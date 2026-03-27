@@ -3,299 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App - Dashboard</title>
+    <title>Bilancio App - Pro</title>
     <style>
-        /* --- STILI GLOBALI E COLORI --- */
         :root {
-            --primary-color: #3b82f6;
-            --bg-color: #e5e7eb;
-            --surface: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --dark-card: #1e3a8a;
-            --border-radius: 20px;
+            --primary: #3b82f6;
+            --bg: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --accent-dark: #1e3a8a;
+            --radius: 24px;
         }
 
         body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 40px 20px;
         }
 
-        .dashboard {
+        .app-container {
             width: 100%;
-            max-width: 1300px;
-            background: #f3f4f6;
-            border-radius: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            max-width: 1200px;
+            background: #f8fafc;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15);
+            padding: 30px;
+            min-height: 85vh;
         }
 
-        /* --- MENU DI NAVIGAZIONE --- */
+        /* --- HEADER & NAV --- */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--surface);
-            padding: 15px 25px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 20px;
         }
 
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--dark-card); display: flex; align-items: center; gap: 10px;}
-        
+        .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); }
+
         nav { display: flex; gap: 10px; }
-        nav a {
-            padding: 10px 15px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        nav button {
+            background: none; border: none; padding: 10px 18px;
+            border-radius: 12px; font-weight: 600; cursor: pointer;
+            color: var(--text-light); transition: 0.3s;
         }
-        nav a:hover { background: #eff6ff; color: var(--primary-color); }
-        nav a.active { background: var(--primary-color); color: white; }
+        nav button.active { background: var(--primary); color: white; }
 
-        .nav-controls button {
-            background: #f3f4f6; border: none; padding: 10px 15px;
-            border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--text-main);
-            transition: background 0.2s; margin-left: 5px;
+        .history-controls button {
+            background: #f1f5f9; border: none; padding: 10px 15px;
+            border-radius: 10px; cursor: pointer; font-size: 0.9rem;
         }
-        .nav-controls button:hover { background: #d1d5db; }
-        .nav-controls button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .history-controls button:disabled { opacity: 0.3; }
 
-        /* --- GESTIONE VISTE (Pagine) --- */
-        .view-section { display: none; animation: fadeIn 0.4s ease; }
-        .view-section.active { display: block; }
+        /* --- MONTH SELECTOR --- */
+        .month-selector-wrapper {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        select#monthSelect {
+            padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;
+            font-weight: bold; color: var(--primary);
+        }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        /* --- VIEWS --- */
+        .view { display: none; animation: slideUp 0.4s ease-out; }
+        .view.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- LAYOUT GRIGLIA DASHBOARD --- */
-        .main-grid {
+        /* --- GRID LAYOUTS --- */
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: 1.3fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
         }
 
         .card {
-            background: var(--surface);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            background: white; border-radius: var(--radius);
+            padding: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
-        .card.dark { background: var(--dark-card); color: white; }
 
-        /* --- ELEMENTI INTERNI --- */
-        h1 { margin: 0 0 15px 0; color: var(--dark-card); font-size: 2.2rem; line-height: 1.2;}
-        .buttons-row { display: flex; gap: 15px; margin-bottom: 30px; }
-        .btn { padding: 12px 25px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-blue { background: var(--primary-color); color: white; }
-        .btn-outline { background: transparent; border: 2px solid #d1d5db; color: var(--text-main); }
-
-        .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-        .action-box { 
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; 
-            padding: 20px 10px; text-align: center; font-weight: 600; cursor: pointer; transition: transform 0.2s;
+        /* CALENDARIO CARDS */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
         }
-        .action-box:hover { transform: translateY(-3px); border-color: var(--primary-color); }
-
-        /* Finto Grafico a Linee */
-        .chart-placeholder { height: 180px; position: relative; margin-top: 20px; border-bottom: 2px solid #e5e7eb; display: flex; align-items: flex-end;}
-        .chart-line { width: 100%; height: 60%; background: linear-gradient(180deg, rgba(59,130,246,0.3) 0%, rgba(255,255,255,0) 100%); border-top: 3px solid var(--primary-color); border-radius: 10px 10px 0 0; }
-
-        /* Grafico a ciambella e statistiche */
-        .grid-right { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .donut-chart {
-            width: 140px; height: 140px; border-radius: 50%;
-            border: 20px solid #eff6ff; border-top-color: var(--primary-color);
-            margin: 20px auto;
+        .memo-card {
+            padding: 20px; border-radius: 20px; color: #1e293b;
+            font-weight: 500; min-height: 150px;
         }
-        .big-number { font-size: 2.5rem; font-weight: 900; color: var(--dark-card); text-align: center;}
+
+        /* --- UTILS --- */
+        .dark-card { background: var(--accent-dark); color: white; }
+        .donut {
+            width: 120px; height: 120px; border-radius: 50%;
+            border: 15px solid #e2e8f0; border-top-color: var(--primary);
+            margin: 20px auto; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 800;
+        }
+        .progress-bar {
+            height: 12px; background: #e2e8f0; border-radius: 10px; margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-fill { height: 100%; background: var(--primary); transition: 0.5s; }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
+<div class="app-container">
     <header>
-        <div class="logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Bilancio-App
-        </div>
-        
-        <nav id="navbar">
-            <a data-target="home" class="active">Home</a>
-            <a data-target="transazioni">Transazioni</a>
-            <a data-target="categorie">Categorie</a>
-            <a data-target="previsioni">Previsioni</a>
+        <div class="logo">Bilancio-App</div>
+        <nav id="mainNav">
+            <button onclick="changePage('home')" id="nav-home" class="active">Home</button>
+            <button onclick="changePage('calendario')" id="nav-calendario">Calendario/Promemoria</button>
+            <button onclick="changePage('resoconto')" id="nav-resoconto">Resoconto Annuale</button>
+            <button onclick="changePage('previsioni')" id="nav-previsioni">Previsioni</button>
         </nav>
-
-        <div class="nav-controls">
-            <button id="btn-back" onclick="goBack()" disabled>&#8592; Indietro</button>
-            <button id="btn-forward" onclick="goForward()" disabled>Avanti &#8594;</button>
+        <div class="history-controls">
+            <button id="backBtn" onclick="goBack()">← Indietro</button>
+            <button id="forwardBtn" onclick="goForward()">Avanti →</button>
         </div>
     </header>
 
-    <div id="home" class="view-section active">
-        <div class="main-grid">
-            
+    <div class="month-selector-wrapper">
+        <label>Seleziona Mese:</label>
+        <select id="monthSelect" onchange="updateData()">
+            <option value="0">Gennaio</option>
+            <option value="1">Febbraio</option>
+            <option value="2">Marzo</option>
+            </select>
+    </div>
+
+    <div id="home" class="view active">
+        <div class="dashboard-grid">
             <div>
-                <h1>Analisi di Bilancio e<br>Tracciamento dei Flussi</h1>
-                <div class="buttons-row">
-                    <button class="btn btn-blue">Nuova Transazione</button>
-                    <button class="btn btn-outline">Genera Report</button>
-                </div>
-
-                <div class="card">
-                    <h3 style="margin-top:0;">Scorciatoie Rapide</h3>
-                    <div class="quick-actions">
-                        <div class="action-box">💰<br><br>Entrate</div>
-                        <div class="action-box">💸<br><br>Uscite</div>
-                        <div class="action-box">📊<br><br>Categorie</div>
-                        <div class="action-box">🎯<br><br>Risparmi</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3 style="margin-top:0;">Evoluzione Saldo Mensile</h3>
-                    <div class="chart-placeholder">
-                        <div class="chart-line"></div>
+                <h1 style="font-size: 2.5rem;">Analisi di Bilancio e<br>Flussi di Cassa</h1>
+                <div class="card" style="margin-top:20px">
+                    <h3>Andamento Mensile</h3>
+                    <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px;">
+                        <div style="flex:1; background: #3b82f633; height: 40%; border-radius: 5px;"></div>
+                        <div style="flex:1; background: #3b82f633; height: 70%; border-radius: 5px;"></div>
+                        <div style="flex:1; background: var(--primary); height: 90%; border-radius: 5px;"></div>
                     </div>
                 </div>
             </div>
+            <div class="card dark-card">
+                <h3>Saldo Totale</h3>
+                <h2 id="val-saldo" style="font-size: 3rem; margin: 10px 0;">€ 0,00</h2>
+                <p>Entrate: <span id="val-entrate">€ 0</span></p>
+                <p>Uscite: <span id="val-uscite">€ 0</span></p>
+            </div>
+        </div>
+    </div>
 
-            <div class="grid-right">
-                <div class="card">
-                    <h3 style="margin-top:0; text-align:center;">Spese Fisse</h3>
-                    <div class="big-number">36%</div>
-                    <div class="donut-chart"></div>
-                </div>
+    <div id="calendario" class="view">
+        <div class="calendar-grid">
+            <div class="memo-card" style="background: #fef3c7;"><h3>Settembre</h3><p>Affitto e utenze</p></div>
+            <div class="memo-card" style="background: #dcfce7;"><h3>Obiettivi</h3><p>Risparmio vacanze</p></div>
+            <div class="memo-card" style="background: #fee2e2;"><h3>Scadenza</h3><p>Assicurazione Auto</p></div>
+            <div class="memo-card" style="background: #e0e7ff;"><h3>Bache</h3><p>Revisione conti</p></div>
+        </div>
+    </div>
 
-                <div class="card dark">
-                    <h3 style="margin-top:0;">Resoconto Totale</h3>
-                    <p style="color:#93c5fd;">Entrate del mese</p>
-                    <h2 style="margin:5px 0 20px 0;">€ 5.743,00</h2>
-                    
-                    <p style="color:#93c5fd;">Uscite del mese</p>
-                    <h2 style="margin:5px 0;">€ 2.100,00</h2>
-                </div>
-
-                <div class="card" style="grid-column: span 2;">
-                    <div style="display:flex; justify-content: space-between; align-items:center;">
-                        <div>
-                            <h3 style="margin:0;">Target Risparmio</h3>
-                            <p style="color:var(--text-muted); margin:5px 0 0 0;">Obiettivo annuale</p>
-                        </div>
-                        <div class="big-number" style="color:var(--primary-color);">87%</div>
+    <div id="resoconto" class="view">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2 style="margin-top:0">Analisi Annuale</h2>
+                <div class="donut" id="val-donut">36%</div>
+                <p style="text-align:center; color: var(--text-light)">Percentuale Spese Fisse</p>
+                
+                <div style="margin-top: 40px;">
+                    <div style="display:flex; justify-content:space-between">
+                        <span>Target Risparmio Raggiunto</span>
+                        <b id="val-target-text">87%</b>
                     </div>
-                    <div style="width:100%; height:10px; background:#e5e7eb; border-radius:5px; margin-top:15px;">
-                        <div style="width:87%; height:100%; background:var(--primary-color); border-radius:5px;"></div>
-                    </div>
+                    <div class="progress-bar"><div id="val-target-bar" class="progress-fill" style="width: 87%;"></div></div>
                 </div>
             </div>
-
+            <div class="card dark-card">
+                <h3>Resoconto Totale Anno</h3>
+                <h2 id="val-anno-tot" style="font-size: 2.5rem;">€ 54.200</h2>
+                <hr style="opacity:0.2">
+                <p>Media Mensile: <b>€ 4.516</b></p>
+                <p>Mese migliore: <b>Marzo</b></p>
+            </div>
         </div>
     </div>
 
-    <div id="transazioni" class="view-section">
+    <div id="previsioni" class="view">
         <div class="card">
-            <h1>Le tue Transazioni</h1>
-            <p>Qui inserirai la tabella con la cronologia di tutte le tue spese ed entrate.</p>
-        </div>
-    </div>
-
-    <div id="categorie" class="view-section">
-        <div class="card">
-            <h1>Gestione Categorie</h1>
-            <p>Qui potrai modificare, aggiungere o eliminare le categorie di bilancio.</p>
-        </div>
-    </div>
-
-    <div id="previsioni" class="view-section">
-        <div class="card">
-            <h1>Previsioni Future</h1>
-            <p>Qui inserirai i grafici previsionali sui tuoi risparmi nei prossimi mesi.</p>
+            <h1>Previsioni Risparmio</h1>
+            <p>In base ai tuoi dati, potresti risparmiare altri €12.000 entro fine anno.</p>
         </div>
     </div>
 
 </div>
 
 <script>
-    const navLinks = document.querySelectorAll('#navbar a');
-    const views = document.querySelectorAll('.view-section');
-    const btnBack = document.getElementById('btn-back');
-    const btnForward = document.getElementById('btn-forward');
+    // DATI SIMULATI PER I MESI
+    const datiMensili = [
+        { saldo: "5.743", entrate: "7.000", uscite: "1.257", speseFisse: "36", target: "87" }, // Gennaio
+        { saldo: "4.200", entrate: "6.500", uscite: "2.300", speseFisse: "42", target: "65" }, // Febbraio
+        { saldo: "6.100", entrate: "8.000", uscite: "1.900", speseFisse: "28", target: "92" }  // Marzo
+    ];
 
-    // Array che funge da "Cronologia" del browser
-    let historyStack = ['home'];
+    let history = ['home'];
     let currentIndex = 0;
 
-    // Funzione principale per cambiare pagina
-    function navigateTo(targetId, isUserClick = true) {
-        // 1. Nascondi tutte le sezioni e disattiva i link
-        views.forEach(view => view.classList.remove('active'));
-        navLinks.forEach(link => link.classList.remove('active'));
+    function updateData() {
+        const mese = document.getElementById('monthSelect').value;
+        const data = datiMensili[mese] || datiMensili[0];
 
-        // 2. Mostra la sezione corretta
-        document.getElementById(targetId).classList.add('active');
-        document.querySelector(`#navbar a[data-target="${targetId}"]`).classList.add('active');
+        // Aggiorna i testi nella UI
+        document.getElementById('val-saldo').innerText = "€ " + data.saldo;
+        document.getElementById('val-entrate').innerText = "€ " + data.entrate;
+        document.getElementById('val-uscite').innerText = "€ " + data.uscite;
+        document.getElementById('val-donut').innerText = data.speseFisse + "%";
+        document.getElementById('val-target-text').innerText = data.target + "%";
+        document.getElementById('val-target-bar').style.width = data.target + "%";
+    }
 
-        // 3. Gestisci la cronologia se è un click diretto dal menu
-        if (isUserClick) {
-            // Se clicco su un link mentre sono andato indietro, taglio il "futuro"
-            historyStack = historyStack.slice(0, currentIndex + 1);
-            historyStack.push(targetId);
+    function changePage(pageId, isHistoryAction = false) {
+        // Gestione UI
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('#mainNav button').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById(pageId).classList.add('active');
+        document.getElementById('nav-' + pageId).classList.add('active');
+
+        // Gestione Cronologia
+        if (!isHistoryAction) {
+            history = history.slice(0, currentIndex + 1);
+            history.push(pageId);
             currentIndex++;
         }
-
         updateButtons();
     }
 
-    // Aggiungi l'evento di click al menu
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            const targetId = e.target.getAttribute('data-target');
-            if (targetId !== historyStack[currentIndex]) {
-                navigateTo(targetId, true);
-            }
-        });
-    });
-
-    // Automazione Bottone INDIETRO
-    window.goBack = function() {
+    function goBack() {
         if (currentIndex > 0) {
             currentIndex--;
-            navigateTo(historyStack[currentIndex], false);
+            changePage(history[currentIndex], true);
         }
     }
 
-    // Automazione Bottone AVANTI
-    window.goForward = function() {
-        if (currentIndex < historyStack.length - 1) {
+    function goForward() {
+        if (currentIndex < history.length - 1) {
             currentIndex++;
-            navigateTo(historyStack[currentIndex], false);
+            changePage(history[currentIndex], true);
         }
     }
 
-    // Aggiorna lo stato dei bottoni (attivi/disattivi)
     function updateButtons() {
-        btnBack.disabled = currentIndex === 0;
-        btnForward.disabled = currentIndex === historyStack.length - 1;
+        document.getElementById('backBtn').disabled = (currentIndex === 0);
+        document.getElementById('forwardBtn').disabled = (currentIndex === history.length - 1);
     }
+
+    // Inizializzazione
+    updateData();
+    updateButtons();
 </script>
 
 </body>
