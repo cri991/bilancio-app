@@ -3,147 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App - Dashboard Home Interattiva</title>
+    <title>Bilancio App - Dashboard Calendario Gestionale</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #f4f7f6;
+            --bg-color: #f8f9fa;
             --sidebar-color: #ffffff;
             --primary-blue: #3498db;
-            --income-green: #2ecc71;
-            --expense-red: #e74c3c;
             --text-dark: #2c3e50;
-            --shadow: 0 4px 15px rgba(0,0,0,0.05);
-            --sidebar-width: 80px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            /* Colori Post-it */
+            --postit-blue: #d1ecf1;
+            --postit-red: #f8d7da;
+            --postit-green: #d4edda;
+            --postit-yellow: #fff3cd;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             display: flex;
             height: 100vh;
             background-color: var(--bg-color);
-            color: var(--text-dark);
-            overflow: hidden; /* Previene scrollbar doppie */
+            overflow: hidden;
         }
 
-        /* --- SIDEBAR SINISTRA INTERATTIVA --- */
+        /* --- SIDEBAR (Automazione icone) --- */
         .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--sidebar-color);
+            width: 80px;
+            background: var(--sidebar-color);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px 0;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            z-index: 100;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
         }
 
-        /* Contenitore per le icone principali */
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-grow: 1; /* Occupa lo spazio disponibile */
-        }
-
-        /* Link della sidebar */
-        .sidebar-item-link {
-            text-decoration: none; /* Rimuove sottolineatura */
+        .nav-link {
+            text-decoration: none;
             margin: 15px 0;
-            padding: 10px;
+            padding: 12px;
             border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            transition: 0.3s;
+            color: #bdc3c7;
+            font-size: 24px;
         }
 
-        /* Effetto Hover generico */
-        .sidebar-item-link:hover {
-            background-color: #f0f4f8;
-            transform: translateY(-2px);
-        }
+        .nav-link:hover { background: #f0f2f5; color: var(--primary-blue); }
+        .nav-link.active { background: #e1f0fa; color: var(--primary-blue); border-left: 4px solid var(--primary-blue); border-radius: 0 12px 12px 0; }
 
-        /* Stato Attivo (evidenziazione visiva) */
-        .sidebar-item-link.active {
-            background-color: #e1f0fa;
-        }
-
-        /* Linea verticale per lo stato attivo */
-        .sidebar-item-link.active::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 10%;
-            height: 80%;
-            width: 4px;
-            background-color: var(--primary-blue);
-            border-radius: 0 4px 4px 0;
-        }
-
-        /* Icone personalizzate (dimensioni e colori) */
-        .sidebar-icon { font-size: 26px; transition: color 0.2s; }
-        
-        .icon-home { color: #bdc3c7; } /* Colore base grigio */
-        .sidebar-item-link.active .icon-home { color: var(--primary-blue); } /* Blu se attivo */
-        .sidebar-item-link:hover .icon-home { color: var(--primary-blue); } /* Blu su hover */
-
-        .icon-wallet { color: #3498db; } /* Foto 1 */
-        .icon-cal { color: #3498db; }    /* Foto 2 */
-        .icon-stats { color: #1abc9c; }  /* Foto 3 */
-
-        /* Azioni in basso */
-        .bottom-actions {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .icon-action { color: #95a5a6; font-size: 20px; }
-        .icon-action:hover { color: var(--text-dark); }
-
-
-        /* --- MAIN CONTENT (DASHBOARD HOME) --- */
-        /* ID aggiunto per l'ancoraggio */
-        .main-content {
+        /* --- MAIN LAYOUT --- */
+        .main-container {
             flex-grow: 1;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            grid-template-rows: 1fr auto;
-            gap: 20px;
-            padding: 25px;
-            overflow-y: auto; /* Scrollbar solo qui */
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
             padding: 20px;
-            box-shadow: var(--shadow);
+            gap: 20px;
+            overflow-y: auto;
         }
 
-        /* Sezione Sinistra: Totali */
-        .financial-summary {
+        /* --- SEZIONE POST-IT (ALTO) --- */
+        .postit-container {
             display: flex;
-            flex-direction: column;
             gap: 15px;
+            min-height: 120px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
         }
 
-        .stat-box h2 { margin: 0; font-size: 14px; color: #7f8c8d; }
-        .stat-box p { margin: 5px 0; font-size: 28px; font-weight: bold; }
-        .income { color: var(--income-green); }
-        .expense { color: var(--expense-red); }
-        .net { color: var(--text-dark); border-top: 1px solid #eee; pt: 10px; margin-top: 10px; }
+        .postit {
+            width: 160px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+            font-weight: bold;
+            position: relative;
+            animation: fadeIn 0.5s ease;
+        }
+        .blue { background: var(--postit-blue); border-left: 5px solid #0c5460; }
+        .red { background: var(--postit-red); border-left: 5px solid #721c24; }
+        .green { background: var(--postit-green); border-left: 5px solid #155724; }
 
-        /* Calendario Centrale */
-        .calendar-container {
-            grid-column: 2;
-            grid-row: 1 / 3;
-            display: flex;
-            flex-direction: column;
+        /* --- CALENDARIO (CENTRO/BASSO) --- */
+        .calendar-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            flex-grow: 1;
         }
 
         .calendar-header {
@@ -152,123 +100,160 @@
             align-items: center;
             margin-bottom: 20px;
         }
-        .calendar-header h2 { margin: 0; }
+
+        .add-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            color: #95a5a6;
+            margin-bottom: 10px;
+        }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            flex-grow: 1;
+            grid-auto-rows: minmax(100px, 1fr);
+            gap: 1px;
+            background: #eee;
+            border: 1px solid #eee;
         }
 
-        .day {
-            border: 1px solid #f0f0f0;
-            border-radius: 8px;
-            min-height: 80px;
-            padding: 5px;
+        .calendar-day {
             background: #fff;
+            padding: 10px;
             position: relative;
+            transition: 0.2s;
         }
-        .day-number { font-weight: bold; color: #7f8c8d; }
+        .calendar-day:hover { background: #fdfdfd; }
+        .calendar-day.today { background: #f0f7ff; }
+        
+        .day-label { font-weight: bold; color: #34495e; }
 
-        /* Promemoria Colorati */
-        .event {
-            font-size: 10px;
-            padding: 3px;
-            border-radius: 4px;
-            margin-top: 2px;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .event-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 5px;
+            margin-top: 5px;
+            display: block;
+            color: #333;
         }
-        .event-blue { background: #3498db; }
-        .event-red { background: #e74c3c; }
-        .event-green { background: #2ecc71; }
 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
-        <div class="sidebar-menu">
-            <a href="#dashboard-home" class="sidebar-item-link active" title="Dashboard Home">
-                <i class="fas fa-home sidebar-icon icon-home"></i>
-            </a>
-            
-            <a href="#" class="sidebar-item-link" title="Dashboard Calendario">
-                <i class="fas fa-calendar-alt sidebar-icon icon-cal"></i>
-            </a>
-            
-            <a href="#" class="sidebar-item-link" title="Resoconto Annuale">
-                <i class="fas fa-chart-bar sidebar-icon icon-stats"></i>
-            </a>
-            
-            <a href="#" class="sidebar-item-link" title="Guadagni e Spese">
-                <i class="fas fa-wallet sidebar-icon icon-wallet"></i>
-            </a>
-        </div>
+        <a href="index.html" class="nav-link" title="Home"><i class="fas fa-home"></i></a>
+        <a href="#" class="nav-link active" title="Calendario"><i class="fas fa-calendar-alt"></i></a>
+        <a href="resoconto.html" class="nav-link" title="Resoconto"><i class="fas fa-chart-bar"></i></a>
+        <a href="guadagni.html" class="nav-link" title="Spese"><i class="fas fa-wallet"></i></a>
         
-        <div class="bottom-actions">
-            <a href="#" class="sidebar-item-link icon-action" title="Modalità Scura"><i class="fas fa-moon"></i></a>
-            <a href="#" class="sidebar-item-link icon-action" title="Disconnetti"><i class="fas fa-sign-out-alt"></i></a>
+        <div style="margin-top: auto; display: flex; flex-direction: column;">
+            <a href="#" class="nav-link"><i class="fas fa-moon"></i></a>
+            <a href="#" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
         </div>
     </nav>
 
-    <main id="dashboard-home" class="main-content">
+    <div class="main-container">
         
-        <section class="financial-summary">
-            <div class="card stat-box">
-                <h2>Guadagni Totali</h2>
-                <p class="income">€ 4.250,00</p>
-                
-                <h2>Spese Totali</h2>
-                <p class="expense">€ 3.110,00</p>
-                
-                <div class="net">
-                    <h2>Totale Netto</h2>
-                    <p>€ 1.140,00</p>
-                </div>
-            </div>
+        <div class="postit-container" id="postit-list">
+            <div class="postit red">Affitto Casa<br><small>Scade il 05/03</small></div>
+            <div class="postit blue">Bolletta Luce<br><small>Scade il 11/03</small></div>
+            <div class="postit green">Stipendio<br><small>Previsto 14/03</small></div>
+        </div>
 
-            <div class="card">
-                <h3>Andamento Spese/Guadagni</h3>
-                <div style="height: 150px; width: 100%; border-left: 2px solid #eee; border-bottom: 2px solid #eee; position: relative; margin-top: 15px;">
-                    <svg viewBox="0 0 200 100" style="width:100%; height:100%" preserveAspectRatio="none">
-                        <path d="M0,80 Q50,20 100,50 T200,10" fill="none" stroke="#2ecc71" stroke-width="3" />
-                        <path d="M0,90 Q50,60 100,80 T200,40" fill="none" stroke="#e74c3c" stroke-width="3" />
-                    </svg>
-                </div>
-            </div>
-        </section>
-
-        <section class="card calendar-container">
+        <div class="calendar-card">
             <div class="calendar-header">
-                <h2>Marzo 2026</h2>
-                <div>
-                    <button style="border:none; background:none; cursor:pointer;"><i class="fas fa-chevron-left"></i></button>
-                    <button style="border:none; background:none; cursor:pointer;"><i class="fas fa-chevron-right"></i></button>
+                <h2 id="month-display">Marzo 2026</h2>
+                <div style="display:flex; gap:10px;">
+                    <button class="add-btn" onclick="addReminder()"><i class="fas fa-plus"></i> Aggiungi</button>
+                    <div style="display:flex; align-items:center; background:#eee; border-radius:10px; padding:0 10px;">
+                        <i class="fas fa-chevron-left" style="cursor:pointer; margin-right:15px;"></i>
+                        <i class="fas fa-chevron-right" style="cursor:pointer;"></i>
+                    </div>
                 </div>
             </div>
-            <div class="calendar-grid">
-                <div class="day"><span class="day-number">1</span></div>
-                <div class="day"><span class="day-number">2</span></div>
-                <div class="day"><span class="day-number">3</span></div>
-                <div class="day"><span class="day-number">4</span></div>
-                <div class="day"><span class="day-number">5</span> <div class="event event-red">Affitto</div></div>
-                <div class="day"><span class="day-number">6</span></div>
-                <div class="day"><span class="day-number">7</span></div>
-                <div class="day"><span class="day-number">8</span></div>
-                <div class="day"><span class="day-number">9</span></div>
-                <div class="day"><span class="day-number">10</span></div>
-                <div class="day"><span class="day-number">11</span> <div class="event event-blue">Bolletta Luce</div></div>
-                <div class="day"><span class="day-number">12</span></div>
-                <div class="day"><span class="day-number">13</span></div>
-                <div class="day"><span class="day-number">14</span> <div class="event event-green">Stipendio</div></div>
+
+            <div class="grid-header">
+                <div>DOM</div><div>LUN</div><div>MAR</div><div>MER</div><div>GIO</div><div>VEN</div><div>SAB</div>
+            </div>
+            
+            <div class="calendar-grid" id="calendar-days">
                 </div>
-        </section>
+        </div>
+    </div>
 
-    </main>
+    <script>
+        // Funzione per generare il calendario di Marzo 2026
+        function generateCalendar() {
+            const grid = document.getElementById('calendar-days');
+            const daysInMonth = 31; 
+            const startDay = 0; // 1 Marzo 2026 è Domenica (0)
 
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                dayDiv.innerHTML = `<span class="day-label">${i}</span>`;
+                
+                // Esempi di eventi predefiniti
+                if(i === 5) dayDiv.innerHTML += `<span class="event-tag" style="background:var(--postit-red)">Affitto</span>`;
+                if(i === 11) dayDiv.innerHTML += `<span class="event-tag" style="background:var(--postit-blue)">Bolletta Luce</span>`;
+                if(i === 14) dayDiv.innerHTML += `<span class="event-tag" style="background:var(--postit-green)">Stipendio</span>`;
+                
+                grid.appendChild(dayDiv);
+            }
+        }
+
+        // Automazione aggiunta promemoria con logica colori
+        function addReminder() {
+            const text = prompt("Cosa vuoi ricordare? (es: Luce, Affitto, Spesa)");
+            if (!text) return;
+
+            const day = prompt("In quale giorno di Marzo?");
+            let colorClass = 'blue'; // Default
+            let colorHex = 'var(--postit-blue)';
+
+            const lowerText = text.toLowerCase();
+            if(lowerText.includes('affitto') || lowerText.includes('casa')) {
+                colorClass = 'red';
+                colorHex = 'var(--postit-red)';
+            } else if(lowerText.includes('stipendio') || lowerText.includes('guadagno')) {
+                colorClass = 'green';
+                colorHex = 'var(--postit-green)';
+            } else if(lowerText.includes('spesa')) {
+                colorClass = 'yellow';
+                colorHex = 'var(--postit-yellow)';
+            }
+
+            // Aggiungi Post-it in alto
+            const list = document.getElementById('postit-list');
+            const newPostit = document.createElement('div');
+            newPostit.className = `postit ${colorClass}`;
+            newPostit.innerHTML = `${text}<br><small>Giorno ${day}</small>`;
+            list.prepend(newPostit);
+
+            // Aggiorna calendario (visuale semplificata per l'esempio)
+            alert("Promemoria aggiunto con successo!");
+        }
+
+        generateCalendar();
+    </script>
 </body>
 </html>
