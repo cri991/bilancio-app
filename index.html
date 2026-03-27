@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App Pro - Dashboard Home</title>
+    <title>Bilancio App Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
@@ -25,7 +25,6 @@
 
         .wrapper { max-width: 1400px; margin: auto; }
         
-        /* --- HEADER --- */
         header {
             background: var(--white);
             padding: 15px 30px;
@@ -50,51 +49,28 @@
         .time-controls { display: flex; gap: 10px; align-items: center; }
         select { padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-weight: 600; }
 
-        /* --- VISTE --- */
         .view { display: none; animation: fadeIn 0.4s ease; }
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- HOME: DASHBOARD GRID (Laptop Style) --- */
-        
-        /* Pannelli Superiori (Quattro Blocchi) */
+        /* --- HOME LAYOUT --- */
         .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
-        .summary-card {
-            background: var(--white); padding: 25px; border-radius: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .summary-info h4 { margin: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .summary-card { background: var(--white); padding: 25px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .summary-info h2 { margin: 8px 0; font-size: 2rem; font-weight: 800; }
-        .summary-info small { font-weight: 600; }
+        .progress-circle { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 8px solid #f1f5f9; }
 
-        .progress-circle {
-            width: 70px; height: 70px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1.1rem;
-            border: 8px solid #f1f5f9; /* Sfondo del cerchio */
-        }
-
-        /* Pannelli Centrali (Tabelle + Grafici) */
         .main-data-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px; margin-bottom: 25px; }
-        .data-panel { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .data-panel h3 { margin-top: 0; font-weight: 700; }
+        .data-panel { background: var(--white); border-radius: 20px; padding: 25px; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 12px; border-bottom: 1px solid #f8fafc; text-align: left; }
 
-        .table-container { margin-bottom: 30px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-        th { text-align: left; color: var(--text-muted); padding: 12px; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 12px; border-bottom: 1px solid #f8fafc; }
-
-        .chart-box { height: 280px; position: relative; }
-
-        /* Pannello Inferiore (Andamento) */
-        .trend-panel { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .trend-chart-box { height: 200px; }
-
-        /* Colori dinamici per differenze */
-        .pos { color: var(--success); font-weight: 600; }
-        .neg { color: var(--danger); font-weight: 600; }
-
+        /* --- CALENDARIO STYLE --- */
+        .memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+        .memo-card { padding: 20px; border-radius: 20px; position: relative; min-height: 120px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .memo-date { font-weight: 800; font-size: 1.2rem; display: block; margin-bottom: 10px; }
+        .memo-text { outline: none; display: block; min-height: 40px; }
+        .btn-add-memo { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+        .btn-del { position: absolute; top: 10px; right: 10px; border: none; background: none; cursor: pointer; opacity: 0.3; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -103,169 +79,141 @@
     <header>
         <div class="logo">Bilancio App Pro</div>
         <nav>
-            <button onclick="showPage('home')" class="active">Home</button>
-            <button onclick="showPage('calendario')">Calendario</button>
-            <button onclick="showPage('resoconto')">Resoconto Annuale</button>
-            <button onclick="showPage('guadagni')">Guadagni e Spese</button>
+            <button onclick="showPage('home')" id="btn-home" class="active">Home</button>
+            <button onclick="showPage('calendario')" id="btn-calendario">Calendario</button>
+            <button onclick="showPage('resoconto')" id="btn-resoconto">Resoconto Annuale</button>
+            <button onclick="showPage('guadagni')" id="btn-guadagni">Guadagni e Spese</button>
         </nav>
         <div class="time-controls">
-            <select id="selMese" onchange="updateDashboard()"></select>
-            <select id="selAnno" onchange="updateDashboard()"></select>
+            <select id="selMese" onchange="handleTimeChange()"></select>
+            <select id="selAnno" onchange="handleTimeChange()"></select>
         </div>
     </header>
 
     <div id="home" class="view active">
-        
         <div class="summary-grid">
             <div class="summary-card">
-                <div class="summary-info"><h4>Reddito</h4><h2 id="val-reddito">€ 7.780</h2><small class="pos">+ € 2.515 sopra al budget</small></div>
-                <div class="progress-circle" style="border-top-color: var(--success); color: var(--success);">148%</div>
+                <div class="summary-info"><h4>Reddito</h4><h2>€ 7.780</h2><small style="color:var(--success)">+ € 2.515 sopra budget</small></div>
+                <div class="progress-circle" style="border-top-color:var(--success)">148%</div>
             </div>
             <div class="summary-card">
-                <div class="summary-info"><h4>Spese</h4><h2 id="val-spese">€ 1.435</h2><small class="pos">- € 1.405 sotto al budget</small></div>
-                <div class="progress-circle" style="border-top-color: var(--danger); color: var(--danger);">51%</div>
+                <div class="summary-info"><h4>Spese</h4><h2>€ 1.435</h2><small style="color:var(--success)">- € 1.405 sotto budget</small></div>
+                <div class="progress-circle" style="border-top-color:var(--danger)">51%</div>
             </div>
             <div class="summary-card">
-                <div class="summary-info"><h4>Risparmi</h4><h2 id="val-risparmi">€ 1.805</h2><small class="pos">+ € 155 sopra al budget</small></div>
-                <div class="progress-circle" style="border-top-color: var(--warning); color: var(--warning);">109%</div>
+                <div class="summary-info"><h4>Risparmi</h4><h2>€ 1.805</h2><small style="color:var(--success)">+ € 155 sopra budget</small></div>
+                <div class="progress-circle" style="border-top-color:var(--warning)">109%</div>
             </div>
             <div class="summary-card">
-                <div class="summary-info"><h4>Debiti</h4><h2 id="val-debiti">€ 2.744</h2><small class="neg">+ € 1.794 sopra al budget</small></div>
-                <div class="progress-circle" style="border-top-color: var(--info); color: var(--info);">289%</div>
+                <div class="summary-info"><h4>Debiti</h4><h2>€ 2.744</h2><small style="color:var(--danger)">+ € 1.794 sopra budget</small></div>
+                <div class="progress-circle" style="border-top-color:var(--info)">289%</div>
             </div>
         </div>
-
         <div class="main-data-grid">
             <div class="data-panel">
-                <div class="table-container">
-                    <h3 style="color:var(--success)">Dettaglio Reddito</h3>
-                    <table>
-                        <thead><tr><th>Categoria</th><th>Obiettivo</th><th>Effettivo</th><th>Differenza</th></tr></thead>
-                        <tbody id="table-reddito">
-                            <tr><td>Stipendio</td><td>€ 2.500</td><td>€ 3.950</td><td class="pos">+ 1.450</td></tr>
-                            <tr><td>Interessi</td><td>€ 1.000</td><td>€ 800</td><td class="neg">- 200</td></tr>
-                            <tr><td>Dividendi</td><td>€ 100</td><td>€ 600</td><td class="pos">+ 500</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="table-container">
-                    <h3 style="color:var(--danger)">Dettaglio Spese</h3>
-                    <table>
-                        <thead><tr><th>Categoria</th><th>Obiettivo</th><th>Effettivo</th><th>Differenza</th></tr></thead>
-                        <tbody id="table-spese">
-                            <tr><td>Affitto</td><td>€ 900</td><td>€ 900</td><td>€ 0</td></tr>
-                            <tr><td>Utenze</td><td>€ 300</td><td>€ 175</td><td class="pos">- 125</td></tr>
-                            <tr><td>Ristoranti</td><td>€ 200</td><td>€ 130</td><td class="pos">- 70</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <h3>Dettaglio Reddito</h3>
+                <table>
+                    <thead><tr><th>Categoria</th><th>Obiettivo</th><th>Effettivo</th><th>Differenza</th></tr></thead>
+                    <tr><td>Stipendio</td><td>€ 2.500</td><td>€ 3.950</td><td style="color:var(--success)">+ 1.450</td></tr>
+                </table>
             </div>
-
             <div class="data-panel">
                 <h3>Ripartizione Mensile</h3>
-                <div class="chart-box"><canvas id="chartDoughnutReddito"></canvas></div>
-                <div class="chart-box" style="margin-top:20px;"><canvas id="chartBarSpese"></canvas></div>
+                <div style="height:250px"><canvas id="chartHome"></canvas></div>
             </div>
         </div>
-
-        <div class="trend-panel">
-            <h3>Andamento nel tempo</h3>
-            <div class="trend-chart-box"><canvas id="chartLineTrend"></canvas></div>
-        </div>
-
     </div>
 
-    <div id="calendario" class="view"><div class="data-panel"><h2>Calendario</h2></div></div>
+    <div id="calendario" class="view">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 id="calendarTitle">Caricamento...</h2>
+            <button class="btn-add-memo" onclick="addNewMemo()">+ Nuovo Promemoria</button>
+        </div>
+        <div id="memoGrid" class="memo-grid"></div>
+    </div>
+
     <div id="resoconto" class="view"><div class="data-panel"><h2>Resoconto Annuale</h2></div></div>
     <div id="guadagni" class="view"><div class="data-panel"><h2>Guadagni e Spese</h2></div></div>
-
 </div>
 
 <script>
-    // --- GESTIONE NAVIGAZIONE ---
+    const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+    const baseYear = 2026;
+    let memoData = JSON.parse(localStorage.getItem('app_memos')) || {};
+
+    // Inizializzazione Selettori (±10 anni)
+    const sM = document.getElementById('selMese');
+    const sA = document.getElementById('selAnno');
+    mesi.forEach(m => sM.add(new Option(m, m)));
+    for(let i = baseYear - 10; i <= baseYear + 10; i++) sA.add(new Option(i, i));
+    sM.value = "Marzo"; sA.value = "2026";
+
     function showPage(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
-        if (id === 'home') initCharts();
+        document.getElementById('btn-' + id).classList.add('active');
+        if(id === 'calendario') loadMemos();
+        if(id === 'home') initHomeChart();
     }
 
-    // --- POPOLAMENTO SELETTORI TEMPORALI ---
-    const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
-    const selMese = document.getElementById('selMese');
-    const selAnno = document.getElementById('selAnno');
-    
-    mesi.forEach(m => selMese.add(new Option(m, m)));
-    for (let i = 2026; i >= 2020; i--) selAnno.add(new Option(i, i));
-    selMese.value = "Marzo"; // Default come immagine
-
-    // --- LOGICA AGGIORNAMENTO DASHBOARD ---
-    function updateDashboard() {
-        // Simulazione cambio dati
-        const r = (n) => Math.floor(Math.random() * n) + 1000;
-        document.getElementById('val-reddito').innerText = "€ " + r(8000);
-        document.getElementById('val-spese').innerText = "€ " + r(2000);
-        document.getElementById('val-risparmi').innerText = "€ " + r(3000);
-        if (document.getElementById('home').classList.contains('active')) initCharts();
+    function handleTimeChange() {
+        if(document.getElementById('calendario').classList.contains('active')) loadMemos();
     }
 
-    // --- GRAFICI (Chart.js) ---
-    let chartD, chartB, chartL;
-
-    function initCharts() {
-        // Distruggi grafici esistenti se presenti per evitare sovrapposizioni
-        if (chartD) chartD.destroy();
-        if (chartB) chartB.destroy();
-        if (chartL) chartL.destroy();
-
-        // 1. Grafico a Ciambella (Reddito)
-        chartD = new Chart(document.getElementById('chartDoughnutReddito'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Stipendio', 'Interessi', 'Dividendi'],
-                datasets: [{
-                    data: [3950, 800, 600],
-                    backgroundColor: ['#10b981', '#34d399', '#6ee7b7'],
-                    borderWidth: 0
-                }]
-            },
-            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-        });
-
-        // 2. Grafico a Barre (Spese)
-        chartB = new Chart(document.getElementById('chartBarSpese'), {
-            type: 'bar',
-            data: {
-                labels: ['Affitto', 'Utenze', 'Cibo', 'Auto'],
-                datasets: [{
-                    label: 'Spese Effettive',
-                    data: [900, 175, 450, 300],
-                    backgroundColor: '#ef4444',
-                    borderRadius: 8
-                }]
-            },
-            options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-        });
-
-        // 3. Grafico a Linee (Andamento)
-        chartL = new Chart(document.getElementById('chartLineTrend'), {
-            type: 'line',
-            data: {
-                labels: ['Sett 1', 'Sett 2', 'Sett 3', 'Sett 4'],
-                datasets: [
-                    { label: 'Entrate', data: [1500, 2200, 1900, 2180], borderColor: '#10b981', tension: 0.4 },
-                    { label: 'Uscite', data: [400, 600, 350, 485], borderColor: '#ef4444', tension: 0.4 }
-                ]
-            },
-            options: { maintainAspectRatio: false }
-        });
+    // LOGICA CALENDARIO
+    function loadMemos() {
+        const key = `${sM.value}-${sA.value}`;
+        document.getElementById('calendarTitle').innerText = `Promemoria: ${sM.value} ${sA.value}`;
+        const grid = document.getElementById('memoGrid');
+        grid.innerHTML = "";
+        
+        if(memoData[key]) {
+            memoData[key].forEach((m, i) => createMemoCard(m.date, m.text, m.color, i));
+        }
     }
 
-    // Avvio iniziale dei grafici
-    window.onload = initCharts;
+    function createMemoCard(date, text, color, index) {
+        const card = document.createElement('div');
+        card.className = "memo-card";
+        card.style.backgroundColor = color;
+        card.innerHTML = `
+            <button class="btn-del" onclick="deleteMemo(${index})">×</button>
+            <span class="memo-date" contenteditable="true" onblur="saveMemos()">${date}</span>
+            <span class="memo-text" contenteditable="true" onblur="saveMemos()">${text}</span>
+        `;
+        document.getElementById('memoGrid').appendChild(card);
+    }
 
+    function addNewMemo() {
+        const colors = ["#fef3c7", "#dcfce7", "#fee2e2", "#e0f2f1"];
+        createMemoCard("Data", "Scrivi qui...", colors[Math.floor(Math.random()*4)]);
+        saveMemos();
+    }
+
+    function saveMemos() {
+        const key = `${sM.value}-${sA.value}`;
+        const cards = document.querySelectorAll('.memo-card');
+        memoData[key] = Array.from(cards).map(c => ({
+            date: c.querySelector('.memo-date').innerText,
+            text: c.querySelector('.memo-text').innerText,
+            color: c.style.backgroundColor
+        }));
+        localStorage.setItem('app_memos', JSON.stringify(memoData));
+    }
+
+    function deleteMemo(i) {
+        const key = `${sM.value}-${sA.value}`;
+        memoData[key].splice(i, 1);
+        saveMemos(); loadMemos();
+    }
+
+    function initHomeChart() {
+        const ctx = document.getElementById('chartHome').getContext('2d');
+        new Chart(ctx, { type: 'doughnut', data: { labels: ['A', 'B'], datasets: [{ data: [300, 50], backgroundColor: ['#10b981', '#ef4444'] }] }, options: { maintainAspectRatio: false } });
+    }
+
+    window.onload = () => { initHomeChart(); loadMemos(); };
 </script>
-
 </body>
 </html>
