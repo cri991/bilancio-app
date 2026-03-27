@@ -3,72 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App - Dashboard Pro</title>
+    <title>Bilancio-App | Dashboard Home</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg: #f0f2f5;
+            --bg: #f4f7fa;
             --white: #ffffff;
-            --text: #334155;
-            --primary: #3b82f6;
-            --green: #10b981;
-            --red: #ef4444;
+            --text-main: #2d3748;
+            --text-sub: #718096;
+            --primary: #3182ce;
+            --green: #38a169;
+            --red: #e53e3e;
+            --blue-light: #e0f2fe;
             --border: #e2e8f0;
         }
 
         body {
-            margin: 0; font-family: 'Inter', sans-serif;
-            background: var(--bg); color: var(--text);
+            margin: 0; font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg); color: var(--text-main);
             display: flex; height: 100vh; overflow: hidden;
         }
 
         /* SIDEBAR PRO */
         .sidebar {
             width: 90px; background: var(--white); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; align-items: center; padding: 20px 0;
+            display: flex; flex-direction: column; align-items: center; padding: 25px 0; flex-shrink: 0;
         }
-        .sidebar-logo { color: var(--primary); font-size: 30px; margin-bottom: 40px; }
-        .nav-link { color: #94a3b8; font-size: 22px; margin: 15px 0; transition: 0.3s; position: relative; }
+        .sidebar-logo { color: var(--primary); font-size: 28px; margin-bottom: 40px; }
+        .nav-link { color: #cbd5e0; font-size: 22px; margin: 18px 0; text-decoration: none; transition: 0.3s; }
         .nav-link.active { color: var(--primary); }
         .nav-link:hover { color: var(--primary); }
+        .logout { margin-top: auto; color: #cbd5e0; cursor: pointer; }
 
-        /* CONTENT LAYOUT */
+        /* MAIN CONTENT LAYOUT */
         .main-content {
-            flex-grow: 1; padding: 20px; display: grid;
-            grid-template-columns: 350px 1fr;
-            grid-template-rows: 400px 1fr;
+            flex-grow: 1; padding: 25px; display: grid;
+            grid-template-columns: 360px 1fr;
+            grid-template-rows: 420px 1fr;
             gap: 20px; overflow-y: auto;
         }
 
-        .card { background: var(--white); border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card { background: var(--white); border-radius: 18px; padding: 22px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
 
-        /* BLOCCO BILANCIO (TOP LEFT) */
-        .bilancio-box h2 { font-size: 18px; margin-bottom: 20px; color: #64748b; }
-        .stat-item { margin-bottom: 25px; }
-        .stat-label { font-size: 14px; color: #64748b; font-weight: 500; }
-        .stat-value { font-size: 36px; font-weight: 800; }
-        .netto-box { background: #f8fafc; padding: 15px; border-radius: 12px; }
+        /* BOX BILANCIO (TOP LEFT) */
+        .balance-card h2 { font-size: 18px; margin: 0 0 20px 0; color: var(--text-sub); }
+        .stat-group { margin-bottom: 25px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
+        .stat-group:last-child { border: none; background: #f8fafc; padding: 15px; border-radius: 12px; }
+        .label { font-size: 14px; color: var(--text-sub); font-weight: 500; }
+        .val { font-size: 34px; font-weight: 800; display: block; margin-top: 5px; }
 
-        /* CALENDARIO ESTESO (TOP RIGHT) */
+        /* CALENDARIO (TOP RIGHT) */
         .calendar-card { grid-column: 2; display: flex; flex-direction: column; }
-        .cal-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        table.calendar-table { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; flex-grow: 1; }
-        .calendar-table th { font-size: 12px; color: #94a3b8; padding: 10px; }
-        .calendar-table td { padding: 8px; border: 1px solid #f1f5f9; font-size: 13px; height: 40px; position: relative; }
-        .dot { height: 6px; width: 6px; border-radius: 50%; display: block; margin: 4px auto; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .calendar-table { width: 100%; border-collapse: collapse; flex-grow: 1; }
+        .calendar-table th { font-size: 12px; color: var(--text-sub); padding: 10px; text-transform: uppercase; }
+        .calendar-table td { border: 1px solid #f1f5f9; text-align: center; vertical-align: top; padding: 8px; height: 45px; font-size: 13px; color: #4a5568; }
+        .event-dot { width: 6px; height: 6px; border-radius: 50%; display: block; margin: 4px auto; }
 
         /* GRAFICO (BOTTOM LEFT) */
-        .chart-card { grid-row: 2; }
+        .chart-card h3 { margin-top: 0; font-size: 16px; }
+        .chart-container { height: 200px; position: relative; }
 
-        /* TABELLA PROGETTI (BOTTOM RIGHT) */
-        .project-card { grid-column: 2; grid-row: 2; }
-        .project-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .project-table th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); font-size: 13px; }
-        .project-table td { padding: 12px; font-size: 14px; border-bottom: 1px solid var(--border); }
-        .header-row { background: #e0f2fe; font-weight: bold; }
-        .pos { color: var(--green); }
-        .neg { color: var(--red); }
+        /* TABELLA GUADAGNI/SPESE (BOTTOM RIGHT) */
+        .data-card { grid-column: 2; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); font-size: 13px; color: var(--text-sub); }
+        .data-table td { padding: 12px; font-size: 14px; border-bottom: 1px solid #f7fafc; }
+        .row-cat { background: var(--blue-light); font-weight: bold; color: #2c5282; }
+        .pos { color: var(--green); font-weight: 600; }
+        .neg { color: var(--red); font-weight: 600; }
 
     </style>
 </head>
@@ -80,57 +84,62 @@
         <a href="calendario.html" class="nav-link"><i class="fas fa-calendar-alt"></i></a>
         <a href="resoconto.html" class="nav-link"><i class="fas fa-chart-line"></i></a>
         <a href="guadagni.html" class="nav-link"><i class="fas fa-wallet"></i></a>
-        <div style="margin-top: auto; color: #94a3b8;"><i class="fas fa-sign-out-alt"></i></div>
+        <div class="logout"><i class="fas fa-power-off"></i></div>
     </nav>
 
     <div class="main-content">
         
-        <div class="card bilancio-box">
+        <div class="card balance-card">
             <h2>Guadagni e Spese</h2>
-            <div class="stat-item">
-                <div class="stat-label">Guadagni Totali:</div>
-                <div class="stat-value" style="color:var(--text)">€ 4.250</div>
+            <div class="stat-group">
+                <span class="label">Guadagni Totali:</span>
+                <span class="val">€ 4,250</span>
             </div>
-            <div class="stat-item">
-                <div class="stat-label">Spese Totali:</div>
-                <div class="stat-value" style="color:var(--text)">€ 3.110</div>
+            <div class="stat-group">
+                <span class="label">Spese Totali:</span>
+                <span class="val">€ 3,110</span>
             </div>
-            <div class="stat-item netto-box">
-                <div class="stat-label">Totale Netto:</div>
-                <div class="stat-value" style="color:var(--primary)">€ 1.140</div>
+            <div class="stat-group">
+                <span class="label">Totale Netto:</span>
+                <span class="val" style="color:var(--primary)">€ 1,140</span>
             </div>
         </div>
 
         <div class="card calendar-card">
             <div class="cal-header">
-                <strong>Promemoria Spese e Utenze</strong>
-                <span style="color:var(--primary); font-size: 13px;">Marzo 2026 <i class="fas fa-chevron-right"></i></span>
+                <strong style="font-size: 18px;">Promemoria Spese e Utenze</strong>
+                <span style="color:var(--primary); font-size: 14px; cursor:pointer;">Marzo 2026 <i class="fas fa-chevron-right"></i></span>
             </div>
             <table class="calendar-table">
-                <thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead>
-                <tbody id="cal-body">
+                <thead>
+                    <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+                </thead>
+                <tbody id="calendar-body">
                     </tbody>
             </table>
         </div>
 
         <div class="card chart-card">
-            <h3>Andamento</h3>
-            <canvas id="lineChart"></canvas>
+            <h3>Andamento Mensile</h3>
+            <div class="chart-container">
+                <canvas id="homeChart"></canvas>
+            </div>
         </div>
 
-        <div class="card project-card">
-            <h3>Dettaglio Progetti</h3>
-            <table class="project-table">
+        <div class="card data-card">
+            <h3 style="margin-top:0">Dettaglio Movimenti</h3>
+            <table class="data-table">
                 <thead>
-                    <tr><th>Progetto</th><th>Attività</th><th>Resp.</th><th>Scostamento</th></tr>
+                    <tr><th>Categoria</th><th>Voce</th><th>Responsabile</th><th>Scostamento</th></tr>
                 </thead>
                 <tbody>
-                    <tr class="header-row"><td colspan="4">Progetto A</td></tr>
-                    <tr><td>Fase 1</td><td>Attività 1</td><td>Mario</td><td class="pos">+30 gt</td></tr>
-                    <tr><td>Fase 2</td><td>Attività 2</td><td>Giorgia</td><td class="pos">+62 g</td></tr>
-                    <tr class="header-row"><td colspan="4">Progetto B</td></tr>
-                    <tr><td>Fase 1</td><td>Attività 1</td><td>Franco</td><td class="pos">+180 €</td></tr>
-                    <tr><td>Fase 3</td><td>Attività 2</td><td>Isabella</td><td class="neg">-30 g</td></tr>
+                    <tr class="row-cat"><td colspan="4">Guadagni Totali</td></tr>
+                    <tr><td>Vendite</td><td>Prodotto A</td><td>Mario</td><td class="pos">+30 gt</td></tr>
+                    <tr><td>Servizi</td><td>Consulenza</td><td>Giorgia</td><td class="pos">+62 g</td></tr>
+                    
+                    <tr class="row-cat"><td colspan="4">Spese Totali</td></tr>
+                    <tr><td>Ufficio</td><td>Affitto</td><td>Franco</td><td class="pos">180 €</td></tr>
+                    <tr><td>Utenze</td><td>Bolletta Luce</td><td>Isabella</td><td class="neg">-30 g</td></tr>
                 </tbody>
             </table>
         </div>
@@ -138,32 +147,37 @@
     </div>
 
     <script>
-        // Inizializzazione Grafico
-        const ctx = document.getElementById('lineChart').getContext('2d');
+        // Grafico Linee
+        const ctx = document.getElementById('homeChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag'],
                 datasets: [
-                    { label: 'Guadagni', data: [500, 1200, 800, 1500, 1300, 2000], borderColor: '#10b981', tension: 0.4 },
-                    { label: 'Spese', data: [400, 600, 900, 800, 1000, 1100], borderColor: '#ef4444', tension: 0.4 }
+                    { label: 'Guadagni', data: [600, 1400, 1000, 1800, 1500], borderColor: '#38a169', tension: 0.4, fill: false },
+                    { label: 'Spese', data: [400, 700, 1100, 900, 1200], borderColor: '#e53e3e', tension: 0.4, fill: false }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { display: false }, x: { grid: { display: false } } }
+            }
         });
 
-        // Riempimento Calendario
-        const body = document.getElementById('cal-body');
-        let day = 1;
-        for(let i=0; i<5; i++) {
-            let row = body.insertRow();
-            for(let j=0; j<7; j++) {
+        // Generazione Calendario
+        const calBody = document.getElementById('calendar-body');
+        let dayCounter = 1;
+        for (let i = 0; i < 5; i++) {
+            let row = calBody.insertRow();
+            for (let j = 0; j < 7; j++) {
                 let cell = row.insertCell();
-                if(day <= 31) {
-                    cell.innerHTML = day;
-                    if(day == 15 || day == 18) cell.innerHTML += '<span class="dot" style="background:var(--red)"></span>';
-                    if(day == 22) cell.innerHTML += '<span class="dot" style="background:var(--green)"></span>';
-                    day++;
+                if (dayCounter <= 31) {
+                    cell.innerHTML = `<div>${dayCounter}</div>`;
+                    if([12, 15, 18].includes(dayCounter)) cell.innerHTML += '<span class="event-dot" style="background:var(--red)"></span>';
+                    if([22, 25].includes(dayCounter)) cell.innerHTML += '<span class="event-dot" style="background:var(--green)"></span>';
+                    dayCounter++;
                 }
             }
         }
