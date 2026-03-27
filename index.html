@@ -3,186 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BilancioApp Pro - Gestione Dinamica</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
+    <title>Bilancio-App Pro</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --bg: #f1f5f9;
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --teal-bg: #e0f2f1;
-            --teal-text: #00796b;
+            --primary: #3b82f6;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --success: #dcfce7;
+            --warning: #fef3c7;
+            --danger: #fee2e2;
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); margin: 0; padding: 20px; color: var(--text-main); }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+        .container { max-width: 1100px; margin: auto; }
 
-        .wrapper { max-width: 1200px; margin: auto; }
-        
         header {
-            background: var(--white);
-            padding: 15px 25px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: white; padding: 15px 30px; border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px;
         }
-
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        nav { display: flex; gap: 10px; }
         nav button {
-            border: none; background: none; padding: 10px 16px;
-            border-radius: 10px; font-weight: 600; cursor: pointer;
-            color: #64748b; transition: 0.3s;
+            border: none; background: none; padding: 10px 15px; border-radius: 12px;
+            font-weight: 600; cursor: pointer; color: #64748b;
         }
         nav button.active { background: var(--primary); color: white; }
 
-        .view { display: none; animation: fadeIn 0.4s ease; }
+        .view { display: none; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* --- CARDS --- */
+        .card { background: white; padding: 25px; border-radius: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 20px; }
+
+        /* --- CALENDARIO GRID --- */
+        .memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+        .memo-card { 
+            padding: 20px; border-radius: 20px; position: relative; 
+            min-height: 120px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+        .memo-card:hover { transform: translateY(-5px); }
+        .memo-date { font-weight: 800; font-size: 1.2rem; margin-bottom: 10px; display: block; }
+        .memo-text { outline: none; min-height: 40px; display: block; }
+        
+        .btn-add-memo {
+            background: var(--primary); color: white; border: none; padding: 12px 20px;
+            border-radius: 12px; cursor: pointer; font-weight: 600; margin-top: 10px;
+        }
+        .btn-del-memo {
+            position: absolute; top: 10px; right: 10px; background: none; border: none;
+            cursor: pointer; font-weight: bold; opacity: 0.3;
+        }
+        .btn-del-memo:hover { opacity: 1; color: red; }
+
         /* --- TABELLA GUADAGNI E SPESE --- */
-        .table-panel { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        th { text-align: left; color: #64748b; padding: 12px; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 12px; border-bottom: 1px solid #f8fafc; }
-
-        .section-header { background: var(--teal-bg); color: var(--teal-text); font-weight: 800; font-size: 1.1rem; }
-        
-        [contenteditable="true"] { 
-            padding: 4px 8px;
-            border-radius: 4px;
-            outline: none;
-            transition: 0.2s;
-        }
-        [contenteditable="true"]:focus { background: #eef2ff; box-shadow: 0 0 0 2px var(--primary); }
-
-        .btn-add {
-            background: #f1f5f9; border: 1px dashed #cbd5e1; color: #475569;
-            padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
-            width: 100%; margin-bottom: 25px; transition: 0.3s;
-        }
-        .btn-add:hover { background: #e2e8f0; border-color: #94a3b8; }
-
-        .btn-delete {
-            color: var(--danger); background: none; border: none; 
-            font-weight: bold; cursor: pointer; font-size: 1.2rem;
-            opacity: 0.3; transition: 0.3s;
-        }
-        tr:hover .btn-delete { opacity: 1; }
-
-        .val-positive { color: var(--success); font-weight: bold; }
-        .val-negative { color: var(--danger); font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 12px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+        .header-row { background: #e0f2f1; color: #00796b; font-weight: bold; }
+        .pos { color: #10b981; font-weight: bold; }
+        .neg { color: #ef4444; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="wrapper">
+<div class="container">
     <header>
-        <div style="font-weight: 800; font-size: 1.4rem; color: var(--primary);">BilancioApp Pro</div>
+        <div class="logo">Bilancio-App Pro</div>
         <nav>
-            <button onclick="showPage('home')">Home</button>
-            <button onclick="showPage('guadagni')" class="active">Guadagni e Spese</button>
+            <button onclick="showPage('home')" id="nav-home">Home</button>
+            <button onclick="showPage('calendario')" id="nav-calendario" class="active">Calendario/Promemoria</button>
+            <button onclick="showPage('resoconto')" id="nav-resoconto">Resoconto Annuale</button>
+            <button onclick="showPage('guadagni')" id="nav-guadagni">Guadagni e Spese</button>
         </nav>
-        <div style="display: flex; gap: 10px;">
-            <select id="selMese"><option>Gennaio</option><option>Febbraio</option></select>
-            <select id="selAnno"><option>2025</option><option>2026</option></select>
+        <div style="display: flex; gap: 8px;">
+            <select id="selMese" onchange="loadCalendar()"></select>
+            <select id="selAnno" onchange="loadCalendar()"></select>
         </div>
     </header>
 
     <div id="home" class="view">
-        <div class="table-panel"><h1>Dashboard Home</h1><p>Seleziona "Guadagni e Spese" per modificare i dati.</p></div>
+        <div class="card"><h1>Benvenuto nella Dashboard</h1><p>Seleziona una categoria per iniziare.</p></div>
     </div>
 
-    <div id="guadagni" class="view active">
-        <div class="table-panel">
-            <h2>Gestione Flussi Mensili</h2>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 30%;">Voce / Fase</th>
-                        <th style="width: 30%;">Attività</th>
-                        <th style="width: 20%;">Responsabile</th>
-                        <th style="width: 15%;">Importo</th>
-                        <th style="width: 5%;"></th>
-                    </tr>
-                </thead>
-                
-                <tbody id="body-guadagni">
-                    <tr class="section-header"><td colspan="5">Guadagni</td></tr>
-                    <tr>
-                        <td contenteditable="true">Stipendio</td>
-                        <td contenteditable="true">Analisi Mensile</td>
-                        <td contenteditable="true">Mario</td>
-                        <td contenteditable="true" class="val-positive">2.500 €</td>
-                        <td><button class="btn-delete" onclick="deleteRow(this)">×</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button class="btn-add" onclick="addRow('body-guadagni', 'val-positive')">+ Aggiungi Voce Guadagno</button>
-
-            <table>
-                <tbody id="body-spese">
-                    <tr class="section-header"><td colspan="5">Spese</td></tr>
-                    <tr>
-                        <td contenteditable="true">Affitto</td>
-                        <td contenteditable="true">Sviluppo Casa</td>
-                        <td contenteditable="true">Lucio</td>
-                        <td contenteditable="true" class="val-negative">600 €</td>
-                        <td><button class="btn-delete" onclick="deleteRow(this)">×</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button class="btn-add" onclick="addRow('body-spese', 'val-negative')">+ Aggiungi Voce Spesa</button>
-            
-            <div style="text-align: right;">
-                <button onclick="saveData()" style="padding: 12px 30px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">Salva Tutto</button>
+    <div id="calendario" class="view active">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 id="calendarTitle">Caricamento...</h2>
+            <button class="btn-add-memo" onclick="addNewMemo()">+ Nuovo Promemoria</button>
+        </div>
+        <div id="memoGrid" class="memo-grid">
             </div>
+    </div>
+
+    <div id="resoconto" class="view">
+        <div class="card"><h2>Resoconto Annuale</h2><p>Statistiche dell'anno.</p></div>
+    </div>
+
+    <div id="guadagni" class="view">
+        <div class="card">
+            <h2>Gestione Guadagni e Spese</h2>
+            <table id="tableGuadagni">
+                <tr class="header-row"><td colspan="4">Guadagni</td></tr>
+                <tr><td contenteditable="true">Stipendio</td><td contenteditable="true">Analisi</td><td contenteditable="true">Mario</td><td contenteditable="true" class="pos">2500 €</td></tr>
+            </table>
         </div>
     </div>
 </div>
 
 <script>
-    function showPage(pageId) {
+    // --- INIZIALIZZAZIONE DATI ---
+    const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+    const currentYear = 2026;
+    let calendarData = JSON.parse(localStorage.getItem('calendarData')) || {};
+
+    // Popola Selettori
+    const selMese = document.getElementById('selMese');
+    const selAnno = document.getElementById('selAnno');
+    
+    mesi.forEach(m => selMese.add(new Option(m, m)));
+    for(let i = currentYear - 10; i <= currentYear + 10; i++) {
+        selAnno.add(new Option(i, i));
+    }
+    selMese.value = "Marzo";
+    selAnno.value = "2026";
+
+    function showPage(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        document.getElementById(id).classList.add('active');
+        document.getElementById('nav-' + id).classList.add('active');
+        if(id === 'calendario') loadCalendar();
     }
 
-    function addRow(containerId, colorClass) {
-        const tbody = document.getElementById(containerId);
-        const newRow = document.createElement('tr');
+    // --- LOGICA CALENDARIO ---
+    function loadCalendar() {
+        const m = selMese.value;
+        const a = selAnno.value;
+        const key = `${m}-${a}`;
         
-        const defaultSign = colorClass === 'val-negative' ? '-' : '';
-        
-        newRow.innerHTML = `
-            <td contenteditable="true">Nuova Voce</td>
-            <td contenteditable="true">Descrizione</td>
-            <td contenteditable="true">Nome</td>
-            <td contenteditable="true" class="${colorClass}">${defaultSign}0 €</td>
-            <td><button class="btn-delete" onclick="deleteRow(this)">×</button></td>
-        `;
-        tbody.appendChild(newRow);
-    }
+        document.getElementById('calendarTitle').innerText = `Calendario Scadenze: ${m} ${a}`;
+        const grid = document.getElementById('memoGrid');
+        grid.innerHTML = "";
 
-    function deleteRow(btn) {
-        if(confirm("Eliminare questa voce?")) {
-            btn.closest('tr').remove();
+        if(calendarData[key]) {
+            calendarData[key].forEach((memo, index) => {
+                createMemoElement(memo.date, memo.text, memo.color, index);
+            });
         }
     }
 
-    function saveData() {
-        alert("Dati salvati e grafici della Home aggiornati!");
-        // Qui si potrebbe aggiungere la logica per salvare su un database o LocalStorage
+    function createMemoElement(date, text, color, index) {
+        const grid = document.getElementById('memoGrid');
+        const card = document.createElement('div');
+        card.className = "memo-card";
+        card.style.backgroundColor = color;
+        
+        card.innerHTML = `
+            <button class="btn-del-memo" onclick="deleteMemo(${index})">×</button>
+            <span class="memo-date" contenteditable="true" onblur="saveCurrentState()">${date}</span>
+            <span class="memo-text" contenteditable="true" onblur="saveCurrentState()">${text}</span>
+        `;
+        grid.appendChild(card);
     }
+
+    function addNewMemo() {
+        const colors = ["var(--warning)", "var(--success)", "var(--danger)"];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        createMemoElement("01 " + selMese.value, "Clicca qui per scrivere...", randomColor);
+        saveCurrentState();
+    }
+
+    function saveCurrentState() {
+        const m = selMese.value;
+        const a = selAnno.value;
+        const key = `${m}-${a}`;
+        const cards = document.querySelectorAll('.memo-card');
+        
+        calendarData[key] = [];
+        cards.forEach(card => {
+            calendarData[key].push({
+                date: card.querySelector('.memo-date').innerText,
+                text: card.querySelector('.memo-text').innerText,
+                color: card.style.backgroundColor
+            });
+        });
+        
+        localStorage.setItem('calendarData', JSON.stringify(calendarData));
+    }
+
+    function deleteMemo(index) {
+        if(confirm("Vuoi eliminare questo promemoria?")) {
+            const m = selMese.value;
+            const a = selAnno.value;
+            const key = `${m}-${a}`;
+            calendarData[key].splice(index, 1);
+            saveCurrentState();
+            loadCalendar();
+        }
+    }
+
+    // Avvio
+    window.onload = loadCalendar;
 </script>
 
 </body>
