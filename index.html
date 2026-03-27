@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App Pro - Dashboard Totale</title>
+    <title>BilancioApp Pro - Gestione Dinamica</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
@@ -12,19 +12,17 @@
             --primary: #2563eb;
             --success: #10b981;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --info: #3b82f6;
             --bg: #f1f5f9;
             --white: #ffffff;
             --text-main: #1e293b;
-            --text-muted: #64748b;
+            --teal-bg: #e0f2f1;
+            --teal-text: #00796b;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); margin: 0; color: var(--text-main); }
+        body { background-color: var(--bg); margin: 0; padding: 20px; color: var(--text-main); }
 
-        /* --- LAYOUT PRINCIPALE --- */
-        .wrapper { display: flex; flex-direction: column; height: 100vh; padding: 20px; }
+        .wrapper { max-width: 1200px; margin: auto; }
         
         header {
             background: var(--white);
@@ -33,260 +31,158 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
         }
 
-        .nav-left { display: flex; align-items: center; gap: 20px; }
-        .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); }
-        
-        nav { display: flex; gap: 8px; }
         nav button {
             border: none; background: none; padding: 10px 16px;
             border-radius: 10px; font-weight: 600; cursor: pointer;
-            color: var(--text-muted); transition: 0.3s;
+            color: #64748b; transition: 0.3s;
         }
         nav button.active { background: var(--primary); color: white; }
 
-        .time-controls { display: flex; gap: 10px; align-items: center; }
-        select { padding: 8px; border-radius: 8px; border: 1px solid #ddd; font-weight: 600; }
-
-        /* --- VISTE --- */
-        .view { display: none; flex: 1; animation: fadeIn 0.4s ease; overflow-y: auto; }
+        .view { display: none; animation: fadeIn 0.4s ease; }
         .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- HOME: DASHBOARD COMPLESSA --- */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
-        .stat-card {
-            background: var(--white); padding: 20px; border-radius: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .stat-info h4 { margin: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; }
-        .stat-info h2 { margin: 5px 0; font-size: 1.8rem; }
+        /* --- TABELLA GUADAGNI E SPESE --- */
+        .table-panel { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
-        .circle-pct {
-            width: 60px; height: 60px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; border: 6px solid #f1f5f9;
-        }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th { text-align: left; color: #64748b; padding: 12px; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 12px; border-bottom: 1px solid #f8fafc; }
 
-        .main-content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .data-panel { background: var(--white); border-radius: 20px; padding: 20px; }
+        .section-header { background: var(--teal-bg); color: var(--teal-text); font-weight: 800; font-size: 1.1rem; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-        th { text-align: left; color: var(--text-muted); padding: 10px; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 10px; border-bottom: 1px solid #f8fafc; }
+        [contenteditable="true"] { 
+            padding: 4px 8px;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.2s;
+        }
+        [contenteditable="true"]:focus { background: #eef2ff; box-shadow: 0 0 0 2px var(--primary); }
 
-        .chart-container { height: 250px; position: relative; margin-top: 20px; }
+        .btn-add {
+            background: #f1f5f9; border: 1px dashed #cbd5e1; color: #475569;
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
+            width: 100%; margin-bottom: 25px; transition: 0.3s;
+        }
+        .btn-add:hover { background: #e2e8f0; border-color: #94a3b8; }
 
-        /* --- GUADAGNI E SPESE: TABELLA PROGETTI --- */
-        .project-header { background: #e0f2f1; color: #00796b; font-weight: 800; }
-        [contenteditable="true"] { cursor: pointer; border-radius: 4px; }
-        [contenteditable="true"]:hover { background: #f1f5f9; }
+        .btn-delete {
+            color: var(--danger); background: none; border: none; 
+            font-weight: bold; cursor: pointer; font-size: 1.2rem;
+            opacity: 0.3; transition: 0.3s;
+        }
+        tr:hover .btn-delete { opacity: 1; }
 
-        /* --- CALENDARIO: CARDS --- */
-        .memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .memo-card { padding: 20px; border-radius: 20px; color: #1e293b; min-height: 150px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
+        .val-positive { color: var(--success); font-weight: bold; }
+        .val-negative { color: var(--danger); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="wrapper">
     <header>
-        <div class="nav-left">
-            <div class="logo">BilancioApp Pro</div>
-            <nav id="topNav">
-                <button onclick="showPage('home')" id="btn-home" class="active">Home</button>
-                <button onclick="showPage('calendario')" id="btn-calendario">Calendario/Promemoria</button>
-                <button onclick="showPage('resoconto')" id="btn-resoconto">Resoconto Annuale</button>
-                <button onclick="showPage('guadagni')" id="btn-guadagni">Guadagni e Spese</button>
-            </nav>
-        </div>
-
-        <div class="time-controls">
-            <button onclick="goBack()" style="background:none; border:none; cursor:pointer;">←</button>
-            <select id="selMese" onchange="updateGlobalData()">
-                <option value="Gennaio">Gennaio</option>
-                <option value="Febbraio">Febbraio</option>
-                <option value="Marzo">Marzo</option>
-                <option value="Aprile">Aprile</option>
-            </select>
-            <select id="selAnno" onchange="updateGlobalData()">
-                <option value="2026">2026</option>
-                <option value="2025">2025</option>
-            </select>
-            <button onclick="goForward()" style="background:none; border:none; cursor:pointer;">→</button>
+        <div style="font-weight: 800; font-size: 1.4rem; color: var(--primary);">BilancioApp Pro</div>
+        <nav>
+            <button onclick="showPage('home')">Home</button>
+            <button onclick="showPage('guadagni')" class="active">Guadagni e Spese</button>
+        </nav>
+        <div style="display: flex; gap: 10px;">
+            <select id="selMese"><option>Gennaio</option><option>Febbraio</option></select>
+            <select id="selAnno"><option>2025</option><option>2026</option></select>
         </div>
     </header>
 
-    <div id="home" class="view active">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-info"><h4>Reddito</h4><h2 id="h-reddito">€ 7.780</h2><small style="color:var(--success)">+ 2515 sopra al budget</small></div>
-                <div class="circle-pct" style="border-top-color:var(--success)">148%</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info"><h4>Spese</h4><h2 id="h-spese">€ 1.435</h2><small style="color:var(--danger)">- 1405 sotto al budget</small></div>
-                <div class="circle-pct" style="border-top-color:var(--danger)">51%</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info"><h4>Risparmi</h4><h2 id="h-risparmi">€ 1.805</h2><small style="color:var(--warning)">€ 155 sopra al budget</small></div>
-                <div class="circle-pct" style="border-top-color:var(--warning)">109%</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info"><h4>Debiti</h4><h2 id="h-debiti">€ 2.744</h2><small style="color:var(--info)">€ 1794 sopra al budget</small></div>
-                <div class="circle-pct" style="border-top-color:var(--info)">289%</div>
-            </div>
-        </div>
-
-        <div class="main-content-grid">
-            <div class="data-panel">
-                <h3 style="color:var(--success)">Dettaglio Reddito</h3>
-                <table>
-                    <thead><tr><th>Categoria</th><th>Obiettivo</th><th>Effettivo</th><th>Differenza</th></tr></thead>
-                    <tbody id="reddito-table">
-                        <tr><td>Stipendio</td><td>€ 2.500</td><td>€ 3.950</td><td style="color:var(--success)">+ 1.450</td></tr>
-                        <tr><td>Interessi</td><td>€ 1.000</td><td>€ 800</td><td style="color:var(--danger)">- 200</td></tr>
-                        <tr><td>Dividendi</td><td>€ 100</td><td>€ 600</td><td style="color:var(--success)">+ 500</td></tr>
-                    </tbody>
-                </table>
-                <div class="chart-container"><canvas id="chartReddito"></canvas></div>
-            </div>
-            <div class="data-panel">
-                <h3 style="color:var(--danger)">Dettaglio Spese</h3>
-                <table>
-                    <thead><tr><th>Categoria</th><th>Obiettivo</th><th>Effettivo</th><th>Differenza</th></tr></thead>
-                    <tbody id="spese-table">
-                        <tr><td>Affitto</td><td>€ 900</td><td>€ 900</td><td>€ 0</td></tr>
-                        <tr><td>Utenze</td><td>€ 300</td><td>€ 175</td><td style="color:var(--success)">- 125</td></tr>
-                        <tr><td>Ristoranti</td><td>€ 200</td><td>€ 130</td><td style="color:var(--success)">- 70</td></tr>
-                    </tbody>
-                </table>
-                <div class="chart-container"><canvas id="chartSpese"></canvas></div>
-            </div>
-        </div>
+    <div id="home" class="view">
+        <div class="table-panel"><h1>Dashboard Home</h1><p>Seleziona "Guadagni e Spese" per modificare i dati.</p></div>
     </div>
 
-    <div id="calendario" class="view">
-        <h2>Calendario Scadenze</h2>
-        <div class="memo-grid">
-            <div class="memo-card" style="background:#fef3c7"><h3>15 Marzo</h3><p>Pagamento Assicurazione Auto</p></div>
-            <div class="memo-card" style="background:#dcfce7"><h3>27 Marzo</h3><p>Ritiro Dividendi Azionari</p></div>
-            <div class="memo-card" style="background:#fee2e2"><h3>30 Marzo</h3><p>Scadenza Affitto Ufficio</p></div>
-        </div>
-    </div>
-
-    <div id="resoconto" class="view">
-        <div class="data-panel">
-            <h2>Panoramica Annuale 2026</h2>
-            <canvas id="chartAnnuale" height="100"></canvas>
-        </div>
-    </div>
-
-    <div id="guadagni" class="view">
-        <h2>Gestione Progetti e Attività</h2>
-        <div class="data-panel">
-            <table id="progetti-table">
-                <thead><tr><th>Progetto</th><th>Attività</th><th>Responsabile</th><th>Scostamento</th></tr></thead>
-                <tbody>
-                    <tr class="project-header"><td colspan="4">Progetto A</td></tr>
-                    <tr><td contenteditable="true">Fase 1</td><td contenteditable="true">Analisi</td><td contenteditable="true">Mario</td><td contenteditable="true" style="color:var(--success)">30 €</td></tr>
-                    <tr><td contenteditable="true">Fase 2</td><td contenteditable="true">Sviluppo</td><td contenteditable="true">Lucio</td><td contenteditable="true" style="color:var(--success)">130 €</td></tr>
-                    <tr class="project-header"><td colspan="4">Progetto B</td></tr>
-                    <tr><td contenteditable="true">Fase 1</td><td contenteditable="true">Marketing</td><td contenteditable="true">Franco</td><td contenteditable="true" style="color:var(--danger)">-30 €</td></tr>
+    <div id="guadagni" class="view active">
+        <div class="table-panel">
+            <h2>Gestione Flussi Mensili</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Voce / Fase</th>
+                        <th style="width: 30%;">Attività</th>
+                        <th style="width: 20%;">Responsabile</th>
+                        <th style="width: 15%;">Importo</th>
+                        <th style="width: 5%;"></th>
+                    </tr>
+                </thead>
+                
+                <tbody id="body-guadagni">
+                    <tr class="section-header"><td colspan="5">Guadagni</td></tr>
+                    <tr>
+                        <td contenteditable="true">Stipendio</td>
+                        <td contenteditable="true">Analisi Mensile</td>
+                        <td contenteditable="true">Mario</td>
+                        <td contenteditable="true" class="val-positive">2.500 €</td>
+                        <td><button class="btn-delete" onclick="deleteRow(this)">×</button></td>
+                    </tr>
                 </tbody>
             </table>
-            <button onclick="alert('Dati salvati con successo!')" style="margin-top:20px; padding:10px 20px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">Salva Modifiche</button>
+            <button class="btn-add" onclick="addRow('body-guadagni', 'val-positive')">+ Aggiungi Voce Guadagno</button>
+
+            <table>
+                <tbody id="body-spese">
+                    <tr class="section-header"><td colspan="5">Spese</td></tr>
+                    <tr>
+                        <td contenteditable="true">Affitto</td>
+                        <td contenteditable="true">Sviluppo Casa</td>
+                        <td contenteditable="true">Lucio</td>
+                        <td contenteditable="true" class="val-negative">600 €</td>
+                        <td><button class="btn-delete" onclick="deleteRow(this)">×</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn-add" onclick="addRow('body-spese', 'val-negative')">+ Aggiungi Voce Spesa</button>
+            
+            <div style="text-align: right;">
+                <button onclick="saveData()" style="padding: 12px 30px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">Salva Tutto</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- GESTIONE NAVIGAZIONE ---
-    let historyStack = ['home'];
-    let currentIndex = 0;
-
-    function showPage(pageId, addToHistory = true) {
+    function showPage(pageId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        
         document.getElementById(pageId).classList.add('active');
-        document.getElementById('btn-' + pageId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
 
-        if(addToHistory) {
-            historyStack.push(pageId);
-            currentIndex = historyStack.length - 1;
+    function addRow(containerId, colorClass) {
+        const tbody = document.getElementById(containerId);
+        const newRow = document.createElement('tr');
+        
+        const defaultSign = colorClass === 'val-negative' ? '-' : '';
+        
+        newRow.innerHTML = `
+            <td contenteditable="true">Nuova Voce</td>
+            <td contenteditable="true">Descrizione</td>
+            <td contenteditable="true">Nome</td>
+            <td contenteditable="true" class="${colorClass}">${defaultSign}0 €</td>
+            <td><button class="btn-delete" onclick="deleteRow(this)">×</button></td>
+        `;
+        tbody.appendChild(newRow);
+    }
+
+    function deleteRow(btn) {
+        if(confirm("Eliminare questa voce?")) {
+            btn.closest('tr').remove();
         }
-        if(pageId === 'home') initCharts();
-        if(pageId === 'resoconto') initAnnualChart();
     }
 
-    function goBack() { if(currentIndex > 0) { currentIndex--; showPage(historyStack[currentIndex], false); } }
-    function goForward() { if(currentIndex < historyStack.length - 1) { currentIndex++; showPage(historyStack[currentIndex], false); } }
-
-    // --- AUTOMAZIONE DATI ---
-    function updateGlobalData() {
-        const mese = document.getElementById('selMese').value;
-        // Simulazione cambio dati
-        const rand = () => Math.floor(Math.random() * 5000) + 1000;
-        document.getElementById('h-reddito').innerText = "€ " + rand();
-        document.getElementById('h-spese').innerText = "€ " + (rand()/2).toFixed(0);
-        if(document.getElementById('home').classList.contains('active')) initCharts();
+    function saveData() {
+        alert("Dati salvati e grafici della Home aggiornati!");
+        // Qui si potrebbe aggiungere la logica per salvare su un database o LocalStorage
     }
-
-    // --- GRAFICI (Chart.js) ---
-    let chartR, chartS, chartA;
-
-    function initCharts() {
-        if(chartR) chartR.destroy();
-        if(chartS) chartS.destroy();
-
-        const ctxR = document.getElementById('chartReddito').getContext('2d');
-        chartR = new Chart(ctxR, {
-            type: 'doughnut',
-            data: {
-                labels: ['Stipendio', 'Interessi', 'Dividendi'],
-                datasets: [{ data: [3950, 800, 600], backgroundColor: ['#10b981', '#34d399', '#6ee7b7'] }]
-            },
-            options: { maintainAspectRatio: false }
-        });
-
-        const ctxS = document.getElementById('chartSpese').getContext('2d');
-        chartS = new Chart(ctxS, {
-            type: 'bar',
-            data: {
-                labels: ['Affitto', 'Utenze', 'Cibo', 'Auto'],
-                datasets: [{ label: 'Spese Effettive', data: [900, 175, 450, 300], backgroundColor: '#ef4444' }]
-            },
-            options: { maintainAspectRatio: false }
-        });
-    }
-
-    function initAnnualChart() {
-        if(chartA) chartA.destroy();
-        const ctxA = document.getElementById('chartAnnuale').getContext('2d');
-        chartA = new Chart(ctxA, {
-            type: 'line',
-            data: {
-                labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu'],
-                datasets: [{
-                    label: 'Andamento Saldo 2026',
-                    data: [4500, 5200, 4800, 6100, 5900, 7200],
-                    borderColor: '#2563eb',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(37, 99, 235, 0.1)'
-                }]
-            }
-        });
-    }
-
-    // Avvio iniziale
-    window.onload = () => {
-        initCharts();
-    };
 </script>
 
 </body>
