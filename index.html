@@ -1,340 +1,324 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bilancio Premium</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilancio App - Dashboard Professionale</title>
+    <!-- Icone FontAwesome -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        :root {
+            --sidebar-bg: #1a2c3d;
+            --main-bg: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-dark: #333;
+            --text-light: #ecf0f1;
+            --accent-blue: #2196f3;
+            --accent-green: #4caf50;
+            --accent-red: #f44336;
+            --accent-yellow: #ffea00;
+            --accent-cyan: #00e5ff;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100%;
+            background-color: var(--main-bg);
+        }
 
-<style>
-body{
-margin:0;
-font-family:-apple-system;
-background:linear-gradient(135deg,#0f172a,#1e293b);
-color:white;
-}
+        .main-layout {
+            display: flex;
+            height: 100vh;
+        }
 
-/* HEADER */
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px;
-}
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
 
-/* KPI */
-.kpi{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-padding:10px;
-}
-.box{
-padding:15px;
-border-radius:15px;
-text-align:center;
-font-weight:bold;
-}
-.green{background:#2ecc71;}
-.red{background:#e74c3c;}
-.blue{background:#3498db;}
-.purple{background:#9b59b6;}
+        .sidebar-header {
+            padding: 25px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
 
-/* GLASS */
-.card{
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(15px);
-border-radius:20px;
-padding:15px;
-margin:10px;
-}
+        .nav-links {
+            list-style: none;
+            padding: 20px 0;
+            margin: 0;
+            flex-grow: 1;
+        }
 
-/* GRID */
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
+        .nav-links li {
+            padding: 15px 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            border-left: 4px solid transparent;
+        }
 
-/* INPUT */
-input{
-width:100%;
-padding:8px;
-margin:5px 0;
-border-radius:8px;
-border:none;
-}
+        .nav-links li:hover { background: rgba(255,255,255,0.05); }
+        .nav-links li.active {
+            background: #2c3e50;
+            border-left-color: var(--accent-blue);
+        }
 
-/* CALENDARIO */
-.calendar{
-background:#1c1c1e;
-border-radius:20px;
-padding:15px;
-text-align:center;
-}
-.days{
-display:grid;
-grid-template-columns:repeat(7,1fr);
-gap:5px;
-}
-.day{
-padding:10px;
-border-radius:50%;
-}
-.active{
-background:#ff453a;
-}
+        .nav-links i { margin-right: 15px; width: 20px; text-align: center; }
 
-/* LOCK */
-#lock{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#0f172a;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:999;
-}
-</style>
+        .date-selector {
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .selector-box {
+            background: #2c3e50;
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* --- CONTENT AREA --- */
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Upper Pane - Cerchi */
+        .dashboard-header {
+            display: flex;
+            padding: 20px;
+            gap: 15px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .stat-label { font-size: 0.7rem; color: #888; font-weight: bold; }
+        .stat-value { font-size: 1rem; font-weight: bold; color: var(--text-dark); display: block; }
+
+        .circular-chart { width: 50px; height: 50px; }
+        .circle-bg { fill: none; stroke: #eee; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 3.8; stroke-linecap: round; }
+        .percentage { fill: #666; font-size: 0.5em; text-anchor: middle; font-weight: bold; }
+
+        /* Colori Cerchi */
+        .color-entrate .circle { stroke: var(--accent-green); }
+        .color-spese .circle { stroke: var(--accent-red); }
+        .color-iva .circle { stroke: #ff9800; }
+        .color-cassa .circle { stroke: #9c27b0; }
+        .color-profitto .circle { stroke: var(--accent-blue); }
+
+        /* --- MAIN DASHBOARD GRID --- */
+        .dashboard-main {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .chart-placeholder {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+        }
+
+        /* Reminders Panel */
+        .reminders-panel {
+            background: #1e2d3e;
+            border-radius: 12px;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .reminder-section h4 {
+            font-size: 0.75rem;
+            color: #8da1b5;
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 8px;
+            margin-top: 20px;
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .reminder-info { flex-grow: 1; margin-left: 15px; }
+        .reminder-name { font-size: 0.85rem; font-weight: 500; display: block; }
+        .reminder-date { font-size: 0.7rem; color: var(--accent-green); }
+
+        .reminder-amount {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #000;
+        }
+
+        .bg-cyan { background: var(--accent-cyan); }
+        .bg-yellow { background: var(--accent-yellow); }
+    </style>
 </head>
-
 <body>
 
-<!-- 🔐 LOGIN -->
-<div id="lock">
-<h2>🔐 Accesso</h2>
-<input type="password" id="pass">
-<button onclick="login()">Accedi</button>
-</div>
+<div class="main-layout">
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="sidebar-header">MONTHLY DASHBOARD</div>
+        <ul class="nav-links">
+            <li class="active"><i class="fas fa-exchange-alt"></i> TRANSAZIONI</li>
+            <li><i class="fas fa-chart-pie"></i> DASHBOARD MESE</li>
+            <li><i class="fas fa-chart-line"></i> DASHBOARD ANNO</li>
+            <hr style="opacity: 0.1; width: 80%">
+            <li><i class="fas fa-calendar-alt"></i> CALENDARIO</li>
+            <li><i class="fas fa-tags"></i> CATEGORIE</li>
+            <li><i class="fas fa-file-invoice-dollar"></i> RESOCONTO</li>
+        </ul>
 
-<!-- HEADER -->
-<div class="header">
-<h2>💎 Bilancio</h2>
-<button onclick="logout()">Logout</button>
-</div>
+        <div class="date-selector">
+            <div class="selector-box">
+                <i class="fas fa-chevron-left"></i> 2024 <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="selector-box">
+                <i class="fas fa-chevron-left"></i> Maggio <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+    </nav>
 
-<!-- MESE -->
-<div style="text-align:center;">
-<button onclick="prev()">◀</button>
-<span id="mese"></span>
-<button onclick="next()">▶</button>
-</div>
+    <!-- MAIN CONTENT -->
+    <main class="content">
+        <!-- HEADER CON CERCHI -->
+        <header class="dashboard-header">
+            <!-- Entrate -->
+            <div class="stat-card">
+                <div>
+                    <span class="stat-label">ENTRATE</span>
+                    <span class="stat-value">14.370,00 €</span>
+                </div>
+                <div class="color-entrate">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" stroke-dasharray="65, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage">65%</text>
+                    </svg>
+                </div>
+            </div>
+            <!-- Spese -->
+            <div class="stat-card">
+                <div>
+                    <span class="stat-label">SPESE</span>
+                    <span class="stat-value">7.964,75 €</span>
+                </div>
+                <div class="color-spese">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" stroke-dasharray="42, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage">42%</text>
+                    </svg>
+                </div>
+            </div>
+            <!-- Profitto -->
+            <div class="stat-card">
+                <div>
+                    <span class="stat-label">PROFITTO</span>
+                    <span class="stat-value">5.285,25 €</span>
+                </div>
+                <div class="color-profitto">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" stroke-dasharray="80, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage">80%</text>
+                    </svg>
+                </div>
+            </div>
+        </header>
 
-<!-- KPI -->
-<div class="kpi">
-<div class="box green">Reddito<br><span id="e">0</span></div>
-<div class="box red">Spese<br><span id="s">0</span></div>
-<div class="box blue">Risparmio<br><span id="r">0</span></div>
-<div class="box purple">Margine<br><span id="m">0%</span></div>
-</div>
+        <!-- AREA CENTRALE -->
+        <div class="dashboard-main">
+            <!-- Qui andrà il tuo grafico principale o la tabella -->
+            <div class="chart-placeholder">
+                <div style="text-align: center;">
+                    <i class="fas fa-chart-area fa-4x"></i>
+                    <p>Grafico Transazioni Centrali</p>
+                </div>
+            </div>
 
-<!-- CONTENUTO -->
-<div class="grid">
+            <!-- PANNELLO REMINDER (DESTRA) -->
+            <aside class="reminders-panel">
+                <div class="reminder-section">
+                    <h4>PREVISTA</h4>
+                    <div class="reminder-item" style="border-left: 3px solid var(--accent-blue); padding-left: 10px;">
+                        <i class="fas fa-university"></i>
+                        <div class="reminder-info">
+                            <span class="reminder-name">Banca Mutuo</span>
+                            <span class="reminder-date">17 Settembre</span>
+                        </div>
+                        <div class="reminder-amount" style="background: #fff;">1.000€</div>
+                    </div>
+                </div>
 
-<!-- SINISTRA -->
-<div>
-
-<div class="card">
-<h3>Entrate</h3>
-<input id="stip" placeholder="Stipendio">
-<input id="extra" placeholder="Extra">
-</div>
-
-<div class="card">
-<h3>Spese</h3>
-<input id="aff" placeholder="Affitto">
-<input id="bol" placeholder="Bollette">
-<input id="food" placeholder="Spesa">
-</div>
-
-<!-- CALENDARIO -->
-<div class="calendar">
-<h3 id="calMese"></h3>
-<div class="days" id="giorni"></div>
-
-<input id="nota" placeholder="Scrivi spesa">
-<button onclick="addNota()">Aggiungi</button>
-<ul id="lista"></ul>
-
-</div>
-
-</div>
-
-<!-- DESTRA -->
-<div>
-
-<div class="card">
-<canvas id="chart"></canvas>
-</div>
-
-<div class="card">
-<h3>Storico</h3>
-<ul id="storico"></ul>
-</div>
-
-</div>
-
+                <div class="reminder-section">
+                    <h4>PAGATE</h4>
+                    <div class="reminder-item">
+                        <i class="fas fa-percentage"></i>
+                        <div class="reminder-info">
+                            <span class="reminder-name">Interessi</span>
+                            <span class="reminder-date">17 Settembre</span>
+                        </div>
+                        <div class="reminder-amount bg-cyan">400€</div>
+                    </div>
+                    <div class="reminder-item">
+                        <i class="fas fa-gas-pump"></i>
+                        <div class="reminder-info">
+                            <span class="reminder-name">Benzina</span>
+                            <span class="reminder-date">17 Settembre</span>
+                        </div>
+                        <div class="reminder-amount bg-yellow">12€</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
 </div>
 
 <script>
-
-// HASH
-function hash(s){return btoa(s);}
-
-// PASSWORD INIT
-let PASSWORD=localStorage.getItem("pass");
-if(!PASSWORD){
-PASSWORD=hash("1234");
-localStorage.setItem("pass",PASSWORD);
-}
-
-// LOGIN
-function login(){
-if(hash(pass.value)===PASSWORD){
-lock.style.display="none";
-localStorage.setItem("log","ok");
-}else alert("Errata");
-}
-
-// LOGOUT
-function logout(){
-localStorage.removeItem("log");
-lock.style.display="flex";
-}
-
-// AUTO LOGIN
-if(localStorage.getItem("log")==="ok") lock.style.display="none";
-
-// MESE
-let d=new Date();
-let meseIdx=d.getMonth();
-let anno=d.getFullYear();
-const mesi=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
-
-function aggiorna(){
-mese.innerText=mesi[meseIdx]+" "+anno;
-calMese.innerText=mesi[meseIdx];
-carica();
-calendar();
-}
-
-// NAV
-function next(){meseIdx++;if(meseIdx>11){meseIdx=0;anno++}aggiorna();}
-function prev(){meseIdx--;if(meseIdx<0){meseIdx=11;anno--}aggiorna();}
-
-// CALCOLO
-function calc(){
-let entr=(+stip.value||0)+(+extra.value||0);
-let spe=(+aff.value||0)+(+bol.value||0)+(+food.value||0);
-
-e.innerText=entr;
-s.innerText=spe;
-r.innerText=entr-spe;
-m.innerText=(entr?((entr-spe)/entr*100).toFixed(1):0)+"%";
-
-salva();
-grafico(entr,spe);
-storicoAdd(entr,spe);
-}
-
-// SALVA
-function salva(){
-let dati={stip:stip.value,extra:extra.value,aff:aff.value,bol:bol.value,food:food.value};
-localStorage.setItem("dati"+meseIdx+anno,JSON.stringify(dati));
-}
-
-// CARICA
-function carica(){
-let d=JSON.parse(localStorage.getItem("dati"+meseIdx+anno))||{};
-stip.value=d.stip||"";
-extra.value=d.extra||"";
-aff.value=d.aff||"";
-bol.value=d.bol||"";
-food.value=d.food||"";
-calc();
-}
-
-// GRAFICO
-let c;
-function grafico(e1,s1){
-if(c)c.destroy();
-c=new Chart(chart,{type:'doughnut',data:{labels:["Entrate","Spese"],datasets:[{data:[e1,s1]}]}});
-}
-
-// EVENTI
-document.querySelectorAll("input").forEach(i=>i.oninput=calc);
-
-// CALENDARIO
-function calendar(){
-giorni.innerHTML="";
-for(let i=1;i<=31;i++){
-let div=document.createElement("div");
-div.className="day";
-div.innerText=i;
-div.onclick=()=>selectDay(i);
-giorni.appendChild(div);
-}
-}
-
-function selectDay(d){
-document.querySelectorAll(".day").forEach(el=>el.classList.remove("active"));
-giorni.children[d-1].classList.add("active");
-selectedDay=d;
-}
-
-let selectedDay=1;
-
-// NOTE
-function addNota(){
-let arr=JSON.parse(localStorage.getItem("note"+meseIdx+anno))||[];
-arr.push(selectedDay+" - "+nota.value);
-localStorage.setItem("note"+meseIdx+anno,JSON.stringify(arr));
-loadNote();
-}
-
-function loadNote(){
-let arr=JSON.parse(localStorage.getItem("note"+meseIdx+anno))||[];
-lista.innerHTML="";
-arr.forEach(n=>{
-let li=document.createElement("li");
-li.innerText=n;
-lista.appendChild(li);
-});
-}
-
-// STORICO
-function storicoAdd(e1,s1){
-let arr=JSON.parse(localStorage.getItem("storico"))||[];
-arr[meseIdx]={e:e1,s:s1};
-localStorage.setItem("storico",JSON.stringify(arr));
-
-storico.innerHTML="";
-arr.forEach((m,i)=>{
-if(m){
-let li=document.createElement("li");
-li.innerText=mesi[i]+": "+m.e+"€ / "+m.s+"€";
-storico.appendChild(li);
-}
-});
-}
-
-// SWIPE
-let startX=0;
-document.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
-document.addEventListener("touchend",e=>{
-let endX=e.changedTouches[0].clientX;
-if(startX-endX>50)next();
-if(endX-startX>50)prev();
-});
-
-aggiorna();
-loadNote();
-
+    // Inseriremo qui la logica JS per rendere i dati dinamici
+    console.log("Dashboard caricata con successo!");
 </script>
 
 </body>
