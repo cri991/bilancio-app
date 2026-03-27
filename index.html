@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bilancio Mensile</title>
 
-<link rel="manifest" href="manifest.json">
+<title>Bilancio Pro</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -26,25 +25,11 @@ padding:15px;
 margin:10px;
 }
 
-/* HEADER */
-.header {
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px;
-}
-
-button {
-border:none;
-border-radius:10px;
-padding:8px 12px;
-}
-
-/* CARDS */
 .grid {
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
+margin:10px;
 }
 
 .box {
@@ -59,12 +44,11 @@ font-weight:bold;
 .blue{background:#3498db;}
 .purple{background:#9b59b6;}
 
-/* INPUT */
 input {
 width:100%;
-padding:8px;
+padding:10px;
 margin:5px 0;
-border-radius:8px;
+border-radius:10px;
 border:none;
 }
 
@@ -89,13 +73,13 @@ z-index:9999;
 
 <!-- 🔐 LOCK -->
 <div id="lockScreen">
-<h2>🔐 Accesso</h2>
+<h2>🔐 Accesso Sicuro</h2>
 <input type="password" id="password">
 <button onclick="login()">Accedi</button>
 </div>
 
 <!-- HEADER -->
-<div class="header">
+<div style="display:flex;justify-content:space-between;padding:10px;">
 <h2>💎 Bilancio</h2>
 <button onclick="logout()">Logout</button>
 </div>
@@ -107,9 +91,9 @@ z-index:9999;
 <button onclick="nextMonth()">▶</button>
 </div>
 
-<!-- CARDS -->
+<!-- KPI -->
 <div class="grid">
-<div class="box green">Reddito<br><span id="totEntrate">0</span></div>
+<div class="box green">Entrate<br><span id="totEntrate">0</span></div>
 <div class="box red">Spese<br><span id="totSpese">0</span></div>
 <div class="box blue">Risparmio<br><span id="risparmio">0</span></div>
 <div class="box purple">Margine<br><span id="margine">0%</span></div>
@@ -143,26 +127,83 @@ z-index:9999;
 <ul id="lista"></ul>
 </div>
 
+<!-- CAMBIO PASSWORD -->
+<div class="card">
+<h3>🔐 Cambia Password</h3>
+<input type="password" id="oldPass" placeholder="Vecchia">
+<input type="password" id="newPass" placeholder="Nuova">
+<button onclick="changePassword()">Aggiorna</button>
+</div>
+
 <script>
 
+// HASH SEMPLICE
+function hash(str){
+return btoa(str);
+}
+
 // PASSWORD
-const PASSWORD="jpb5:9€db";
+let PASSWORD = localStorage.getItem("password") || hash("1234");
 
 // LOGIN
 function login(){
-if(document.getElementById("password").value===PASSWORD){
+let input = hash(document.getElementById("password").value);
+
+if(input===PASSWORD){
 document.getElementById("lockScreen").style.display="none";
 localStorage.setItem("login","ok");
+startTimer();
+}else{
+alert("Password errata");
 }
 }
 
+// LOGOUT
 function logout(){
-location.reload();
+localStorage.removeItem("login");
+document.getElementById("lockScreen").style.display="flex";
 }
 
 // AUTO LOGIN
 if(localStorage.getItem("login")==="ok"){
 document.getElementById("lockScreen").style.display="none";
+startTimer();
+}
+
+// CAMBIO PASSWORD
+function changePassword(){
+let old = hash(document.getElementById("oldPass").value);
+let nuovo = document.getElementById("newPass").value;
+
+if(old!==PASSWORD){
+alert("Password errata");
+return;
+}
+
+if(nuovo.length<4){
+alert("Troppo corta");
+return;
+}
+
+PASSWORD = hash(nuovo);
+localStorage.setItem("password", PASSWORD);
+
+alert("Password aggiornata");
+}
+
+// TIMER SICUREZZA
+let timeout;
+function startTimer(){
+resetTimer();
+document.onclick=resetTimer;
+document.onkeypress=resetTimer;
+}
+
+function resetTimer(){
+clearTimeout(timeout);
+timeout=setTimeout(()=>{
+logout();
+},300000);
 }
 
 // MESE
@@ -171,7 +212,7 @@ let a=new Date().getFullYear();
 const mesi=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
 
 function aggiorna(){
-document.getElementById("mese").innerText=mesi[m]+" "+a;
+mese.innerText=mesi[m]+" "+a;
 carica();
 caricaLista();
 }
@@ -195,13 +236,7 @@ grafico(e,s);
 
 // SALVA
 function salva(){
-let dati={
-stipendio:stipendio.value,
-extra:extra.value,
-affitto:affitto.value,
-bollette:bollette.value,
-spesa:spesa.value
-};
+let dati={stipendio:stipendio.value,extra:extra.value,affitto:affitto.value,bollette:bollette.value,spesa:spesa.value};
 localStorage.setItem("dati"+m+a,JSON.stringify(dati));
 }
 
@@ -222,10 +257,7 @@ function grafico(e,s){
 if(chart)chart.destroy();
 chart=new Chart(grafico,{
 type:'doughnut',
-data:{
-labels:["Entrate","Spese"],
-datasets:[{data:[e,s]}]
-}
+data:{labels:["Entrate","Spese"],datasets:[{data:[e,s]}]}
 });
 }
 
