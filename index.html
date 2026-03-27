@@ -3,236 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App Pro - Full Suite & PDF</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+    <title>Bilancio App - Dashboard Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2563eb; --bg: #f3f4f6; --white: #ffffff;
-            --text-main: #1f2937; --text-muted: #6b7280;
-            --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
-        }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); margin: 0; padding: 20px; color: var(--text-main); }
-        .wrapper { max-width: 1400px; margin: auto; }
-        
-        header {
-            background: var(--white); padding: 15px 30px; border-radius: 16px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px;
-        }
-        nav { display: flex; gap: 10px; }
-        nav button {
-            border: none; background: none; padding: 10px 18px; border-radius: 10px;
-            font-weight: 600; cursor: pointer; color: var(--text-muted);
-        }
-        nav button.active { background: var(--primary); color: white; }
-        
-        .controls-group { display: flex; gap: 10px; align-items: center; }
-        select { padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-weight: 600; }
-        
-        .btn-pdf {
-            background: #334155; color: white; border: none; padding: 8px 15px;
-            border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px;
+            --bg-color: #f4f7f6;
+            --sidebar-color: #ffffff;
+            --primary-blue: #3498db;
+            --income-green: #2ecc71;
+            --expense-red: #e74c3c;
+            --text-dark: #2c3e50;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        .view { display: none; animation: fadeIn 0.4s ease; padding: 10px; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+        }
 
-        .card-panel { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 20px; }
-        
-        /* HOME STYLING */
-        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
-        .summary-card { background: var(--white); padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .progress-circle { width: 60px; height: 60px; border-radius: 50%; border: 6px solid #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 800; }
-        
-        /* CALENDARIO STYLING */
-        .memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .memo-card { padding: 20px; border-radius: 20px; position: relative; min-height: 130px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        /* --- SIDEBAR SINISTRA --- */
+        .sidebar {
+            width: 80px;
+            background-color: var(--sidebar-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
 
-        /* TABELLE FLUSSI */
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f1f5f9; }
-        .header-row { background: #e0f2f1; color: #00796b; font-weight: 800; }
-        .pos { color: var(--success); font-weight: bold; }
-        .neg { color: var(--danger); font-weight: bold; }
+        .sidebar-item {
+            margin: 20px 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-align: center;
+        }
+
+        .sidebar-item:hover { transform: scale(1.1); }
+
+        /* Icone personalizzate richieste */
+        .icon-wallet { color: #3498db; font-size: 28px; } /* Foto 1 */
+        .icon-cal { color: #3498db; font-size: 28px; }    /* Foto 2 */
+        .icon-stats { color: #1abc9c; font-size: 28px; }  /* Foto 3 */
+
+        .bottom-actions { margin-top: auto; padding-bottom: 20px; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            grid-template-rows: 1fr auto;
+            gap: 20px;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Sezione Sinistra: Guadagni e Spese */
+        .financial-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-box h2 { margin: 0; font-size: 14px; color: #7f8c8d; }
+        .stat-box p { margin: 5px 0; font-size: 28px; font-weight: bold; }
+        .income { color: var(--income-green); }
+        .expense { color: var(--expense-red); }
+        .net { color: var(--text-dark); border-top: 1px solid #eee; pt: 10px; }
+
+        /* Grafico Linee */
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            padding-top: 20px;
+        }
+
+        /* Calendario Centrale */
+        .calendar-container {
+            grid-column: 2;
+            grid-row: 1 / 3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .day {
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            min-height: 80px;
+            padding: 5px;
+            background: #fff;
+        }
+
+        /* Promemoria Colorati */
+        .event {
+            font-size: 10px;
+            padding: 3px;
+            border-radius: 4px;
+            margin-top: 2px;
+            color: #fff;
+        }
+        .event-blue { background: #3498db; }
+        .event-red { background: #e74c3c; }
+        .event-green { background: #2ecc71; }
+
     </style>
 </head>
 <body>
 
-<div class="wrapper" id="main-content">
-    <header data-html2canvas-ignore="true">
-        <div style="font-weight:800; font-size:1.4rem; color:var(--primary)">Bilancio App Pro</div>
-        <nav>
-            <button onclick="showPage('home')" id="nav-home" class="active">Home</button>
-            <button onclick="showPage('calendario')" id="nav-calendario">Calendario</button>
-            <button onclick="showPage('resoconto')" id="nav-resoconto">Resoconto Annuale</button>
-            <button onclick="showPage('guadagni')" id="nav-guadagni">Guadagni e Spese</button>
-        </nav>
-        <div class="controls-group">
-            <button class="btn-pdf" onclick="exportToPDF()">📄 Esporta PDF</button>
-            <select id="selMese" onchange="handleGlobalChange()"></select>
-            <select id="selAnno" onchange="handleGlobalChange()"></select>
+    <nav class="sidebar">
+        <div class="sidebar-item"><i class="fas fa-home" style="color:#ddd"></i></div>
+        <div class="sidebar-item" title="Calendario"><i class="fas fa-calendar-alt icon-cal"></i></div>
+        <div class="sidebar-item" title="Resoconto Annuale"><i class="fas fa-chart-bar icon-stats"></i></div>
+        <div class="sidebar-item" title="Guadagni e Spese"><i class="fas fa-wallet icon-wallet"></i></div>
+        
+        <div class="bottom-actions">
+            <div class="sidebar-item"><i class="fas fa-moon"></i></div>
+            <div class="sidebar-item"><i class="fas fa-sign-out-alt"></i></div>
         </div>
-    </header>
+    </nav>
 
-    <div id="home" class="view active">
-        <div class="summary-grid">
-            <div class="summary-card"><div><h4>Reddito</h4><h2>€ 7.780</h2></div><div class="progress-circle" style="border-top-color:var(--success)">148%</div></div>
-            <div class="summary-card"><div><h4>Spese</h4><h2>€ 1.435</h2></div><div class="progress-circle" style="border-top-color:var(--danger)">51%</div></div>
-            <div class="summary-card"><div><h4>Risparmi</h4><h2>€ 1.805</h2></div><div class="progress-circle" style="border-top-color:var(--warning)">109%</div></div>
-            <div class="summary-card"><div><h4>Debiti</h4><h2>€ 2.744</h2></div><div class="progress-circle" style="border-top-color:var(--info)">289%</div></div>
-        </div>
-        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;">
-            <div class="card-panel">
-                <h3>Dettaglio Reddito</h3>
-                <table>
-                    <thead><tr><th>Categoria</th><th>Obiettivo</th><th>Effettivo</th><th>Differenza</th></tr></thead>
-                    <tr><td>Stipendio</td><td>€ 2.500</td><td>€ 3.950</td><td class="pos">+ 1.450</td></tr>
-                    <tr><td>Interessi</td><td>€ 1.000</td><td>€ 800</td><td class="neg">- 200</td></tr>
-                </table>
+    <main class="main-content">
+        
+        <section class="financial-summary">
+            <div class="card stat-box">
+                <h2>Guadagni Totali</h2>
+                <p class="income">€ 4.250,00</p>
+                
+                <h2>Spese Totali</h2>
+                <p class="expense">€ 3.110,00</p>
+                
+                <div class="net">
+                    <h2>Totale Netto</h2>
+                    <p>€ 1.140,00</p>
+                </div>
             </div>
-            <div class="card-panel">
-                <h3>Ripartizione</h3>
-                <canvas id="homeChart" height="250"></canvas>
+
+            <div class="card">
+                <h3>Andamento Spese/Guadagni</h3>
+                <div style="height: 150px; width: 100%; border-left: 2px solid #eee; border-bottom: 2px solid #eee; position: relative;">
+                    <svg viewBox="0 0 200 100" style="width:100%; height:100%">
+                        <path d="M0,80 Q50,20 100,50 T200,10" fill="none" stroke="#2ecc71" stroke-width="3" />
+                        <path d="M0,90 Q50,60 100,80 T200,40" fill="none" stroke="#e74c3c" stroke-width="3" />
+                    </svg>
+                </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <div id="calendario" class="view">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-            <h2 id="calTitle">Calendario</h2>
-            <button class="btn-pdf" style="background:var(--primary)" onclick="addNewMemo()" data-html2canvas-ignore="true">+ Nuovo Promemoria</button>
-        </div>
-        <div id="memoGrid" class="memo-grid"></div>
-    </div>
+        <section class="card calendar-container">
+            <div class="calendar-header">
+                <h2>Marzo 2026</h2>
+                <div>
+                    <button><i class="fas fa-chevron-left"></i></button>
+                    <button><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="calendar-grid">
+                <div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div>
+                <div class="day">5 <div class="event event-red">Affitto</div></div>
+                <div class="day">6</div><div class="day">7</div>
+                <div class="day">8</div><div class="day">9</div><div class="day">10</div>
+                <div class="day">11 <div class="event event-blue">Bolletta Luce</div></div>
+                <div class="day">12</div><div class="day">13</div>
+                <div class="day">14 <div class="event event-green">Stipendio</div></div>
+                </div>
+        </section>
 
-    <div id="resoconto" class="view">
-        <div class="card-panel">
-            <h2>Andamento Annuale</h2>
-            <canvas id="annualChart" height="400"></canvas>
-        </div>
-    </div>
+    </main>
 
-    <div id="guadagni" class="view">
-        <div class="card-panel">
-            <h2>Gestione Flussi Mensili</h2>
-            <table>
-                <thead><tr><th>Voce / Fase</th><th>Attività</th><th>Responsabile</th><th>Importo</th><th></th></tr></thead>
-                <tbody id="list-g">
-                    <tr class="header-row"><td colspan="5">Guadagni</td></tr>
-                    <tr><td contenteditable="true">Stipendio</td><td contenteditable="true">Analisi Mensile</td><td contenteditable="true">Mario</td><td class="pos" contenteditable="true">2.500 €</td><td></td></tr>
-                </tbody>
-            </table>
-            <button style="width:100%; margin-bottom:20px" onclick="addRow('list-g', 'pos')" data-html2canvas-ignore="true">+ Aggiungi Guadagno</button>
-            
-            <table>
-                <tbody id="list-s">
-                    <tr class="header-row"><td colspan="5">Spese</td></tr>
-                    <tr><td contenteditable="true">Affitto</td><td contenteditable="true">Sviluppo Casa</td><td contenteditable="true">Lucio</td><td class="neg" contenteditable="true">600 €</td><td><button onclick="this.closest('tr').remove()" data-html2canvas-ignore="true" style="border:none; background:none; color:red; cursor:pointer">×</button></td></tr>
-                </tbody>
-            </table>
-            <button style="width:100%" onclick="addRow('list-s', 'neg')" data-html2canvas-ignore="true">+ Aggiungi Spesa</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
-    let memoStore = JSON.parse(localStorage.getItem('memos')) || {};
-
-    // INIZIALIZZAZIONE SELETTORI
-    const sM = document.getElementById('selMese');
-    const sA = document.getElementById('selAnno');
-    mesi.forEach(m => sM.add(new Option(m, m)));
-    for(let i = 2026-10; i <= 2026+10; i++) sA.add(new Option(i, i));
-    sM.value = "Marzo"; sA.value = "2026";
-
-    function showPage(id) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.getElementById('nav-'+id).classList.add('active');
-        if(id === 'home') initHomeChart();
-        if(id === 'calendario') loadCalendar();
-        if(id === 'resoconto') initAnnualChart();
-    }
-
-    function handleGlobalChange() {
-        if(document.getElementById('calendario').classList.contains('active')) loadCalendar();
-    }
-
-    // PDF EXPORT FUNCTION
-    function exportToPDF() {
-        const element = document.getElementById('main-content');
-        const opt = {
-            margin: 10,
-            filename: `Report_${sM.value}_${sA.value}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-        };
-        html2pdf().set(opt).from(element).save();
-    }
-
-    // LOGICA CALENDARIO
-    function loadCalendar() {
-        const key = `${sM.value}-${sA.value}`;
-        document.getElementById('calTitle').innerText = `Scadenze: ${sM.value} ${sA.value}`;
-        const grid = document.getElementById('memoGrid'); grid.innerHTML = "";
-        if(memoStore[key]) memoStore[key].forEach((m, i) => createMemo(m.d, m.t, m.c, i));
-    }
-
-    function createMemo(d, t, c, i) {
-        const card = document.createElement('div');
-        card.className = "memo-card"; card.style.backgroundColor = c;
-        card.innerHTML = `<span contenteditable="true" onblur="saveMemos()"><b>${d}</b></span><br><span contenteditable="true" onblur="saveMemos()">${t}</span>`;
-        document.getElementById('memoGrid').appendChild(card);
-    }
-
-    function addNewMemo() {
-        const colors = ["#fef3c7", "#dcfce7", "#fee2e2"];
-        createMemo("Data", "Nuovo promemoria...", colors[Math.floor(Math.random()*3)]);
-        saveMemos();
-    }
-
-    function saveMemos() {
-        const key = `${sM.value}-${sA.value}`;
-        const cards = document.querySelectorAll('.memo-card');
-        memoStore[key] = Array.from(cards).map(c => ({ d: c.querySelector('b').innerText, t: c.innerText.split('\n')[1] || "", c: c.style.backgroundColor }));
-        localStorage.setItem('memos', JSON.stringify(memoStore));
-    }
-
-    // LOGICA GUADAGNI
-    function addRow(id, cl) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td contenteditable="true">Voce</td><td contenteditable="true">Attività</td><td contenteditable="true">Nome</td><td class="${cl}" contenteditable="true">0 €</td><td><button onclick="this.closest('tr').remove()" style="border:none; background:none; color:red; cursor:pointer" data-html2canvas-ignore="true">×</button></td>`;
-        document.getElementById(id).appendChild(tr);
-    }
-
-    // GRAFICI
-    let hChart;
-    function initHomeChart() {
-        if(hChart) hChart.destroy();
-        hChart = new Chart(document.getElementById('homeChart'), { 
-            type: 'doughnut', 
-            data: { labels: ['Stipendio', 'Altro'], datasets: [{ data: [3950, 1400], backgroundColor: ['#10b981', '#3b82f6'] }] },
-            options: { animation: false } // Disabilitato per cattura PDF più precisa
-        });
-    }
-
-    function initAnnualChart() {
-        new Chart(document.getElementById('annualChart'), { 
-            type: 'bar', 
-            data: { labels: mesi, datasets: [{ label: 'Entrate', data: [2000, 2500, 3000, 2800, 3200, 3100, 2900, 3400, 3500, 3300, 3100, 3600], backgroundColor: '#10b981' }] },
-            options: { animation: false }
-        });
-    }
-
-    window.onload = () => initHomeChart();
-</script>
 </body>
 </html>
