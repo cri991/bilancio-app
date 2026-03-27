@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilancio App - Resoconto</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #1e252b;
+            --card-bg: #2a323a;
+            --text-main: #ecf0f1;
+            --primary-green: #2ecc71;
+            --primary-red: #e74c3c;
+            --accent-blue: #3498db;
+            --sidebar-width: 80px;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #15191d;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+        }
+
+        .nav-link {
+            color: #5d6d7e;
+            font-size: 24px;
+            margin: 20px 0;
+            text-decoration: none;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active { color: var(--primary-green); }
+        .nav-link.active::after {
+            content: ''; position: absolute; left: -28px; top: 0;
+            height: 100%; width: 4px; background: var(--primary-green);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-wrapper {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: 280px 1fr 1fr;
+            grid-template-rows: auto 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .header-area { grid-column: 1 / 4; display: flex; justify-content: space-between; align-items: center; padding: 10px; }
+
+        /* Widget Percentuale */
+        .stat-card {
+            grid-row: 2 / 4;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .percentage-badge {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-green);
+            background: rgba(46, 204, 113, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+
+        .nav-controls { display: flex; align-items: center; gap: 15px; margin-top: 20px; }
+        .btn-nav { background: #3e4853; border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
+
+        /* Containers Grafici */
+        .chart-box {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .top-wide { grid-column: 2 / 4; }
+        
+        h3 { margin-top: 0; font-size: 16px; color: #bdc3c7; text-transform: uppercase; letter-spacing: 1px; }
+
+        canvas { width: 100% !important; height: 100% !important; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <a href="index.html" class="nav-link" title="Home"><i class="fas fa-home"></i></a>
+        <a href="calendario.html" class="nav-link" title="Calendario"><i class="fas fa-calendar-alt"></i></a>
+        <a href="#" class="nav-link active" title="Resoconto"><i class="fas fa-chart-line"></i></a>
+        <a href="guadagni.html" class="nav-link" title="Portafoglio"><i class="fas fa-wallet"></i></a>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="header-area">
+            <h1 style="margin:0">Resoconto Gestionale</h1>
+            <div id="current-selection" style="font-weight: bold; color: var(--accent-blue);">MARZO 2026</div>
+        </div>
+
+        <div class="stat-card">
+            <h3>Mese su Mese</h3>
+            <div class="percentage-badge" id="perc-val">+17%</div>
+            <p id="comp-label">vs. Marzo 2025</p>
+            <div class="nav-controls">
+                <button class="btn-nav" onclick="changeDate(-1)"><i class="fas fa-chevron-left"></i></button>
+                <span id="label-mese">Marzo 2026</span>
+                <button class="btn-nav" onclick="changeDate(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="chart-box top-wide">
+            <h3>Ultime 10 Transazioni (Spese vs Guadagni)</h3>
+            <canvas id="mirrorChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <h3>Flusso di Cassa Giornaliero</h3>
+            <canvas id="flowChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <h3>Guadagni vs Spese (Mese x Mese)</h3>
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let currentMonth = 2; // Marzo
+        let currentYear = 2026;
+        const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+
+        // Configurazione Grafico Specchio
+        const mirrorCtx = document.getElementById('mirrorChart').getContext('2d');
+        let mirrorChart = new Chart(mirrorCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Voci 1', 'Voci 2', 'Voci 3', 'Voci 4', 'Voci 5', 'Voci 6', 'Voci 7', 'Voci 8', 'Voci 9', 'Voci 10'],
+                datasets: [
+                    { label: 'Spese', data: [-50, -20, -80, -40, -90, -30, -60, -70, -10, -55], backgroundColor: '#e74c3c', borderRadius: 5 },
+                    { label: 'Guadagni', data: [100, 40, 120, 80, 150, 90, 110, 130, 60, 140], backgroundColor: '#2ecc71', borderRadius: 5 }
+                ]
+            },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        // Configurazione Grafico Flusso
+        const flowCtx = document.getElementById('flowChart').getContext('2d');
+        let flowChart = new Chart(flowCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 30}, (_, i) => i + 1),
+                datasets: [
+                    { label: 'Entrate', data: [10, 20, 15, 30, 45, 40, 60, 55, 80, 90, 100], borderColor: '#2ecc71', fill: true, backgroundColor: 'rgba(46, 204, 113, 0.1)', tension: 0.4 },
+                    { label: 'Uscite', data: [5, 15, 10, 25, 30, 35, 20, 40, 30, 50, 45], borderColor: '#e74c3c', fill: true, backgroundColor: 'rgba(231, 76, 60, 0.1)', tension: 0.4 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, elements: { point: { radius: 0 } } }
+        });
+
+        // Configurazione Grafico Barre
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        let barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu'],
+                datasets: [
+                    { label: 'Guadagni', data: [2000, 1800, 2500, 2200, 2800, 2600], backgroundColor: '#2ecc71' },
+                    { label: 'Spese', data: [1500, 1600, 1400, 1900, 1700, 1800], backgroundColor: '#e74c3c' }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // Funzione per cambiare data e aggiornare tutto
+        function changeDate(delta) {
+            currentMonth += delta;
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+
+            const monthName = mesi[currentMonth];
+            document.getElementById('label-mese').innerText = `${monthName} ${currentYear}`;
+            document.getElementById('current-selection').innerText = `${monthName.toUpperCase()} ${currentYear}`;
+            document.getElementById('comp-label').innerText = `vs. ${monthName} ${currentYear - 1}`;
+            
+            // Simula cambio dati grafici
+            updateChartData();
+        }
+
+        function updateChartData() {
+            // Qui i grafici ricevono nuovi dati casuali per simulare il database
+            mirrorChart.data.datasets.forEach(dataset => {
+                dataset.data = dataset.data.map(() => Math.floor(Math.random() * 200) - 100);
+            });
+            mirrorChart.update();
+
+            // Aggiorna anche la percentuale in modo casuale
+            const randPerc = (Math.random() * 30).toFixed(1);
+            document.getElementById('perc-val').innerText = `+${randPerc}%`;
+        }
+    </script>
+</body>
+</html>
