@@ -10,9 +10,7 @@
         :root {
             --sidebar-bg: #1a2c3d;
             --main-bg: #f4f7f9;
-            --card-bg: #ffffff;
-            --text-dark: #333;
-            --text-light: #ecf0f1;
+            --text-light: #ffffff;
             --accent-blue: #2196f3;
             --accent-green: #4caf50;
             --accent-red: #f44336;
@@ -21,229 +19,120 @@
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: 'Segoe UI', sans-serif;
-            height: 100vh;
-            overflow: hidden;
+            height: 100vh; overflow: hidden;
             background-color: var(--main-bg);
         }
 
-        .main-layout {
-            display: flex;
-            height: 100vh;
-        }
+        .main-layout { display: flex; height: 100vh; }
 
         /* --- SIDEBAR --- */
         .sidebar {
             width: 260px;
             background-color: var(--sidebar-bg);
             color: var(--text-light);
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             user-select: none;
         }
 
         .sidebar-header {
-            padding: 25px 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
+            padding: 25px 20px; font-size: 0.9rem; font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center;
         }
 
-        .nav-links {
-            list-style: none;
-            padding: 20px 0;
-            margin: 0;
-            flex-grow: 1;
-        }
-
+        .nav-links { list-style: none; padding: 20px 0; margin: 0; flex-grow: 1; }
         .nav-links li {
-            padding: 15px 25px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-            opacity: 0.7;
+            padding: 15px 25px; cursor: pointer; display: flex; align-items: center;
+            font-size: 0.85rem; transition: 0.2s; border-left: 4px solid transparent; opacity: 0.7;
         }
-
-        .nav-links li:hover { background: rgba(255,255,255,0.05); opacity: 1; }
-        .nav-links li.active {
-            background: #2c3e50;
-            border-left-color: var(--accent-blue);
-            opacity: 1;
-            font-weight: bold;
-        }
-
+        .nav-links li:hover, .nav-links li.active { opacity: 1; background: rgba(255,255,255,0.05); }
+        .nav-links li.active { border-left-color: var(--accent-blue); font-weight: bold; }
         .nav-links i { margin-right: 15px; width: 20px; text-align: center; }
 
-        /* SELETTORE DATA SIDEBAR */
-        .date-selector {
-            padding: 20px;
-            background: rgba(0,0,0,0.3);
-        }
-
+        /* SELETTORE DATA (CORRETTO) */
+        .date-selector { padding: 20px; background: rgba(0,0,0,0.3); }
         .selector-box {
-            background: #2c3e50;
-            padding: 12px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 0.9rem;
+            background: #2c3e50; padding: 12px; border-radius: 6px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px; font-weight: bold; color: white;
         }
 
+        /* Frecce Bianche e Interattive */
         .selector-box i {
+            color: white !important; /* Forza il colore bianco */
             cursor: pointer;
-            padding: 5px 10px;
-            transition: color 0.2s;
+            padding: 8px;
+            font-size: 1.1rem;
+            transition: transform 0.2s, color 0.2s;
         }
-
-        .selector-box i:hover { color: var(--accent-blue); }
+        .selector-box i:hover { color: var(--accent-cyan) !important; transform: scale(1.2); }
 
         /* --- CONTENT AREA --- */
-        .content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+        .content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
 
-        /* HEADER DASHBOARD (CERCHI) */
         .dashboard-header {
-            display: flex;
-            padding: 25px;
-            gap: 15px;
-            background: #fff;
+            display: flex; padding: 25px; gap: 15px; background: #fff;
             border-bottom: 1px solid #e0e0e0;
         }
 
         .stat-card {
-            flex: 1;
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            flex: 1; background: #fff; border: 1px solid #eee; border-radius: 12px;
+            padding: 15px; display: flex; align-items: center; justify-content: space-between;
         }
 
-        .stat-info .stat-label { font-size: 0.7rem; color: #888; font-weight: 800; display: block; margin-bottom: 4px; }
-        .stat-info .stat-value { font-size: 1.1rem; font-weight: bold; color: var(--text-dark); }
+        .stat-info .stat-label { font-size: 0.7rem; color: #888; font-weight: 800; display: block; }
+        .stat-info .stat-value { font-size: 1.1rem; font-weight: bold; color: #333; }
 
         .circular-chart { width: 55px; height: 55px; }
         .circle-bg { fill: none; stroke: #eee; stroke-width: 3.8; }
         .circle { fill: none; stroke-width: 3.8; stroke-linecap: round; transition: stroke-dasharray 0.5s ease; }
-        .percentage { fill: #666; font-size: 0.5em; text-anchor: middle; font-weight: bold; font-family: sans-serif; }
+        .percentage { fill: #666; font-size: 0.5em; text-anchor: middle; font-weight: bold; }
 
-        /* Colori Indicatori */
+        /* Colori Cerchi */
         .color-entrate .circle { stroke: var(--accent-green); }
         .color-spese .circle { stroke: var(--accent-red); }
-        .color-iva .circle { stroke: #ff9800; }
         .color-profitto .circle { stroke: var(--accent-blue); }
 
-        /* MAIN GRID */
-        .dashboard-main {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 25px;
-            padding: 25px;
-            flex-grow: 1;
-        }
-
+        .dashboard-main { display: grid; grid-template-columns: 1fr 350px; gap: 25px; padding: 25px; flex-grow: 1; }
         .main-chart-area {
-            background: #fff;
-            border-radius: 15px;
-            border: 1px solid #eee;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #bbb;
-            min-height: 300px;
+            background: #fff; border-radius: 15px; border: 1px solid #eee;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; color: #bbb;
         }
 
-        /* PANNELLO PROMEMORIA (DESTRO) */
-        .reminders-panel {
-            background: #1e2d3e;
-            border-radius: 15px;
-            padding: 20px;
-            color: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .reminder-section h4 {
-            font-size: 0.7rem;
-            color: #8da1b5;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-            margin: 25px 0 15px 0;
-            letter-spacing: 1px;
-        }
-
-        .reminder-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .reminder-icon { width: 30px; text-align: center; font-size: 1.1rem; }
+        /* PANNELLO PROMEMORIA */
+        .reminders-panel { background: #1e2d3e; border-radius: 15px; padding: 20px; color: #fff; }
+        .reminder-section h4 { font-size: 0.7rem; color: #8da1b5; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin: 20px 0 10px; }
+        .reminder-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .reminder-details { flex-grow: 1; margin-left: 15px; }
-        .reminder-name { font-size: 0.85rem; font-weight: 500; display: block; }
+        .reminder-name { font-size: 0.85rem; display: block; }
         .reminder-date { font-size: 0.7rem; color: var(--accent-green); }
-
-        .reminder-amount {
-            min-width: 65px;
-            text-align: center;
-            padding: 5px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.8rem;
-            color: #1a2c3d;
-        }
-
+        .reminder-amount { min-width: 65px; text-align: center; padding: 5px; border-radius: 4px; font-weight: bold; color: #1a2c3d; }
         .bg-cyan { background: var(--accent-cyan); }
         .bg-yellow { background: var(--accent-yellow); }
-        .bg-white { background: #fff; }
-
-        hr { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 20px; }
     </style>
 </head>
 <body>
 
 <div class="main-layout">
-    <!-- SIDEBAR INTERATTIVA -->
     <nav class="sidebar">
         <div class="sidebar-header">BILANCIO APP PRO</div>
-        
         <ul class="nav-links">
-            <li class="active" data-page="transactions"><i class="fas fa-exchange-alt"></i> TRANSAZIONI</li>
-            <li data-page="mo-dash"><i class="fas fa-chart-pie"></i> DASHBOARD MESE</li>
-            <li data-page="yr-dash"><i class="fas fa-chart-line"></i> DASHBOARD ANNO</li>
-            <hr>
-            <li data-page="calendar"><i class="fas fa-calendar-alt"></i> CALENDARIO</li>
-            <li data-page="categories"><i class="fas fa-tags"></i> CATEGORIE</li>
-            <li data-page="summary"><i class="fas fa-file-invoice-dollar"></i> RESOCONTO</li>
+            <li class="active"><i class="fas fa-exchange-alt"></i> TRANSAZIONI</li>
+            <li><i class="fas fa-chart-pie"></i> DASHBOARD MESE</li>
+            <li><i class="fas fa-chart-line"></i> DASHBOARD ANNO</li>
+            <hr style="border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 20px;">
+            <li><i class="fas fa-calendar-alt"></i> CALENDARIO</li>
+            <li><i class="fas fa-tags"></i> CATEGORIE</li>
         </ul>
 
         <div class="date-selector">
-            <!-- Selettore Anno -->
-            <div class="selector-box" id="year-selector">
+            <div class="selector-box">
                 <i class="fas fa-chevron-left" id="prev-year"></i>
                 <span id="display-year">2024</span>
                 <i class="fas fa-chevron-right" id="next-year"></i>
             </div>
-            <!-- Selettore Mese -->
-            <div class="selector-box" id="month-selector">
+            <div class="selector-box">
                 <i class="fas fa-chevron-left" id="prev-month"></i>
                 <span id="display-month">Maggio</span>
                 <i class="fas fa-chevron-right" id="next-month"></i>
@@ -251,29 +140,20 @@
         </div>
     </nav>
 
-    <!-- MAIN CONTENT -->
     <main class="content">
-        <!-- INDICATORI CIRCOLARI -->
         <header class="dashboard-header">
             <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">ENTRATE</span>
-                    <span class="stat-value" id="val-entrate">14.370,00 €</span>
-                </div>
+                <div class="stat-info"><span class="stat-label">ENTRATE</span><span class="stat-value">14.370 €</span></div>
                 <div class="color-entrate">
                     <svg viewBox="0 0 36 36" class="circular-chart">
                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                         <path id="circle-entrate" class="circle" stroke-dasharray="65, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <text x="18" y="20.35" class="percentage">65%</text>
+                        <text x="18" y="20.35" class="percentage" id="perc-entrate">65%</text>
                     </svg>
                 </div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">SPESE</span>
-                    <span class="stat-value" id="val-spese">7.964,75 €</span>
-                </div>
+                <div class="stat-info"><span class="stat-label">SPESE</span><span class="stat-value">7.964 €</span></div>
                 <div class="color-spese">
                     <svg viewBox="0 0 36 36" class="circular-chart">
                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -282,12 +162,8 @@
                     </svg>
                 </div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-info">
-                    <span class="stat-label">PROFITTO</span>
-                    <span class="stat-value" id="val-profitto">6.405,25 €</span>
-                </div>
+                <div class="stat-info"><span class="stat-label">PROFITTO</span><span class="stat-value">6.405 €</span></div>
                 <div class="color-profitto">
                     <svg viewBox="0 0 36 36" class="circular-chart">
                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
@@ -298,45 +174,24 @@
             </div>
         </header>
 
-        <!-- AREA CENTRALE E PROMEMORIA -->
         <div class="dashboard-main">
             <div class="main-chart-area">
-                <i class="fas fa-chart-line fa-4x" style="margin-bottom: 15px;"></i>
-                <p>Visualizzazione Dati: <span id="current-view-label">Maggio 2024</span></p>
-                <small>Carica qui i tuoi grafici Chart.js o tabelle</small>
+                <i class="fas fa-chart-bar fa-4x" style="margin-bottom:15px"></i>
+                <p>Dati di: <strong id="current-view">Maggio 2024</strong></p>
             </div>
-
-            <!-- PANNELLO PROMEMORIA -->
             <aside class="reminders-panel">
                 <div class="reminder-section">
                     <h4>PREVISTA</h4>
-                    <div class="reminder-item" style="border-left: 3px solid var(--accent-blue); padding-left: 10px;">
-                        <div class="reminder-icon"><i class="fas fa-university"></i></div>
-                        <div class="reminder-details">
-                            <span class="reminder-name">Banca Mutuo Casa</span>
-                            <span class="reminder-date">25 Maggio</span>
-                        </div>
-                        <div class="reminder-amount bg-white">1.000 €</div>
+                    <div class="reminder-item">
+                        <div class="reminder-details"><span class="reminder-name">Mutuo</span><span class="reminder-date">25 Mag</span></div>
+                        <div class="reminder-amount" style="background:#fff">1.000€</div>
                     </div>
                 </div>
-
                 <div class="reminder-section">
                     <h4>PAGATE</h4>
                     <div class="reminder-item">
-                        <div class="reminder-icon"><i class="fas fa-percentage"></i></div>
-                        <div class="reminder-details">
-                            <span class="reminder-name">Interessi Passivi</span>
-                            <span class="reminder-date">12 Maggio</span>
-                        </div>
-                        <div class="reminder-amount bg-cyan">400 €</div>
-                    </div>
-                    <div class="reminder-item">
-                        <div class="reminder-icon"><i class="fas fa-gas-pump"></i></div>
-                        <div class="reminder-details">
-                            <span class="reminder-name">Rifornimento Benzina</span>
-                            <span class="reminder-date">08 Maggio</span>
-                        </div>
-                        <div class="reminder-amount bg-yellow">12 €</div>
+                        <div class="reminder-details"><span class="reminder-name">Benzina</span><span class="reminder-date">08 Mag</span></div>
+                        <div class="reminder-amount bg-yellow">12€</div>
                     </div>
                 </div>
             </aside>
@@ -344,58 +199,27 @@
     </main>
 </div>
 
-<!-- LOGICA JAVASCRIPT -->
 <script>
-    const appData = {
+    const state = {
         months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
-        currentMonthIndex: 4, // Maggio
-        currentYear: 2024
+        mIdx: 4, y: 2024
     };
 
-    // --- GESTIONE SIDEBAR (Navigazione) ---
-    document.querySelectorAll('.nav-links li').forEach(link => {
-        link.addEventListener('click', function() {
-            document.querySelector('.nav-links li.active').classList.remove('active');
-            this.classList.add('active');
-            console.log("Navigazione su: " + this.getAttribute('data-page'));
-        });
-    });
-
-    // --- GESTIONE CALENDARIO (Interattività) ---
-    const updateUI = () => {
-        document.getElementById('display-month').innerText = appData.months[appData.currentMonthIndex];
-        document.getElementById('display-year').innerText = appData.currentYear;
-        document.getElementById('current-view-label').innerText = `${appData.months[appData.currentMonthIndex]} ${appData.currentYear}`;
+    function update() {
+        document.getElementById('display-month').innerText = state.months[state.mIdx];
+        document.getElementById('display-year').innerText = state.y;
+        document.getElementById('current-view').innerText = state.months[state.mIdx] + " " + state.y;
         
-        // Effetto visivo di aggiornamento (esempio casuale per i cerchi)
-        const randomEntrate = Math.floor(Math.random() * 100);
-        document.getElementById('circle-entrate').setAttribute('stroke-dasharray', `${randomEntrate}, 100`);
-        document.querySelector('.color-entrate .percentage').textContent = randomEntrate + "%";
-    };
+        // Animazione cerchio verde (Entrate) per feedback visivo
+        const rnd = Math.floor(Math.random() * 100);
+        document.getElementById('circle-entrate').setAttribute('stroke-dasharray', rnd + ", 100");
+        document.getElementById('perc-entrate').textContent = rnd + "%";
+    }
 
-    // Eventi Mese
-    document.getElementById('prev-month').onclick = () => {
-        appData.currentMonthIndex = (appData.currentMonthIndex === 0) ? 11 : appData.currentMonthIndex - 1;
-        updateUI();
-    };
-    document.getElementById('next-month').onclick = () => {
-        appData.currentMonthIndex = (appData.currentMonthIndex === 11) ? 0 : appData.currentMonthIndex + 1;
-        updateUI();
-    };
-
-    // Eventi Anno
-    document.getElementById('prev-year').onclick = () => {
-        appData.currentYear--;
-        updateUI();
-    };
-    document.getElementById('next-year').onclick = () => {
-        appData.currentYear++;
-        updateUI();
-    };
-
-    // Inizializza la UI
-    updateUI();
+    document.getElementById('prev-month').onclick = () => { state.mIdx = state.mIdx === 0 ? 11 : state.mIdx - 1; update(); };
+    document.getElementById('next-month').onclick = () => { state.mIdx = state.mIdx === 11 ? 0 : state.mIdx + 1; update(); };
+    document.getElementById('prev-year').onclick = () => { state.y--; update(); };
+    document.getElementById('next-year').onclick = () => { state.y++; update(); };
 </script>
-
 </body>
 </html>
