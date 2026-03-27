@@ -3,89 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App - Home</title>
+    <title>Bilancio-App | Home Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #f4f7fa; --white: #ffffff; --primary: #3b82f6; --text: #334155; --border: #e2e8f0; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar Unificata */
-        .sidebar { width: 90px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 25px 0; flex-shrink: 0; }
-        .nav-link { color: #cbd5e0; font-size: 24px; margin: 18px 0; text-decoration: none; transition: 0.3s; }
+        :root {
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --primary: #3b82f6;
+            --green: #10b981;
+            --red: #ef4444;
+            --blue-light: #e0f2fe;
+            --border: #e2e8f0;
+        }
+
+        body {
+            margin: 0; font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg); color: var(--text-main);
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        /* SIDEBAR UNIFICATA */
+        .sidebar {
+            width: 90px; background: var(--white); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; align-items: center; padding: 25px 0; flex-shrink: 0;
+        }
+        .sidebar-logo { color: var(--primary); font-size: 28px; margin-bottom: 40px; }
+        .nav-link { color: #cbd5e1; font-size: 24px; margin: 18px 0; text-decoration: none; transition: 0.3s; }
         .nav-link.active { color: var(--primary); }
-        .logout { margin-top: auto; color: #cbd5e0; cursor: pointer; }
+        .nav-link:hover { color: var(--primary); }
+        .logout { margin-top: auto; color: #cbd5e1; cursor: pointer; }
 
-        /* Layout Main */
-        .main-content { flex-grow: 1; padding: 25px; display: grid; grid-template-columns: 360px 1fr; grid-template-rows: auto 1fr; gap: 20px; overflow-y: auto; }
-        .card { background: var(--white); border-radius: 18px; padding: 22px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        /* LAYOUT PRINCIPALE */
+        .main-content {
+            flex-grow: 1; padding: 25px; display: grid;
+            grid-template-columns: 360px 1fr;
+            grid-template-rows: 400px 1fr;
+            gap: 20px; overflow-y: auto;
+        }
 
-        /* Tabella Movimenti Automatica */
+        .card { 
+            background: var(--white); border-radius: 20px; padding: 22px; 
+            border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+            display: flex; flex-direction: column;
+        }
+
+        /* 1. BILANCIO (TOP LEFT) */
+        .balance-card h2 { font-size: 18px; margin: 0 0 20px 0; color: var(--text-sub); }
+        .stat-group { margin-bottom: 20px; }
+        .stat-group .label { font-size: 13px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
+        .stat-group .val { font-size: 36px; font-weight: 800; display: block; margin-top: 5px; }
+        .netto-box { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; }
+
+        /* 2. CALENDARIO (TOP RIGHT) */
+        .calendar-card { grid-column: 2; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .calendar-table { width: 100%; border-collapse: collapse; flex-grow: 1; }
+        .calendar-table th { font-size: 12px; color: var(--text-sub); padding: 8px; }
+        .calendar-table td { border: 1px solid #f1f5f9; text-align: center; padding: 10px; height: 40px; font-size: 13px; position: relative; }
+        .event-dot { width: 6px; height: 6px; border-radius: 50%; display: block; margin: 3px auto; }
+
+        /* 3. DETTAGLIO MOVIMENTI (BOTTOM - FULL WIDTH) */
+        .data-card { grid-column: 1 / 3; }
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .data-table th { text-align: left; padding: 12px; font-size: 13px; color: #64748b; border-bottom: 2px solid var(--border); }
+        .data-table th { text-align: left; padding: 12px; font-size: 13px; color: var(--text-sub); border-bottom: 2px solid var(--border); }
         .data-table td { padding: 12px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
-        .row-cat { background: #e0f2fe; font-weight: bold; color: #0369a1; }
-        .pos { color: #10b981; font-weight: 600; }
-        .neg { color: #ef4444; font-weight: 600; }
+        
+        /* Titoli Sezioni (Entrate/Uscite) */
+        .row-cat { background: var(--blue-light); font-weight: bold; color: #0369a1; }
+        .pos { color: var(--green); font-weight: 700; }
+        .neg { color: var(--red); font-weight: 700; }
+
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
-        <a href="#" class="nav-link"><i class="fas fa-th-large"></i></a>
+        <div class="sidebar-logo"><i class="fas fa-th-large"></i></div>
         <a href="index.html" class="nav-link active"><i class="fas fa-home"></i></a>
         <a href="calendario.html" class="nav-link"><i class="fas fa-calendar-alt"></i></a>
         <a href="resoconto.html" class="nav-link"><i class="fas fa-chart-line"></i></a>
         <a href="guadagni.html" class="nav-link"><i class="fas fa-wallet"></i></a>
-        <div class="logout"><i class="fas fa-power-off"></i></div>
+        <div class="logout"><i class="fas fa-power-off" onclick="localStorage.clear(); location.reload();"></i></div>
     </nav>
 
     <div class="main-content">
-        <div class="card" style="grid-column: 1 / 3;">
-            <h2 style="margin:0; font-size: 18px; color:#64748b;">Totale Netto Attuale</h2>
-            <div id="netto-display" style="font-size: 48px; font-weight: 800; color: var(--primary);">€ 0,00</div>
+        
+        <div class="card">
+            <h2>Riepilogo Mensile</h2>
+            <div class="stat-group">
+                <span class="label">Guadagni Totali:</span>
+                <span class="val" id="h-entrate" style="color: var(--text-main);">€ 0,00</span>
+            </div>
+            <div class="stat-group">
+                <span class="label">Spese Totali:</span>
+                <span class="val" id="h-uscite" style="color: var(--text-main);">€ 0,00</span>
+            </div>
+            <div class="stat-group netto-box">
+                <span class="label">Totale Netto:</span>
+                <span class="val" id="h-netto" style="color: var(--primary);">€ 0,00</span>
+            </div>
         </div>
 
-        <div class="card" style="grid-column: 1 / 3;">
-            <h3>Dettaglio Movimenti (Automatico)</h3>
-            <table class="data-table">
+        <div class="card calendar-card">
+            <div class="cal-header">
+                <strong style="font-size: 18px;">Promemoria Spese e Utenze</strong>
+                <span style="color:var(--primary); font-size: 13px; font-weight: 700; cursor:pointer;">Marzo 2026 <i class="fas fa-chevron-right"></i></span>
+            </div>
+            <table class="calendar-table">
                 <thead>
-                    <tr><th>Categoria</th><th>Descrizione</th><th>Responsabile</th><th>Importo</th></tr>
+                    <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
                 </thead>
-                <tbody id="tabella-corpo">
+                <tbody id="cal-grid">
                     </tbody>
             </table>
         </div>
+
+        <div class="card data-card">
+            <h3 style="margin-top:0">Dettaglio Movimenti Automatici</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Descrizione</th>
+                        <th>Responsabile</th>
+                        <th>Importo</th>
+                    </tr>
+                </thead>
+                <tbody id="tabella-body">
+                    </tbody>
+            </table>
+        </div>
+
     </div>
 
     <script>
-        function aggiornaHome() {
-            const dati = JSON.parse(localStorage.getItem('database_bilancio')) || { entrate: [], uscite: [] };
-            const corpo = document.getElementById('tabella-corpo');
-            let totaleEntrate = 0;
-            let totaleUscite = 0;
-            let html = '';
+        // Funzione per caricare i dati e popolare la dashboard
+        function inizializzaDashboard() {
+            // Recupero dati dal database condiviso (localStorage)
+            const db = JSON.parse(localStorage.getItem('database_bilancio')) || { entrate: [], uscite: [] };
+            
+            const tbody = document.getElementById('tabella-body');
+            let entrateTot = 0;
+            let usciteTot = 0;
+            let rowsHtml = '';
 
-            // Render Entrate
-            html += '<tr class="row-cat"><td colspan="4">Resoconto Entrate</td></tr>';
-            dati.entrate.forEach(e => {
-                totaleEntrate += parseFloat(e.importo);
-                html += `<tr><td>${e.cat}</td><td>${e.desc}</td><td>${e.resp}</td><td class="pos">+ € ${e.importo}</td></tr>`;
-            });
+            // --- SEZIONE ENTRATE ---
+            rowsHtml += `<tr class="row-cat"><td colspan="4">Resoconto Entrate</td></tr>`;
+            if(db.entrate.length === 0) {
+                rowsHtml += `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">Nessun dato inserito</td></tr>`;
+            } else {
+                db.entrate.forEach(e => {
+                    entrateTot += parseFloat(e.importo);
+                    rowsHtml += `<tr><td>${e.cat}</td><td>${e.desc}</td><td>${e.resp}</td><td class="pos">+ € ${e.importo}</td></tr>`;
+                });
+            }
 
-            // Render Uscite
-            html += '<tr class="row-cat"><td colspan="4">Resoconto Uscite</td></tr>';
-            dati.uscite.forEach(u => {
-                totaleUscite += parseFloat(u.importo);
-                html += `<tr><td>${u.cat}</td><td>${u.desc}</td><td>${u.resp}</td><td class="neg">- € ${u.importo}</td></tr>`;
-            });
+            // --- SEZIONE USCITE ---
+            rowsHtml += `<tr class="row-cat"><td colspan="4">Resoconto Uscite</td></tr>`;
+            if(db.uscite.length === 0) {
+                rowsHtml += `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">Nessun dato inserito</td></tr>`;
+            } else {
+                db.uscite.forEach(u => {
+                    usciteTot += parseFloat(u.importo);
+                    rowsHtml += `<tr><td>${u.cat}</td><td>${u.desc}</td><td>${u.resp}</td><td class="neg">- € ${u.importo}</td></tr>`;
+                });
+            }
 
-            corpo.innerHTML = html;
-            const netto = totaleEntrate - totaleUscite;
-            document.getElementById('netto-display').innerText = `€ ${netto.toLocaleString('it-IT', {minimumFractionDigits: 2})}`;
-            document.getElementById('netto-display').style.color = netto >= 0 ? '#10b981' : '#ef4444';
+            // Aggiornamento Tabella e Numeri
+            tbody.innerHTML = rowsHtml;
+            document.getElementById('h-entrate').innerText = `€ ${entrateTot.toLocaleString('it-IT', {minimumFractionDigits: 2})}`;
+            document.getElementById('h-uscite').innerText = `€ ${usciteTot.toLocaleString('it-IT', {minimumFractionDigits: 2})}`;
+            
+            const netto = entrateTot - usciteTot;
+            const nettoEl = document.getElementById('h-netto');
+            nettoEl.innerText = `€ ${netto.toLocaleString('it-IT', {minimumFractionDigits: 2})}`;
+            nettoEl.style.color = netto >= 0 ? '#10b981' : '#ef4444';
+
+            // Generazione Calendario Semplice
+            const calGrid = document.getElementById('cal-grid');
+            let day = 1;
+            for(let i=0; i<5; i++) {
+                let row = calGrid.insertRow();
+                for(let j=0; j<7; j++) {
+                    let cell = row.insertCell();
+                    if(day <= 31) {
+                        cell.innerHTML = `<div>${day}</div>`;
+                        if([5, 12, 20].includes(day)) cell.innerHTML += '<span class="event-dot" style="background:var(--red)"></span>';
+                        if([15, 25].includes(day)) cell.innerHTML += '<span class="event-dot" style="background:var(--green)"></span>';
+                        day++;
+                    }
+                }
+            }
         }
 
-        window.onload = aggiornaHome;
+        // Avvio al caricamento
+        window.onload = inizializzaDashboard;
     </script>
 </body>
 </html>
