@@ -1,0 +1,48 @@
+let monthKey = new Date().toISOString().slice(0,7);
+
+// -------- PROGETTI --------
+function loadProjects() {
+    let data = JSON.parse(localStorage.getItem("projects_"+monthKey) || "[]");
+    let tbody = document.querySelector("#projectTable tbody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    data.forEach((r,i)=>{
+        let tr = document.createElement("tr");
+
+        tr.innerHTML = `
+        <td><input value="${r.progetto}" onchange="updateP(${i},'progetto',this.value)"></td>
+        <td><input value="${r.attivita}" onchange="updateP(${i},'attivita',this.value)"></td>
+        <td><input value="${r.responsabile}" onchange="updateP(${i},'responsabile',this.value)"></td>
+        <td><input value="${r.scostamento}" onchange="updateP(${i},'scostamento',this.value)"></td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+function addProject() {
+    let data = JSON.parse(localStorage.getItem("projects_"+monthKey) || "[]");
+    data.push({progetto:"",attivita:"",responsabile:"",scostamento:""});
+    localStorage.setItem("projects_"+monthKey, JSON.stringify(data));
+    loadProjects();
+}
+
+function updateP(i,f,v){
+    let data = JSON.parse(localStorage.getItem("projects_"+monthKey) || "[]");
+    data[i][f]=v;
+    localStorage.setItem("projects_"+monthKey, JSON.stringify(data));
+}
+
+// -------- CALENDARIO --------
+function saveEvent(){
+    let date = document.getElementById("date").value;
+    let title = document.getElementById("title").value;
+
+    let events = JSON.parse(localStorage.getItem("events")||"[]");
+    events.push({date,title});
+    localStorage.setItem("events",JSON.stringify(events));
+
+    alert("Salvato");
+}
