@@ -3,102 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App - Resoconto</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Bilancio App - Resoconto Chiaro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #14181b;
-            --card-bg: #1e252b;
-            --text-main: #f8f9fa;
-            --primary-green: #2ecc71;
-            --primary-red: #e74c3c;
-            --accent-blue: #3498db;
+            /* Palette Chiara Coerente */
+            --bg-color: #f4f7f6;
+            --sidebar-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --primary-blue: #3498db;
+            --income-green: #2ecc71;
+            --expense-red: #e74c3c;
+            --border-color: #e0e6ed;
             --sidebar-width: 80px;
         }
 
         body, html {
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-dark);
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
             color: var(--text-main);
-            overflow: hidden; /* Blocca lo scroll della pagina */
+            overflow: hidden;
+            display: flex;
         }
 
-        body { display: flex; }
-
-        /* SIDEBAR */
+        /* --- SIDEBAR CHIARA --- */
         .sidebar {
             width: var(--sidebar-width);
-            background-color: #0b0d0f;
+            background-color: var(--sidebar-color);
             display: flex; flex-direction: column; align-items: center; padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
             flex-shrink: 0;
+            z-index: 10;
         }
-        .nav-link { color: #5d6d7e; font-size: 24px; margin: 20px 0; text-decoration: none; transition: 0.3s; }
-        .nav-link.active { color: var(--primary-green); }
 
-        /* GRID LAYOUT FLUIDO */
+        .nav-link {
+            color: #bdc3c7;
+            font-size: 24px;
+            margin: 20px 0;
+            text-decoration: none;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active { color: var(--primary-blue); }
+        
+        .nav-link.active::after {
+            content: ''; position: absolute; left: -28px; top: 0;
+            height: 100%; width: 4px; background: var(--primary-blue);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* --- GRID LAYOUT FLUIDO --- */
         .dashboard-container {
             flex-grow: 1;
             display: grid;
-            grid-template-columns: 300px 1fr 1fr;
-            grid-template-rows: 60px 1fr 1fr;
-            gap: 10px;
-            padding: 10px;
+            grid-template-columns: 280px 1fr 1fr;
+            grid-template-rows: 70px 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
-        .header-bar { grid-column: 1 / 4; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; }
+        .header-bar {
+            grid-column: 1 / 4;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 15px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
 
+        .date-selector { display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 1.1rem; }
+        .btn-nav { background: var(--primary-blue); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-nav:hover { background: #2980b9; }
+
+        /* --- CARDS & GRAFICI --- */
         .chart-container {
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 15px;
+            padding: 18px;
             display: flex; flex-direction: column;
             position: relative;
-            min-height: 0; /* Importante per Chart.js */
+            min-height: 0; /* Cruciale per il resize di Chart.js */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
         }
 
-        /* WIDGET STATISTICA */
         .stat-sidebar { grid-row: 2 / 4; justify-content: center; align-items: center; text-align: center; }
-        .perc-val { font-size: 56px; font-weight: bold; color: var(--primary-green); margin: 15px 0; }
-        .nav-btns { display: flex; gap: 15px; margin-top: 20px; }
-        .btn { background: #34495e; border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
-        .btn:hover { background: var(--accent-blue); }
+        .perc-val { font-size: 52px; font-weight: bold; color: var(--income-green); margin: 10px 0; }
+        .comp-text { color: var(--text-sub); font-size: 14px; margin: 0; }
 
-        /* GRAFICI */
         .top-mirror { grid-column: 2 / 4; }
         .chart-wrapper { flex-grow: 1; position: relative; width: 100%; height: 100%; }
-        h3 { margin: 0 0 10px 0; font-size: 14px; color: #95a5a6; text-transform: uppercase; }
+        
+        h3 { margin: 0 0 12px 0; font-size: 13px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
-        <a href="index.html" class="nav-link"><i class="fas fa-home"></i></a>
-        <a href="calendario.html" class="nav-link"><i class="fas fa-calendar-alt"></i></a>
-        <a href="#" class="nav-link active"><i class="fas fa-chart-line"></i></a>
-        <a href="guadagni.html" class="nav-link"><i class="fas fa-wallet"></i></a>
+        <a href="index.html" class="nav-link" title="Home"><i class="fas fa-home"></i></a>
+        <a href="calendario.html" class="nav-link" title="Calendario"><i class="fas fa-calendar-alt"></i></a>
+        <a href="#" class="nav-link active" title="Resoconto"><i class="fas fa-chart-line"></i></a>
+        <a href="guadagni.html" class="nav-link" title="Guadagni e Spese"><i class="fas fa-wallet"></i></a>
     </nav>
 
     <div class="dashboard-container">
         <div class="header-bar">
-            <h2 id="title-date">RESOCONTO MARZO 2026</h2>
-            <div style="color: var(--accent-blue)">Modalità Desktop Attiva</div>
-        </div>
-
-        <div class="chart-container stat-sidebar">
-            <h3>Confronto Mensile</h3>
-            <div class="perc-val" id="perc-display">+17%</div>
-            <p id="comp-text">vs. Marzo 2025</p>
-            <div class="nav-btns">
-                <button class="btn" onclick="updateData(-1)"><i class="fas fa-chevron-left"></i></button>
-                <button class="btn" onclick="updateData(1)"><i class="fas fa-chevron-right"></i></button>
+            <h2 style="margin:0; font-size: 1.3rem;">Resoconto Gestionale</h2>
+            <div class="date-selector">
+                <button class="btn-nav" onclick="changeDate(-1)"><i class="fas fa-chevron-left"></i></button>
+                <span id="title-date">MARZO 2026</span>
+                <button class="btn-nav" onclick="changeDate(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
 
+        <div class="chart-container stat-sidebar">
+            <h3>Vs. Anno Precedente</h3>
+            <div class="perc-val" id="perc-display">+17%</div>
+            <p class="comp-text" id="comp-text">Marzo 2025</p>
+            <p style="font-size: 12px; color: #95a5a6; margin-top: 20px;">(Dati simulati in modalità Lite)</p>
+        </div>
+
         <div class="chart-container top-mirror">
-            <h3>Ultime 10 Transazioni: Spese (Sinistra) vs Guadagni (Destra)</h3>
+            <h3>Ultime 10 Transazioni: Uscite (Rossi) vs Entrate (Verdi)</h3>
             <div class="chart-wrapper">
                 <canvas id="mirrorChart"></canvas>
             </div>
@@ -120,74 +153,95 @@
     </div>
 
     <script>
-        // Configurazione globale Chart.js per Dark Mode
-        Chart.defaults.color = '#95a5a6';
-        Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+        // Configurazione globale Chart.js per Light Mode
+        Chart.defaults.color = '#7f8c8d'; // Colore testo assi
+        Chart.defaults.borderColor = '#f0f0f0'; // Colore linee griglia
 
         let monthIdx = 2; // Marzo
         const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+        
+        // Opzioni comuni per leggerezza (niente legende pesanti, animazioni brevi)
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 300 }, // Animazione molto breve
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } }, // Rimuovi griglia verticale per pulizia
+                y: { beginAtZero: true, grid: { color: '#f5f5f5' } }
+            }
+        };
 
-        // 1. GRAFICO SPECCHIO
+        // 1. GRAFICO SPECCHIO (Mirror)
         const mirrorCtx = document.getElementById('mirrorChart').getContext('2d');
         const mirrorChart = new Chart(mirrorCtx, {
             type: 'bar',
             data: {
-                labels: ['Stipendio', 'Freelance', 'Vendita', 'Bonus', 'Affitto', 'Luce', 'Spesa', 'Auto', 'Palestra', 'Internet'],
+                labels: ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10'],
                 datasets: [
-                    { label: 'Uscite', data: [-400, -120, -80, -200, -600, -50, -90, -150, -40, -30], backgroundColor: '#e74c3c' },
-                    { label: 'Entrate', data: [2200, 450, 100, 300, 0, 0, 0, 0, 0, 0], backgroundColor: '#2ecc71' }
+                    { label: 'Uscite', data: [-400, -120, -80, -200, -600, -50, -90, -150, -40, -30], backgroundColor: '#e74c3c', borderRadius: 4 },
+                    { label: 'Entrate', data: [2200, 450, 100, 300, 0, 0, 0, 0, 0, 0], backgroundColor: '#2ecc71', borderRadius: 4 }
                 ]
             },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            options: {
+                ...commonOptions,
+                indexAxis: 'y', // Rende le barre orizzontali
+                scales: {
+                    x: { stacked: true, grid: { color: '#f5f5f5' } },
+                    y: { stacked: true, grid: { display: false } }
+                }
+            }
         });
 
-        // 2. GRAFICO FLUSSO
+        // 2. GRAFICO FLUSSO (Linee, con meno punti per leggerezza)
         const flowCtx = document.getElementById('flowChart').getContext('2d');
         const flowChart = new Chart(flowCtx, {
             type: 'line',
             data: {
-                labels: Array.from({length: 30}, (_, i) => i + 1),
+                labels: [1, 5, 10, 15, 20, 25, 30], // Solo punti chiave
                 datasets: [
-                    { label: 'Guadagni', data: [10, 30, 20, 50, 80, 70, 90, 100, 110], borderColor: '#2ecc71', fill: true, backgroundColor: 'rgba(46, 204, 113, 0.1)', tension: 0.4 },
-                    { label: 'Spese', data: [5, 20, 40, 30, 25, 60, 40, 50, 30], borderColor: '#e74c3c', fill: true, backgroundColor: 'rgba(231, 76, 60, 0.1)', tension: 0.4 }
+                    { label: 'Guadagni', data: [1000, 1500, 1200, 2000, 2500, 2200, 3000], borderColor: '#2ecc71', borderWidth: 2, tension: 0.3, pointRadius: 2 },
+                    { label: 'Spese', data: [800, 1000, 1400, 1200, 1800, 1500, 1900], borderColor: '#e74c3c', borderWidth: 2, tension: 0.3, pointRadius: 2 }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: commonOptions
         });
 
-        // 3. GRAFICO BARRE
+        // 3. GRAFICO BARRE ANNUALI
         const barCtx = document.getElementById('barChart').getContext('2d');
         const barChart = new Chart(barCtx, {
             type: 'bar',
             data: {
                 labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu'],
                 datasets: [
-                    { label: 'Entrate', data: [2000, 2200, 2500, 2100, 2400, 2300], backgroundColor: '#2ecc71' },
-                    { label: 'Uscite', data: [1800, 1500, 1900, 1600, 1700, 2000], backgroundColor: '#e74c3c' }
+                    { label: 'Entrate', data: [2000, 2200, 2500, 2100, 2400, 2300], backgroundColor: '#2ecc71', borderRadius: 4 },
+                    { label: 'Uscite', data: [1800, 1500, 1900, 1600, 1700, 2000], backgroundColor: '#e74c3c', borderRadius: 4 }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: commonOptions
         });
 
-        function updateData(step) {
+        // Funzione per navigare tra le date
+        function changeDate(step) {
             monthIdx += step;
             if(monthIdx > 11) monthIdx = 0;
             if(monthIdx < 0) monthIdx = 11;
 
             const meseCorrente = mesi[monthIdx];
-            document.getElementById('title-date').innerText = `RESOCONTO ${meseCorrente.toUpperCase()} 2026`;
-            document.getElementById('comp-text').innerText = `vs. ${meseCorrente} 2025`;
+            document.getElementById('title-date').innerText = `${meseCorrente.toUpperCase()} 2026`;
+            document.getElementById('comp-text').innerText = `${meseCorrente} 2025`;
             
-            // Simula variazione dati casuali
-            const newVal = (Math.random() * 40).toFixed(1);
+            // Simula variazione percentuale
+            const newVal = (Math.random() * 25).toFixed(1);
             document.getElementById('perc-display').innerText = `+${newVal}%`;
             
-            // Aggiorna grafici con dati random per mostrare il movimento
+            // Aggiorna i grafici in modo ultra-veloce (senza ricalcolare animazioni complesse)
             [mirrorChart, flowChart, barChart].forEach(chart => {
                 chart.data.datasets.forEach(ds => {
-                    ds.data = ds.data.map(v => v + (Math.random() * 10 - 5));
+                    // Simula movimento dati
+                    ds.data = ds.data.map(v => v + (Math.random() * 100 - 50));
                 });
-                chart.update();
+                chart.update('none'); // Update istantaneo, zero lag
             });
         }
     </script>
