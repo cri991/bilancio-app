@@ -3,21 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Bilancio Pro</title>
+<title>Bilancio Premium</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body {
+body{
 margin:0;
 font-family:-apple-system;
 background:linear-gradient(135deg,#0f172a,#1e293b);
 color:white;
 }
 
+/* HEADER */
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px;
+}
+
+/* KPI */
+.kpi{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+padding:10px;
+}
+.box{
+padding:15px;
+border-radius:15px;
+text-align:center;
+font-weight:bold;
+}
+.green{background:#2ecc71;}
+.red{background:#e74c3c;}
+.blue{background:#3498db;}
+.purple{background:#9b59b6;}
+
 /* GLASS */
-.card {
+.card{
 background:rgba(255,255,255,0.08);
 backdrop-filter:blur(15px);
 border-radius:20px;
@@ -25,35 +50,44 @@ padding:15px;
 margin:10px;
 }
 
-.grid {
+/* GRID */
+.grid{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:10px;
-margin:10px;
 }
 
-.box {
-padding:15px;
-border-radius:15px;
-text-align:center;
-font-weight:bold;
-}
-
-.green{background:#2ecc71;}
-.red{background:#e74c3c;}
-.blue{background:#3498db;}
-.purple{background:#9b59b6;}
-
-input {
+/* INPUT */
+input{
 width:100%;
-padding:10px;
+padding:8px;
 margin:5px 0;
-border-radius:10px;
+border-radius:8px;
 border:none;
 }
 
+/* CALENDARIO */
+.calendar{
+background:#1c1c1e;
+border-radius:20px;
+padding:15px;
+text-align:center;
+}
+.days{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px;
+}
+.day{
+padding:10px;
+border-radius:50%;
+}
+.active{
+background:#ff453a;
+}
+
 /* LOCK */
-#lockScreen{
+#lock{
 position:fixed;
 top:0;
 left:0;
@@ -61,237 +95,231 @@ width:100%;
 height:100%;
 background:#0f172a;
 display:flex;
-flex-direction:column;
 justify-content:center;
 align-items:center;
-z-index:9999;
+flex-direction:column;
+z-index:999;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 LOCK -->
-<div id="lockScreen">
-<h2>🔐 Accesso Sicuro</h2>
-<input type="password" id="password">
+<!-- 🔐 LOGIN -->
+<div id="lock">
+<h2>🔐 Accesso</h2>
+<input type="password" id="pass">
 <button onclick="login()">Accedi</button>
 </div>
 
 <!-- HEADER -->
-<div style="display:flex;justify-content:space-between;padding:10px;">
+<div class="header">
 <h2>💎 Bilancio</h2>
 <button onclick="logout()">Logout</button>
 </div>
 
 <!-- MESE -->
 <div style="text-align:center;">
-<button onclick="prevMonth()">◀</button>
+<button onclick="prev()">◀</button>
 <span id="mese"></span>
-<button onclick="nextMonth()">▶</button>
+<button onclick="next()">▶</button>
 </div>
 
 <!-- KPI -->
-<div class="grid">
-<div class="box green">Entrate<br><span id="totEntrate">0</span></div>
-<div class="box red">Spese<br><span id="totSpese">0</span></div>
-<div class="box blue">Risparmio<br><span id="risparmio">0</span></div>
-<div class="box purple">Margine<br><span id="margine">0%</span></div>
+<div class="kpi">
+<div class="box green">Reddito<br><span id="e">0</span></div>
+<div class="box red">Spese<br><span id="s">0</span></div>
+<div class="box blue">Risparmio<br><span id="r">0</span></div>
+<div class="box purple">Margine<br><span id="m">0%</span></div>
 </div>
 
-<!-- INPUT -->
+<!-- CONTENUTO -->
+<div class="grid">
+
+<!-- SINISTRA -->
+<div>
+
 <div class="card">
 <h3>Entrate</h3>
-<input id="stipendio" placeholder="Stipendio">
+<input id="stip" placeholder="Stipendio">
 <input id="extra" placeholder="Extra">
 </div>
 
 <div class="card">
 <h3>Spese</h3>
-<input id="affitto" placeholder="Affitto">
-<input id="bollette" placeholder="Bollette">
-<input id="spesa" placeholder="Spesa">
-</div>
-
-<!-- GRAFICO -->
-<div class="card">
-<canvas id="grafico"></canvas>
+<input id="aff" placeholder="Affitto">
+<input id="bol" placeholder="Bollette">
+<input id="food" placeholder="Spesa">
 </div>
 
 <!-- CALENDARIO -->
-<div class="card">
-<h3>📅 Promemoria</h3>
-<input type="date" id="data">
-<input id="testo" placeholder="Scrivi spesa">
-<button onclick="aggiungi()">Aggiungi</button>
+<div class="calendar">
+<h3 id="calMese"></h3>
+<div class="days" id="giorni"></div>
+
+<input id="nota" placeholder="Scrivi spesa">
+<button onclick="addNota()">Aggiungi</button>
 <ul id="lista"></ul>
+
 </div>
 
-<!-- CAMBIO PASSWORD -->
+</div>
+
+<!-- DESTRA -->
+<div>
+
 <div class="card">
-<h3>🔐 Cambia Password</h3>
-<input type="password" id="oldPass" placeholder="Vecchia">
-<input type="password" id="newPass" placeholder="Nuova">
-<button onclick="changePassword()">Aggiorna</button>
+<canvas id="chart"></canvas>
+</div>
+
+<div class="card">
+<h3>Storico</h3>
+<ul id="storico"></ul>
+</div>
+
+</div>
+
 </div>
 
 <script>
 
-// HASH SEMPLICE
-function hash(str){
-return btoa(str);
-}
+// HASH
+function hash(s){return btoa(s);}
 
-// PASSWORD
-let PASSWORD = localStorage.getItem("password");
-
+// PASSWORD INIT
+let PASSWORD=localStorage.getItem("pass");
 if(!PASSWORD){
-PASSWORD = hash("1234");
-localStorage.setItem("password", PASSWORD);
+PASSWORD=hash("1234");
+localStorage.setItem("pass",PASSWORD);
 }
 
 // LOGIN
 function login(){
-let input = hash(document.getElementById("password").value);
-
-if(input===PASSWORD){
-document.getElementById("lockScreen").style.display="none";
-localStorage.setItem("login","ok");
-startTimer();
-}else{
-alert("Password errata");
-}
+if(hash(pass.value)===PASSWORD){
+lock.style.display="none";
+localStorage.setItem("log","ok");
+}else alert("Errata");
 }
 
 // LOGOUT
 function logout(){
-localStorage.removeItem("login");
-document.getElementById("lockScreen").style.display="flex";
+localStorage.removeItem("log");
+lock.style.display="flex";
 }
 
 // AUTO LOGIN
-if(localStorage.getItem("login")==="ok"){
-document.getElementById("lockScreen").style.display="none";
-startTimer();
-}
-
-// CAMBIO PASSWORD
-function changePassword(){
-
-let oldInput = document.getElementById("oldPass").value;
-let newInput = document.getElementById("newPass").value;
-
-if(hash(oldInput) !== PASSWORD){
-alert("Password attuale errata");
-return;
-}
-
-if(newInput.length < 4){
-alert("Password troppo corta");
-return;
-}
-
-let nuovaHash = hash(newInput);
-
-PASSWORD = nuovaHash;
-localStorage.setItem("password", nuovaHash);
-
-alert("Password aggiornata");
-
-// reset campi
-document.getElementById("oldPass").value="";
-document.getElementById("newPass").value="";
-}
-}
-
-// TIMER SICUREZZA
-let timeout;
-function startTimer(){
-resetTimer();
-document.onclick=resetTimer;
-document.onkeypress=resetTimer;
-}
-
-function resetTimer(){
-clearTimeout(timeout);
-timeout=setTimeout(()=>{
-logout();
-},300000);
-}
+if(localStorage.getItem("log")==="ok") lock.style.display="none";
 
 // MESE
-let m=new Date().getMonth();
-let a=new Date().getFullYear();
+let d=new Date();
+let meseIdx=d.getMonth();
+let anno=d.getFullYear();
 const mesi=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
 
 function aggiorna(){
-mese.innerText=mesi[m]+" "+a;
+mese.innerText=mesi[meseIdx]+" "+anno;
+calMese.innerText=mesi[meseIdx];
 carica();
-caricaLista();
+calendar();
 }
 
-function nextMonth(){m++;if(m>11){m=0;a++}aggiorna();}
-function prevMonth(){m--;if(m<0){m=11;a--}aggiorna();}
+// NAV
+function next(){meseIdx++;if(meseIdx>11){meseIdx=0;anno++}aggiorna();}
+function prev(){meseIdx--;if(meseIdx<0){meseIdx=11;anno--}aggiorna();}
 
 // CALCOLO
-function calcola(){
-let e=(+stipendio.value||0)+(+extra.value||0);
-let s=(+affitto.value||0)+(+bollette.value||0)+(+spesa.value||0);
+function calc(){
+let entr=(+stip.value||0)+(+extra.value||0);
+let spe=(+aff.value||0)+(+bol.value||0)+(+food.value||0);
 
-totEntrate.innerText=e;
-totSpese.innerText=s;
-risparmio.innerText=e-s;
-margine.innerText=(e?((e-s)/e*100).toFixed(1):0)+"%";
+e.innerText=entr;
+s.innerText=spe;
+r.innerText=entr-spe;
+m.innerText=(entr?((entr-spe)/entr*100).toFixed(1):0)+"%";
 
 salva();
-grafico(e,s);
+grafico(entr,spe);
+storicoAdd(entr,spe);
 }
 
 // SALVA
 function salva(){
-let dati={stipendio:stipendio.value,extra:extra.value,affitto:affitto.value,bollette:bollette.value,spesa:spesa.value};
-localStorage.setItem("dati"+m+a,JSON.stringify(dati));
+let dati={stip:stip.value,extra:extra.value,aff:aff.value,bol:bol.value,food:food.value};
+localStorage.setItem("dati"+meseIdx+anno,JSON.stringify(dati));
 }
 
 // CARICA
 function carica(){
-let d=JSON.parse(localStorage.getItem("dati"+m+a))||{};
-stipendio.value=d.stipendio||"";
+let d=JSON.parse(localStorage.getItem("dati"+meseIdx+anno))||{};
+stip.value=d.stip||"";
 extra.value=d.extra||"";
-affitto.value=d.affitto||"";
-bollette.value=d.bollette||"";
-spesa.value=d.spesa||"";
-calcola();
+aff.value=d.aff||"";
+bol.value=d.bol||"";
+food.value=d.food||"";
+calc();
 }
 
 // GRAFICO
-let chart;
-function grafico(e,s){
-if(chart)chart.destroy();
-chart=new Chart(grafico,{
-type:'doughnut',
-data:{labels:["Entrate","Spese"],datasets:[{data:[e,s]}]}
-});
+let c;
+function grafico(e1,s1){
+if(c)c.destroy();
+c=new Chart(chart,{type:'doughnut',data:{labels:["Entrate","Spese"],datasets:[{data:[e1,s1]}]}});
 }
 
 // EVENTI
-document.querySelectorAll("input").forEach(i=>i.oninput=calcola);
+document.querySelectorAll("input").forEach(i=>i.oninput=calc);
 
 // CALENDARIO
-function aggiungi(){
-let arr=JSON.parse(localStorage.getItem("sp"+m+a))||[];
-arr.push(data.value+" - "+testo.value);
-localStorage.setItem("sp"+m+a,JSON.stringify(arr));
-caricaLista();
+function calendar(){
+giorni.innerHTML="";
+for(let i=1;i<=31;i++){
+let div=document.createElement("div");
+div.className="day";
+div.innerText=i;
+div.onclick=()=>selectDay(i);
+giorni.appendChild(div);
+}
 }
 
-function caricaLista(){
-let arr=JSON.parse(localStorage.getItem("sp"+m+a))||[];
+function selectDay(d){
+document.querySelectorAll(".day").forEach(el=>el.classList.remove("active"));
+giorni.children[d-1].classList.add("active");
+selectedDay=d;
+}
+
+let selectedDay=1;
+
+// NOTE
+function addNota(){
+let arr=JSON.parse(localStorage.getItem("note"+meseIdx+anno))||[];
+arr.push(selectedDay+" - "+nota.value);
+localStorage.setItem("note"+meseIdx+anno,JSON.stringify(arr));
+loadNote();
+}
+
+function loadNote(){
+let arr=JSON.parse(localStorage.getItem("note"+meseIdx+anno))||[];
 lista.innerHTML="";
-arr.forEach(e=>{
+arr.forEach(n=>{
 let li=document.createElement("li");
-li.innerText=e;
+li.innerText=n;
 lista.appendChild(li);
+});
+}
+
+// STORICO
+function storicoAdd(e1,s1){
+let arr=JSON.parse(localStorage.getItem("storico"))||[];
+arr[meseIdx]={e:e1,s:s1};
+localStorage.setItem("storico",JSON.stringify(arr));
+
+storico.innerHTML="";
+arr.forEach((m,i)=>{
+if(m){
+let li=document.createElement("li");
+li.innerText=mesi[i]+": "+m.e+"€ / "+m.s+"€";
+storico.appendChild(li);
+}
 });
 }
 
@@ -300,11 +328,12 @@ let startX=0;
 document.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
 document.addEventListener("touchend",e=>{
 let endX=e.changedTouches[0].clientX;
-if(startX-endX>50)nextMonth();
-if(endX-startX>50)prevMonth();
+if(startX-endX>50)next();
+if(endX-startX>50)prev();
 });
 
 aggiorna();
+loadNote();
 
 </script>
 
