@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App - Dashboard Home</title>
+    <title>Bilancio App - Dashboard Home Interattiva</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -14,6 +14,7 @@
             --expense-red: #e74c3c;
             --text-dark: #2c3e50;
             --shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --sidebar-width: 80px;
         }
 
         body {
@@ -23,11 +24,12 @@
             height: 100vh;
             background-color: var(--bg-color);
             color: var(--text-dark);
+            overflow: hidden; /* Previene scrollbar doppie */
         }
 
-        /* --- SIDEBAR SINISTRA --- */
+        /* --- SIDEBAR SINISTRA INTERATTIVA --- */
         .sidebar {
-            width: 80px;
+            width: var(--sidebar-width);
             background-color: var(--sidebar-color);
             display: flex;
             flex-direction: column;
@@ -37,23 +39,75 @@
             z-index: 100;
         }
 
-        .sidebar-item {
-            margin: 20px 0;
-            cursor: pointer;
-            transition: transform 0.2s;
-            text-align: center;
+        /* Contenitore per le icone principali */
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1; /* Occupa lo spazio disponibile */
         }
 
-        .sidebar-item:hover { transform: scale(1.1); }
+        /* Link della sidebar */
+        .sidebar-item-link {
+            text-decoration: none; /* Rimuove sottolineatura */
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-        /* Icone personalizzate richieste */
-        .icon-wallet { color: #3498db; font-size: 28px; } /* Foto 1 */
-        .icon-cal { color: #3498db; font-size: 28px; }    /* Foto 2 */
-        .icon-stats { color: #1abc9c; font-size: 28px; }  /* Foto 3 */
+        /* Effetto Hover generico */
+        .sidebar-item-link:hover {
+            background-color: #f0f4f8;
+            transform: translateY(-2px);
+        }
 
-        .bottom-actions { margin-top: auto; padding-bottom: 20px; }
+        /* Stato Attivo (evidenziazione visiva) */
+        .sidebar-item-link.active {
+            background-color: #e1f0fa;
+        }
 
-        /* --- MAIN CONTENT --- */
+        /* Linea verticale per lo stato attivo */
+        .sidebar-item-link.active::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 10%;
+            height: 80%;
+            width: 4px;
+            background-color: var(--primary-blue);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Icone personalizzate (dimensioni e colori) */
+        .sidebar-icon { font-size: 26px; transition: color 0.2s; }
+        
+        .icon-home { color: #bdc3c7; } /* Colore base grigio */
+        .sidebar-item-link.active .icon-home { color: var(--primary-blue); } /* Blu se attivo */
+        .sidebar-item-link:hover .icon-home { color: var(--primary-blue); } /* Blu su hover */
+
+        .icon-wallet { color: #3498db; } /* Foto 1 */
+        .icon-cal { color: #3498db; }    /* Foto 2 */
+        .icon-stats { color: #1abc9c; }  /* Foto 3 */
+
+        /* Azioni in basso */
+        .bottom-actions {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .icon-action { color: #95a5a6; font-size: 20px; }
+        .icon-action:hover { color: var(--text-dark); }
+
+
+        /* --- MAIN CONTENT (DASHBOARD HOME) --- */
+        /* ID aggiunto per l'ancoraggio */
         .main-content {
             flex-grow: 1;
             display: grid;
@@ -61,7 +115,7 @@
             grid-template-rows: 1fr auto;
             gap: 20px;
             padding: 25px;
-            overflow-y: auto;
+            overflow-y: auto; /* Scrollbar solo qui */
         }
 
         .card {
@@ -71,7 +125,7 @@
             box-shadow: var(--shadow);
         }
 
-        /* Sezione Sinistra: Guadagni e Spese */
+        /* Sezione Sinistra: Totali */
         .financial-summary {
             display: flex;
             flex-direction: column;
@@ -82,16 +136,7 @@
         .stat-box p { margin: 5px 0; font-size: 28px; font-weight: bold; }
         .income { color: var(--income-green); }
         .expense { color: var(--expense-red); }
-        .net { color: var(--text-dark); border-top: 1px solid #eee; pt: 10px; }
-
-        /* Grafico Linee */
-        .chart-container {
-            height: 250px;
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            padding-top: 20px;
-        }
+        .net { color: var(--text-dark); border-top: 1px solid #eee; pt: 10px; margin-top: 10px; }
 
         /* Calendario Centrale */
         .calendar-container {
@@ -107,6 +152,7 @@
             align-items: center;
             margin-bottom: 20px;
         }
+        .calendar-header h2 { margin: 0; }
 
         .calendar-grid {
             display: grid;
@@ -121,7 +167,9 @@
             min-height: 80px;
             padding: 5px;
             background: #fff;
+            position: relative;
         }
+        .day-number { font-weight: bold; color: #7f8c8d; }
 
         /* Promemoria Colorati */
         .event {
@@ -130,6 +178,9 @@
             border-radius: 4px;
             margin-top: 2px;
             color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .event-blue { background: #3498db; }
         .event-red { background: #e74c3c; }
@@ -140,18 +191,31 @@
 <body>
 
     <nav class="sidebar">
-        <div class="sidebar-item"><i class="fas fa-home" style="color:#ddd"></i></div>
-        <div class="sidebar-item" title="Calendario"><i class="fas fa-calendar-alt icon-cal"></i></div>
-        <div class="sidebar-item" title="Resoconto Annuale"><i class="fas fa-chart-bar icon-stats"></i></div>
-        <div class="sidebar-item" title="Guadagni e Spese"><i class="fas fa-wallet icon-wallet"></i></div>
+        <div class="sidebar-menu">
+            <a href="#dashboard-home" class="sidebar-item-link active" title="Dashboard Home">
+                <i class="fas fa-home sidebar-icon icon-home"></i>
+            </a>
+            
+            <a href="#" class="sidebar-item-link" title="Dashboard Calendario">
+                <i class="fas fa-calendar-alt sidebar-icon icon-cal"></i>
+            </a>
+            
+            <a href="#" class="sidebar-item-link" title="Resoconto Annuale">
+                <i class="fas fa-chart-bar sidebar-icon icon-stats"></i>
+            </a>
+            
+            <a href="#" class="sidebar-item-link" title="Guadagni e Spese">
+                <i class="fas fa-wallet sidebar-icon icon-wallet"></i>
+            </a>
+        </div>
         
         <div class="bottom-actions">
-            <div class="sidebar-item"><i class="fas fa-moon"></i></div>
-            <div class="sidebar-item"><i class="fas fa-sign-out-alt"></i></div>
+            <a href="#" class="sidebar-item-link icon-action" title="Modalità Scura"><i class="fas fa-moon"></i></a>
+            <a href="#" class="sidebar-item-link icon-action" title="Disconnetti"><i class="fas fa-sign-out-alt"></i></a>
         </div>
     </nav>
 
-    <main class="main-content">
+    <main id="dashboard-home" class="main-content">
         
         <section class="financial-summary">
             <div class="card stat-box">
@@ -169,8 +233,8 @@
 
             <div class="card">
                 <h3>Andamento Spese/Guadagni</h3>
-                <div style="height: 150px; width: 100%; border-left: 2px solid #eee; border-bottom: 2px solid #eee; position: relative;">
-                    <svg viewBox="0 0 200 100" style="width:100%; height:100%">
+                <div style="height: 150px; width: 100%; border-left: 2px solid #eee; border-bottom: 2px solid #eee; position: relative; margin-top: 15px;">
+                    <svg viewBox="0 0 200 100" style="width:100%; height:100%" preserveAspectRatio="none">
                         <path d="M0,80 Q50,20 100,50 T200,10" fill="none" stroke="#2ecc71" stroke-width="3" />
                         <path d="M0,90 Q50,60 100,80 T200,40" fill="none" stroke="#e74c3c" stroke-width="3" />
                     </svg>
@@ -182,18 +246,25 @@
             <div class="calendar-header">
                 <h2>Marzo 2026</h2>
                 <div>
-                    <button><i class="fas fa-chevron-left"></i></button>
-                    <button><i class="fas fa-chevron-right"></i></button>
+                    <button style="border:none; background:none; cursor:pointer;"><i class="fas fa-chevron-left"></i></button>
+                    <button style="border:none; background:none; cursor:pointer;"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
             <div class="calendar-grid">
-                <div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div>
-                <div class="day">5 <div class="event event-red">Affitto</div></div>
-                <div class="day">6</div><div class="day">7</div>
-                <div class="day">8</div><div class="day">9</div><div class="day">10</div>
-                <div class="day">11 <div class="event event-blue">Bolletta Luce</div></div>
-                <div class="day">12</div><div class="day">13</div>
-                <div class="day">14 <div class="event event-green">Stipendio</div></div>
+                <div class="day"><span class="day-number">1</span></div>
+                <div class="day"><span class="day-number">2</span></div>
+                <div class="day"><span class="day-number">3</span></div>
+                <div class="day"><span class="day-number">4</span></div>
+                <div class="day"><span class="day-number">5</span> <div class="event event-red">Affitto</div></div>
+                <div class="day"><span class="day-number">6</span></div>
+                <div class="day"><span class="day-number">7</span></div>
+                <div class="day"><span class="day-number">8</span></div>
+                <div class="day"><span class="day-number">9</span></div>
+                <div class="day"><span class="day-number">10</span></div>
+                <div class="day"><span class="day-number">11</span> <div class="event event-blue">Bolletta Luce</div></div>
+                <div class="day"><span class="day-number">12</span></div>
+                <div class="day"><span class="day-number">13</span></div>
+                <div class="day"><span class="day-number">14</span> <div class="event event-green">Stipendio</div></div>
                 </div>
         </section>
 
