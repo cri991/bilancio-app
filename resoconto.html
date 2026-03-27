@@ -2,165 +2,136 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App - Resoconto Sbloccato</title>
+    <title>Resoconto Modern 2.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #f4f7f6;
-            --sidebar-color: #ffffff;
-            --card-bg: #ffffff;
-            --text-main: #2c3e50;
-            --primary-blue: #3498db;
-            --income-green: #2ecc71;
-            --expense-red: #e74c3c;
-            --sidebar-width: 80px;
+            --bg: #f8fafc;
+            --side: #ffffff;
+            --primary: #3498db;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --text: #334155;
         }
 
-        body, html {
-            margin: 0; padding: 0; height: 100vh; width: 100vw;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-color);
-            display: flex; overflow: hidden;
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-color);
-            display: flex; flex-direction: column; align-items: center; padding-top: 20px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            z-index: 999; /* Sempre sopra tutto */
-        }
-        .nav-link { color: #bdc3c7; font-size: 24px; margin: 20px 0; text-decoration: none; }
-        .nav-link.active { color: var(--primary-blue); }
-
-        /* --- LAYOUT --- */
-        .main-container {
-            flex-grow: 1;
-            display: grid;
-            grid-template-columns: 280px 1fr 1fr;
-            grid-template-rows: 70px 1fr 1fr;
-            gap: 15px; padding: 15px;
-            box-sizing: border-box;
-        }
-
-        .header-bar {
-            grid-column: 1 / 4;
-            background: white; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px; z-index: 10;
-        }
-
-        .controls { display: flex; align-items: center; gap: 15px; }
+        body { margin: 0; display: flex; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
         
-        /* PULSANTI - Aumentata area cliccabile */
-        .btn-nav { 
-            background: var(--primary-blue); color: white; border: none; 
-            padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-size: 18px; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .btn-nav:hover { background: #2980b9; transform: scale(1.05); }
+        /* SIDEBAR MINIMAL */
+        .sidebar { width: 70px; background: var(--side); display: flex; flex-direction: column; align-items: center; padding-top: 20px; border-right: 1px solid #e2e8f0; }
+        .nav-link { color: #94a3b8; margin: 15px 0; font-size: 20px; text-decoration: none; transition: 0.2s; }
+        .nav-link.active { color: var(--primary); }
 
-        .card {
-            background: white; border-radius: 12px; padding: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            border: 1px solid #eee;
-            display: flex; flex-direction: column;
-            min-height: 0; position: relative;
+        /* CONTENT AREA */
+        .main { flex-grow: 1; display: flex; flex-direction: column; padding: 20px; gap: 20px; overflow-y: auto; }
+
+        /* TOP BAR */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 25px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .controls { display: flex; align-items: center; gap: 20px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        /* DASHBOARD GRID SIMPLIFIED */
+        .dashboard-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            grid-template-rows: auto auto; 
+            gap: 20px; 
         }
 
-        .stat-card { grid-row: 2 / 4; justify-content: center; align-items: center; text-align: center; }
-        .top-wide { grid-column: 2 / 4; }
-        .chart-wrapper { flex-grow: 1; position: relative; width: 100%; height: 100%; }
+        .card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; min-height: 250px; }
+        .full-width { grid-column: 1 / 3; }
         
-        .perc { font-size: 50px; font-weight: bold; color: var(--income-green); margin: 10px 0; }
-        h3 { font-size: 12px; color: #95a5a6; text-transform: uppercase; margin: 0 0 10px 0; }
+        .stat-val { font-size: 40px; font-weight: 800; color: var(--green); margin: 10px 0; }
+        h3 { font-size: 13px; color: #64748b; text-transform: uppercase; margin: 0 0 15px 0; letter-spacing: 0.5px; }
+
+        canvas { max-height: 100% !important; }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
         <a href="index.html" class="nav-link"><i class="fas fa-home"></i></a>
-        <a href="calendario.html" class="nav-link"><i class="fas fa-calendar-alt"></i></a>
-        <a href="resoconto.html" class="nav-link active"><i class="fas fa-chart-line"></i></a>
+        <a href="#" class="nav-link active"><i class="fas fa-chart-line"></i></a>
         <a href="guadagni.html" class="nav-link"><i class="fas fa-wallet"></i></a>
     </nav>
 
-    <div class="main-container">
-        <div class="header-bar">
-            <h2 style="margin:0">Dashboard Analisi</h2>
+    <div class="main">
+        <div class="top-bar">
+            <h2 style="margin:0; font-size: 20px;">Analisi Finanziaria</h2>
             <div class="controls">
-                <button class="btn-nav" id="prevBtn" onclick="updateDashboard(-1)"><i class="fas fa-chevron-left"></i></button>
-                <span id="dateLabel" style="font-weight: bold; min-width: 120px; text-align: center;">MARZO 2026</span>
-                <button class="btn-nav" id="nextBtn" onclick="updateDashboard(1)"><i class="fas fa-chevron-right"></i></button>
+                <button class="btn" onclick="update( -1 )"><i class="fas fa-arrow-left"></i></button>
+                <span id="dateLabel" style="font-weight: 700; width: 140px; text-align: center;">MARZO 2026</span>
+                <button class="btn" onclick="update( 1 )"><i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
-        <div class="card stat-card">
-            <h3>Crescita Mensile</h3>
-            <div class="perc" id="percLabel">+17.4%</div>
-            <p id="subLabel" style="color:#7f8c8d">vs Marzo 2025</p>
-        </div>
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Crescita vs Anno Prec.</h3>
+                <div class="stat-val" id="percVal">+12.4%</div>
+                <p id="subT" style="color: #94a3b8; font-size: 14px;">Rispetto a Marzo 2025</p>
+            </div>
 
-        <div class="card top-wide">
-            <h3>Ultime 10 Transazioni</h3>
-            <div class="chart-wrapper"><canvas id="c1"></canvas></div>
-        </div>
+            <div class="card">
+                <h3>Top 5 Entrate vs Uscite</h3>
+                <canvas id="c1"></canvas>
+            </div>
 
-        <div class="card">
-            <h3>Flusso di Cassa</h3>
-            <div class="chart-wrapper"><canvas id="c2"></canvas></div>
-        </div>
-
-        <div class="card">
-            <h3>Confronto Annuale</h3>
-            <div class="chart-wrapper"><canvas id="c3"></canvas></div>
+            <div class="card full-width">
+                <h3>Andamento Flusso Mensile</h3>
+                <canvas id="c2"></canvas>
+            </div>
         </div>
     </div>
 
     <script>
-        let currentM = 2; // Marzo
-        const mesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+        let m = 2;
+        const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+        
+        // Configurazione per massime prestazioni
+        const fastOpt = { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            animation: false, // Disabilita animazioni per fluidità totale
+            plugins: { legend: { display: false } } 
+        };
 
-        // Configurazione Grafici
-        const config = { type: 'bar', options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } };
-
-        const ctx1 = new Chart(document.getElementById('c1'), {
+        // Grafico 1: Solo 5 barre
+        const ch1 = new Chart(document.getElementById('c1'), {
             type: 'bar',
-            data: { labels: ['A','B','C','D','E','F','G','H','I','L'], datasets: [{data: [-50,-20,-30,-40,-10], backgroundColor: '#e74c3c'}, {data: [100,80,60,90,70], backgroundColor: '#2ecc71'}] },
-            options: { ...config.options, indexAxis: 'y' }
+            data: { 
+                labels: ['Voce 1','Voce 2','Voce 3','Voce 4','Voce 5'], 
+                datasets: [
+                    { data: [-20,-40,-15,-30,-10], backgroundColor: '#e74c3c', borderRadius: 5 },
+                    { data: [50,80,60,90,70], backgroundColor: '#2ecc71', borderRadius: 5 }
+                ] 
+            },
+            options: { ...fastOpt, indexAxis: 'y' }
         });
 
-        const ctx2 = new Chart(document.getElementById('c2'), {
+        // Grafico 2: Linee dritte (più veloci da renderizzare)
+        const ch2 = new Chart(document.getElementById('c2'), {
             type: 'line',
-            data: { labels: [1,10,20,30], datasets: [{data: [10,40,30,80], borderColor: '#2ecc71', tension: 0.4}, {data: [5,20,15,40], borderColor: '#e74c3c', tension: 0.4}] },
-            options: config.options
+            data: { 
+                labels: [1, 5, 10, 15, 20, 25, 30], 
+                datasets: [
+                    { data: [30, 50, 40, 70, 60, 90, 100], borderColor: '#2ecc71', borderWidth: 3, tension: 0 },
+                    { data: [10, 20, 25, 30, 45, 40, 50], borderColor: '#e74c3c', borderWidth: 3, tension: 0 }
+                ] 
+            },
+            options: fastOpt
         });
 
-        const ctx3 = new Chart(document.getElementById('c3'), {
-            type: 'bar',
-            data: { labels: ['G','F','M','A','M','G'], datasets: [{data: [50,70,60,80], backgroundColor: '#2ecc71'}, {data: [40,30,50,40], backgroundColor: '#e74c3c'}] },
-            options: config.options
-        });
+        function update(s) {
+            m = (m + s + 12) % 12;
+            document.getElementById('dateLabel').innerText = mesi[m].toUpperCase() + " 2026";
+            document.getElementById('subT').innerText = "Rispetto a " + mesi[m] + " 2025";
+            document.getElementById('percVal').innerText = "+" + (Math.random() * 20).toFixed(1) + "%";
 
-        // FUNZIONE DI AGGIORNAMENTO (SBLOCCATA)
-        function updateDashboard(step) {
-            currentM = (currentM + step + 12) % 12;
-            
-            // Aggiorna Testi
-            document.getElementById('dateLabel').innerText = mesi[currentM].toUpperCase() + " 2026";
-            document.getElementById('subLabel').innerText = "vs " + mesi[currentM] + " 2025";
-            document.getElementById('percLabel').innerText = "+" + (Math.random() * 20 + 5).toFixed(1) + "%";
-
-            // Aggiorna Grafici (senza lag)
-            [ctx1, ctx2, ctx3].forEach(chart => {
-                chart.data.datasets.forEach(ds => {
-                    ds.data = ds.data.map(v => v + (Math.random() * 20 - 10));
-                });
-                chart.update('none');
+            // Aggiornamento dati randomico ultra-veloce
+            [ch1, ch2].forEach(c => {
+                c.data.datasets.forEach(d => d.data = d.data.map(v => v + (Math.random()*10 - 5)));
+                c.update();
             });
         }
     </script>
