@@ -1,340 +1,207 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bilancio Premium</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Bilancio PRO</title>
+    <script src="https://jsdelivr.net"></script>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0047FF;
+            --bg: #F0F4F8;
+            --card: #FFFFFF;
+            --text: #1A1A1B;
+            --green: #27AE60;
+            --red: #EB5757;
+            --yellow: #F2C94C;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
 
-<style>
-body{
-margin:0;
-font-family:-apple-system;
-background:linear-gradient(135deg,#0f172a,#1e293b);
-color:white;
-}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-/* HEADER */
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:15px;
-}
+        /* Titolo PRO */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-/* KPI */
-.kpi{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-padding:10px;
-}
-.box{
-padding:15px;
-border-radius:15px;
-text-align:center;
-font-weight:bold;
-}
-.green{background:#2ecc71;}
-.red{background:#e74c3c;}
-.blue{background:#3498db;}
-.purple{background:#9b59b6;}
+        .header h1 {
+            font-size: 48px;
+            margin: 0;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
 
-/* GLASS */
-.card{
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(15px);
-border-radius:20px;
-padding:15px;
-margin:10px;
-}
+        .header span {
+            color: #000;
+        }
 
-/* GRID */
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
+        /* Dashboard Top Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-/* INPUT */
-input{
-width:100%;
-padding:8px;
-margin:5px 0;
-border-radius:8px;
-border:none;
-}
+        .card {
+            background: var(--card);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
 
-/* CALENDARIO */
-.calendar{
-background:#1c1c1e;
-border-radius:20px;
-padding:15px;
-text-align:center;
-}
-.days{
-display:grid;
-grid-template-columns:repeat(7,1fr);
-gap:5px;
-}
-.day{
-padding:10px;
-border-radius:50%;
-}
-.active{
-background:#ff453a;
-}
+        .circle-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+        }
 
-/* LOCK */
-#lock{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#0f172a;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:999;
-}
-</style>
+        .metric-title {
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* Middle Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: var(--card);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        /* Colori dinamici per i titoli */
+        .red-text { color: var(--red); }
+        .green-text { color: var(--green); }
+        .yellow-text { color: var(--yellow); }
+        .blue-text { color: var(--primary); }
+
+    </style>
 </head>
-
 <body>
 
-<!-- 🔐 LOGIN -->
-<div id="lock">
-<h2>🔐 Accesso</h2>
-<input type="password" id="pass">
-<button onclick="login()">Accedi</button>
-</div>
+<div class="container">
+    <div class="header">
+        <h1><span>Gestione</span> Bilancio PRO</h1>
+    </div>
 
-<!-- HEADER -->
-<div class="header">
-<h2>💎 Bilancio</h2>
-<button onclick="logout()">Logout</button>
-</div>
+    <!-- Top KPI Bar -->
+    <div class="metrics-grid">
+        <div class="card">
+            <div class="metric-title green-text">REDDITO</div>
+            <div class="circle-container">
+                <canvas id="chartReddito"></canvas>
+            </div>
+            <div class="metric-value">€ 2.750</div>
+        </div>
+        <div class="card">
+            <div class="metric-title red-text">SPESE</div>
+            <div class="circle-container">
+                <canvas id="chartSpese"></canvas>
+            </div>
+            <div class="metric-value">€ 1.450</div>
+        </div>
+        <div class="card">
+            <div class="metric-title yellow-text">RISPARMI</div>
+            <div class="circle-container">
+                <canvas id="chartRisparmi"></canvas>
+            </div>
+            <div class="metric-value">€ 1.050</div>
+        </div>
+        <div class="card">
+            <div class="metric-title blue-text">DEBITI</div>
+            <div class="circle-container">
+                <canvas id="chartDebiti"></canvas>
+            </div>
+            <div class="metric-value">€ 250</div>
+        </div>
+    </div>
 
-<!-- MESE -->
-<div style="text-align:center;">
-<button onclick="prev()">◀</button>
-<span id="mese"></span>
-<button onclick="next()">▶</button>
-</div>
-
-<!-- KPI -->
-<div class="kpi">
-<div class="box green">Reddito<br><span id="e">0</span></div>
-<div class="box red">Spese<br><span id="s">0</span></div>
-<div class="box blue">Risparmio<br><span id="r">0</span></div>
-<div class="box purple">Margine<br><span id="m">0%</span></div>
-</div>
-
-<!-- CONTENUTO -->
-<div class="grid">
-
-<!-- SINISTRA -->
-<div>
-
-<div class="card">
-<h3>Entrate</h3>
-<input id="stip" placeholder="Stipendio">
-<input id="extra" placeholder="Extra">
-</div>
-
-<div class="card">
-<h3>Spese</h3>
-<input id="aff" placeholder="Affitto">
-<input id="bol" placeholder="Bollette">
-<input id="food" placeholder="Spesa">
-</div>
-
-<!-- CALENDARIO -->
-<div class="calendar">
-<h3 id="calMese"></h3>
-<div class="days" id="giorni"></div>
-
-<input id="nota" placeholder="Scrivi spesa">
-<button onclick="addNota()">Aggiungi</button>
-<ul id="lista"></ul>
-
-</div>
-
-</div>
-
-<!-- DESTRA -->
-<div>
-
-<div class="card">
-<canvas id="chart"></canvas>
-</div>
-
-<div class="card">
-<h3>Storico</h3>
-<ul id="storico"></ul>
-</div>
-
-</div>
-
+    <!-- Main Content -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3 style="margin-top:0">Andamento Mensile (Ottobre)</h3>
+            <canvas id="mainBarChart" height="150"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3 style="margin-top:0">Distribuzione Spese</h3>
+            <canvas id="mainPieChart"></canvas>
+        </div>
+    </div>
 </div>
 
 <script>
+    // Funzione per creare i cerchi (Doughnut charts) in alto
+    function createCircle(id, color, percent) {
+        new Chart(document.getElementById(id), {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [percent, 100 - percent],
+                    backgroundColor: [color, '#f0f0f0'],
+                    borderWidth: 0
+                }]
+            },
+            options: { cutout: '80%', events: [], plugins: { tooltip: { enabled: false } } }
+        });
+    }
 
-// HASH
-function hash(s){return btoa(s);}
+    createCircle('chartReddito', '#27AE60', 85);
+    createCircle('chartSpese', '#EB5757', 55);
+    createCircle('chartRisparmi', '#F2C94C', 35);
+    createCircle('chartDebiti', '#0047FF', 15);
 
-// PASSWORD INIT
-let PASSWORD=localStorage.getItem("pass");
-if(!PASSWORD){
-PASSWORD=hash("1234");
-localStorage.setItem("pass",PASSWORD);
-}
+    // Grafico a Barre Principale
+    new Chart(document.getElementById('mainBarChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+            datasets: [{
+                label: 'Speso (€)',
+                data: [120, 190, 30, 50, 200, 300, 45],
+                backgroundColor: '#0047FF'
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
 
-// LOGIN
-function login(){
-if(hash(pass.value)===PASSWORD){
-lock.style.display="none";
-localStorage.setItem("log","ok");
-}else alert("Errata");
-}
-
-// LOGOUT
-function logout(){
-localStorage.removeItem("log");
-lock.style.display="flex";
-}
-
-// AUTO LOGIN
-if(localStorage.getItem("log")==="ok") lock.style.display="none";
-
-// MESE
-let d=new Date();
-let meseIdx=d.getMonth();
-let anno=d.getFullYear();
-const mesi=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
-
-function aggiorna(){
-mese.innerText=mesi[meseIdx]+" "+anno;
-calMese.innerText=mesi[meseIdx];
-carica();
-calendar();
-}
-
-// NAV
-function next(){meseIdx++;if(meseIdx>11){meseIdx=0;anno++}aggiorna();}
-function prev(){meseIdx--;if(meseIdx<0){meseIdx=11;anno--}aggiorna();}
-
-// CALCOLO
-function calc(){
-let entr=(+stip.value||0)+(+extra.value||0);
-let spe=(+aff.value||0)+(+bol.value||0)+(+food.value||0);
-
-e.innerText=entr;
-s.innerText=spe;
-r.innerText=entr-spe;
-m.innerText=(entr?((entr-spe)/entr*100).toFixed(1):0)+"%";
-
-salva();
-grafico(entr,spe);
-storicoAdd(entr,spe);
-}
-
-// SALVA
-function salva(){
-let dati={stip:stip.value,extra:extra.value,aff:aff.value,bol:bol.value,food:food.value};
-localStorage.setItem("dati"+meseIdx+anno,JSON.stringify(dati));
-}
-
-// CARICA
-function carica(){
-let d=JSON.parse(localStorage.getItem("dati"+meseIdx+anno))||{};
-stip.value=d.stip||"";
-extra.value=d.extra||"";
-aff.value=d.aff||"";
-bol.value=d.bol||"";
-food.value=d.food||"";
-calc();
-}
-
-// GRAFICO
-let c;
-function grafico(e1,s1){
-if(c)c.destroy();
-c=new Chart(chart,{type:'doughnut',data:{labels:["Entrate","Spese"],datasets:[{data:[e1,s1]}]}});
-}
-
-// EVENTI
-document.querySelectorAll("input").forEach(i=>i.oninput=calc);
-
-// CALENDARIO
-function calendar(){
-giorni.innerHTML="";
-for(let i=1;i<=31;i++){
-let div=document.createElement("div");
-div.className="day";
-div.innerText=i;
-div.onclick=()=>selectDay(i);
-giorni.appendChild(div);
-}
-}
-
-function selectDay(d){
-document.querySelectorAll(".day").forEach(el=>el.classList.remove("active"));
-giorni.children[d-1].classList.add("active");
-selectedDay=d;
-}
-
-let selectedDay=1;
-
-// NOTE
-function addNota(){
-let arr=JSON.parse(localStorage.getItem("note"+meseIdx+anno))||[];
-arr.push(selectedDay+" - "+nota.value);
-localStorage.setItem("note"+meseIdx+anno,JSON.stringify(arr));
-loadNote();
-}
-
-function loadNote(){
-let arr=JSON.parse(localStorage.getItem("note"+meseIdx+anno))||[];
-lista.innerHTML="";
-arr.forEach(n=>{
-let li=document.createElement("li");
-li.innerText=n;
-lista.appendChild(li);
-});
-}
-
-// STORICO
-function storicoAdd(e1,s1){
-let arr=JSON.parse(localStorage.getItem("storico"))||[];
-arr[meseIdx]={e:e1,s:s1};
-localStorage.setItem("storico",JSON.stringify(arr));
-
-storico.innerHTML="";
-arr.forEach((m,i)=>{
-if(m){
-let li=document.createElement("li");
-li.innerText=mesi[i]+": "+m.e+"€ / "+m.s+"€";
-storico.appendChild(li);
-}
-});
-}
-
-// SWIPE
-let startX=0;
-document.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
-document.addEventListener("touchend",e=>{
-let endX=e.changedTouches[0].clientX;
-if(startX-endX>50)next();
-if(endX-startX>50)prev();
-});
-
-aggiorna();
-loadNote();
-
+    // Grafico a Torta (Pie)
+    new Chart(document.getElementById('mainPieChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Affitto', 'Cibo', 'Auto', 'Svago'],
+            datasets: [{
+                data: [700, 350, 200, 200],
+                backgroundColor: ['#0047FF', '#EB5757', '#F2C94C', '#27AE60']
+            }]
+        }
+    });
 </script>
 
 </body>
