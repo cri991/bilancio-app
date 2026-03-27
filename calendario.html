@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilancio App - Dashboard Calendario Gestionale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --sidebar-color: #ffffff;
+            --primary-blue: #3498db;
+            --text-dark: #2c3e50;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            /* Colori Post-it */
+            --postit-blue: #d1ecf1;
+            --postit-red: #f8d7da;
+            --postit-green: #d4edda;
+            --postit-yellow: #fff3cd;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-color);
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR (Automazione icone) --- */
+        .sidebar {
+            width: 80px;
+            background: var(--sidebar-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 12px;
+            transition: 0.3s;
+            color: #bdc3c7;
+            font-size: 24px;
+        }
+
+        .nav-link:hover { background: #f0f2f5; color: var(--primary-blue); }
+        .nav-link.active { background: #e1f0fa; color: var(--primary-blue); border-left: 4px solid var(--primary-blue); border-radius: 0 12px 12px 0; }
+
+        /* --- MAIN LAYOUT --- */
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        /* --- SEZIONE POST-IT (ALTO) --- */
+        .postit-container {
+            display: flex;
+            gap: 15px;
+            min-height: 120px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .postit {
+            width: 160px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+            font-weight: bold;
+            position: relative;
+            animation: fadeIn 0.5s ease;
+        }
+        .blue { background: var(--postit-blue); border-left: 5px solid #0c5460; }
+        .red { background: var(--postit-red); border-left: 5px solid #721c24; }
+        .green { background: var(--postit-green); border-left: 5px solid #155724; }
+
+        /* --- CALENDARIO (CENTRO/BASSO) --- */
+        .calendar-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            flex-grow: 1;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .add-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            color: #95a5a6;
+            margin-bottom: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-auto-rows: minmax(100px, 1fr);
+            gap: 1px;
+            background: #eee;
+            border: 1px solid #eee;
+        }
+
+        .calendar-day {
+            background: #fff;
+            padding: 10px;
+            position: relative;
+            transition: 0.2s;
+        }
+        .calendar-day:hover { background: #fdfdfd; }
+        .calendar-day.today { background: #f0f7ff; }
+        
+        .day-label { font-weight: bold; color: #34495e; }
+
+        .event-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 5px;
+            margin-top: 5px;
+            display: block;
+            color: #333;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <a href="index.html" class="nav-link" title="Home"><i class="fas fa-home"></i></a>
+        <a href="#" class="nav-link active" title="Calendario"><i class="fas fa-calendar-alt"></i></a>
+        <a href="resoconto.html" class="nav-link" title="Resoconto"><i class="fas fa-chart-bar"></i></a>
+        <a href="guadagni.html" class="nav-link" title="Spese"><i class="fas fa-wallet"></i></a>
+        
+        <div style="margin-top: auto; display: flex; flex-direction: column;">
+            <a href="#" class="nav-link"><i class="fas fa-moon"></i></a>
+            <a href="#" class="nav-link"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        
+        <div class="postit-container" id="postit-list">
+            <div class="postit red">Affitto Casa<br><small>Scade il 05/03</small></div>
+            <div class="postit blue">Bolletta Luce<br><small>Scade il 11/03</small></div>
+            <div class="postit green">Stipendio<br><small>Previsto 14/03</small></div>
+        </div>
+
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <h2 id="month-display">Marzo 2026</h2>
+                <div style="display:flex; gap:10px;">
+                    <button class="add-btn" onclick="addReminder()"><i class="fas fa-plus"></i> Aggiungi</button>
+                    <div style="display:flex; align-items:center; background:#eee; border-radius:10px; padding:0 10px;">
+                        <i class="fas fa-chevron-left" style="cursor:pointer; margin-right:15px;"></i>
+                        <i class="fas fa-chevron-right" style="cursor:pointer;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-header">
+                <div>DOM</div><div>LUN</div><div>MAR</div><div>MER</div><div>GIO</div><div>VEN</div><div>SAB</div>
+            </div>
+            
+            <div class="calendar-grid" id="calendar-days">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // Funzione per generare il calendario di Marzo 2026
+        function generateCalendar() {
+            const grid = document.getElementById('calendar-days');
+            const daysInMonth = 31; 
+            const startDay = 0; // 1 Marzo 2026 è Domenica (0)
+
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                dayDiv.innerHTML = `<span class="day-label">${i}</span>`;
+                
+                // Esempi di eventi predefiniti
+                if(i === 5) dayDiv.innerHTML += `<span class="event-tag" style="background:var(--postit-red)">Affitto</span>`;
+                if(i === 11) dayDiv.innerHTML += `<span class="event-tag" style="background:var(--postit-blue)">Bolletta Luce</span>`;
+                if(i === 14) dayDiv.innerHTML += `<span class="event-tag" style="background:var(--postit-green)">Stipendio</span>`;
+                
+                grid.appendChild(dayDiv);
+            }
+        }
+
+        // Automazione aggiunta promemoria con logica colori
+        function addReminder() {
+            const text = prompt("Cosa vuoi ricordare? (es: Luce, Affitto, Spesa)");
+            if (!text) return;
+
+            const day = prompt("In quale giorno di Marzo?");
+            let colorClass = 'blue'; // Default
+            let colorHex = 'var(--postit-blue)';
+
+            const lowerText = text.toLowerCase();
+            if(lowerText.includes('affitto') || lowerText.includes('casa')) {
+                colorClass = 'red';
+                colorHex = 'var(--postit-red)';
+            } else if(lowerText.includes('stipendio') || lowerText.includes('guadagno')) {
+                colorClass = 'green';
+                colorHex = 'var(--postit-green)';
+            } else if(lowerText.includes('spesa')) {
+                colorClass = 'yellow';
+                colorHex = 'var(--postit-yellow)';
+            }
+
+            // Aggiungi Post-it in alto
+            const list = document.getElementById('postit-list');
+            const newPostit = document.createElement('div');
+            newPostit.className = `postit ${colorClass}`;
+            newPostit.innerHTML = `${text}<br><small>Giorno ${day}</small>`;
+            list.prepend(newPostit);
+
+            // Aggiorna calendario (visuale semplificata per l'esempio)
+            alert("Promemoria aggiunto con successo!");
+        }
+
+        generateCalendar();
+    </script>
+</body>
+</html>
