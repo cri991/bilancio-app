@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bilancio App</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    font-family: -apple-system;
+    background: linear-gradient(135deg,#eef2f7,#dfe9f3);
+    padding: 15px;
+}
+
+/* GLASS */
+.card {
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* KPI */
+.kpi {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 10px;
+}
+
+.box {
+    padding: 15px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+}
+
+.green { background:#2ecc71; }
+.red { background:#e74c3c; }
+.blue { background:#3498db; }
+.purple { background:#9b59b6; }
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+input {
+    width: 70px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>💎 Bilancio Mensile</h2>
+
+<div class="kpi">
+    <div class="box green">💰 Reddito<br><span id="reddito">0</span></div>
+    <div class="box red">💸 Spese<br><span id="spese">0</span></div>
+    <div class="box blue">🐷 Risparmio<br><span id="risparmio">0</span></div>
+    <div class="box purple">📊 Margine<br><span id="margine">0%</span></div>
+</div>
+
+<div class="card">
+<h3>📊 Spese</h3>
+<canvas id="grafico"></canvas>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h3>Entrate</h3>
+<table id="entrate">
+<tr><td>Stipendio</td><td><input type="number"></td></tr>
+<tr><td>Extra</td><td><input type="number"></td></tr>
+<tr><td>Altro</td><td><input type="number"></td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Spese</h3>
+<table id="spese">
+<tr><td>Affitto</td><td><input type="number"></td></tr>
+<tr><td>Energia</td><td><input type="number"></td></tr>
+<tr><td>Spesa</td><td><input type="number"></td></tr>
+<tr><td>Trasporti</td><td><input type="number"></td></tr>
+<tr><td>Altro</td><td><input type="number"></td></tr>
+</table>
+</div>
+
+</div>
+
+<script>
+
+let chart;
+
+function somma(id){
+    let tot=0;
+    document.querySelectorAll(`#${id} input`).forEach(i=>{
+        tot+=Number(i.value)
+    });
+    return tot;
+}
+
+function aggiorna(){
+
+    let entrate = somma("entrate");
+    let spese = somma("spese");
+    let risparmio = entrate - spese;
+    let margine = entrate ? (risparmio/entrate*100).toFixed(1):0;
+
+    reddito.innerText="€ "+entrate;
+    spese.innerText="€ "+spese;
+    risparmio.innerText="€ "+risparmio;
+    margine.innerText=margine+"%";
+
+    aggiornaGrafico();
+    salva();
+}
+
+function aggiornaGrafico(){
+
+    let labels=[];
+    let data=[];
+
+    document.querySelectorAll("#spese tr").forEach((riga,i)=>{
+        if(i===0) return;
+        let nome=riga.children[0].innerText;
+        let valore=Number(riga.children[1].children[0].value);
+
+        if(valore>0){
+            labels.push(nome);
+            data.push(valore);
+        }
+    });
+
+    if(chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("grafico"), {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data
+            }]
+        }
+    });
+}
+
+function salva(){
+    let dati={};
+
+    document.querySelectorAll("input").forEach((i,idx)=>{
+        dati[idx]=i.value;
+    });
+
+    localStorage.setItem("bilancio", JSON.stringify(dati));
+}
+
+function carica(){
+    let dati = JSON.parse(localStorage.getItem("bilancio"));
+
+    if(!dati) return;
+
+    document.querySelectorAll("input").forEach((i,idx)=>{
+        i.value = dati[idx] || "";
+    });
+
+    aggiorna();
+}
+
+document.querySelectorAll("input").forEach(i=>{
+    i.addEventListener("input", aggiorna);
+});
+
+carica();
+
+</script>
+
+</body>
+</html>
