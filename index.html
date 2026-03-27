@@ -68,25 +68,11 @@
             background-color: #e1f0fa;
         }
 
-        .sidebar-item-link.active::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 10%;
-            height: 80%;
-            width: 4px;
-            background-color: var(--primary-blue);
-            border-radius: 0 4px 4px 0;
-        }
-
         .sidebar-icon { font-size: 26px; }
         .icon-home { color: var(--primary-blue); } 
-        .icon-cal { color: #3498db; }    
-        .icon-stats { color: #1abc9c; }  
-        .icon-wallet { color: #3498db; } 
-
-        .bottom-actions { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
-        .icon-action { color: #95a5a6; font-size: 20px; text-decoration: none; }
+        .icon-cal { color: #34495e; }    
+        .icon-stats { color: #2ecc71; }  
+        .icon-wallet { color: #f1c40f; } 
 
         /* --- MAIN CONTENT --- */
         .main-content {
@@ -108,30 +94,25 @@
         .expense { color: var(--expense-red); }
         .net { color: var(--text-dark); border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
 
-        /* Calendario Anteprima */
-        .calendar-container { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; }
+        .calendar-container { grid-column: 2; grid-row: 1 / 3; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; flex-grow: 1; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
         .day { border: 1px solid #f0f0f0; border-radius: 8px; min-height: 80px; padding: 5px; background: #fff; }
-        .day-number { font-weight: bold; color: #7f8c8d; }
-        .event { font-size: 10px; padding: 3px; border-radius: 4px; margin-top: 2px; color: #fff; }
-        .event-blue { background: #3498db; }
-        .event-red { background: #e74c3c; }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
         <div class="sidebar-menu">
-            <a href="index.html" class="sidebar-item-link active" title="Dashboard Home">
+            <a href="index.html" class="sidebar-item-link active" title="Home">
                 <i class="fas fa-home sidebar-icon icon-home"></i>
             </a>
             
-            <a href="calendario.html" class="sidebar-item-link" title="Dashboard Calendario">
+            <a href="calendario.html" class="sidebar-item-link" title="Calendario">
                 <i class="fas fa-calendar-alt sidebar-icon icon-cal"></i>
             </a>
             
-            <a href="resoconto.html" class="sidebar-item-link" title="Resoconto Annuale">
+            <a href="resoconto.html" class="sidebar-item-link" title="Resoconto">
                 <i class="fas fa-chart-bar sidebar-icon icon-stats"></i>
             </a>
             
@@ -139,57 +120,39 @@
                 <i class="fas fa-wallet sidebar-icon icon-wallet"></i>
             </a>
         </div>
-        
-        <div class="bottom-actions">
-            <a href="#" class="icon-action"><i class="fas fa-moon"></i></a>
-            <a href="#" class="icon-action"><i class="fas fa-sign-out-alt"></i></a>
-        </div>
     </nav>
 
     <main class="main-content">
         <section class="financial-summary">
             <div class="card stat-box">
-                <h2>Guadagni Totali</h2>
+                <h2>Guadagni Totali (Marzo)</h2>
                 <p class="income">€ 4.250,00</p>
-                <h2>Spese Totali</h2>
+                <h2>Spese Totali (Marzo)</h2>
                 <p class="expense">€ 3.110,00</p>
                 <div class="net">
-                    <h2>Totale Netto</h2>
+                    <h2>Bilancio Attuale</h2>
                     <p>€ 1.140,00</p>
                 </div>
             </div>
 
             <div class="card">
-                <h3>Andamento Mensile</h3>
-                <div style="height: 150px; width: 100%; border-left: 2px solid #eee; border-bottom: 2px solid #eee; position: relative; margin-top: 15px;">
-                    <svg viewBox="0 0 200 100" style="width:100%; height:100%" preserveAspectRatio="none">
-                        <path d="M0,80 Q50,20 100,50 T200,10" fill="none" stroke="#2ecc71" stroke-width="3" />
-                        <path d="M0,90 Q50,60 100,80 T200,40" fill="none" stroke="#e74c3c" stroke-width="3" />
-                    </svg>
-                </div>
+                <h3>Variazione Rispetto a Febbraio</h3>
+                <p style="color: var(--income-green); font-weight: bold;">+12.5% ↑</p>
             </div>
         </section>
 
         <section class="card calendar-container">
             <div class="calendar-header">
-                <h2>Marzo 2026 (Anteprima)</h2>
-                <a href="calendario.html" style="text-decoration:none; color:var(--primary-blue); font-size: 14px;">Vedi tutto &rarr;</a>
+                <h2>Prossime Scadenze</h2>
+                <a href="calendario.html" style="text-decoration:none; color:var(--primary-blue);">Vai al Calendario &rarr;</a>
             </div>
             <div class="calendar-grid">
-                <div class="day"><span class="day-number">1</span></div>
-                <div class="day"><span class="day-number">2</span></div>
-                <div class="day"><span class="day-number">3</span></div>
-                <div class="day"><span class="day-number">4</span></div>
-                <div class="day"><span class="day-number">5</span> <div class="event event-red">Affitto</div></div>
-                <div class="day"><span class="day-number">6</span></div>
-                <div class="day"><span class="day-number">7</span></div>
-                <div class="day"><span class="day-number">8</span></div>
-                <div class="day"><span class="day-number">9</span></div>
-                <div class="day"><span class="day-number">10</span></div>
-                <div class="day"><span class="day-number">11</span> <div class="event event-blue">Luce</div></div>
-                <div class="day"><span class="day-number">12</span></div>
+                <div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div>
+                <div class="day" style="background: #fff5f5; border-color: #feb2b2;">5 <br><small>Affitto</small></div>
+                <div class="day">6</div><div class="day">7</div>
             </div>
         </section>
     </main>
+
 </body>
 </html>
