@@ -3,122 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio App - Pro</title>
+    <title>Bilancio App Pro - Gestione Avanzata</title>
     <style>
         :root {
             --primary: #3b82f6;
             --bg: #f0f4f8;
             --card-bg: #ffffff;
             --text-dark: #1e293b;
-            --text-light: #64748b;
-            --accent-dark: #1e3a8a;
-            --radius: 24px;
+            --teal-header: #e0f2f1;
+            --teal-text: #00796b;
+            --radius: 20px;
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            color: var(--text-dark);
             margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            padding: 40px 20px;
         }
 
         .app-container {
             width: 100%;
             max-width: 1200px;
             background: #f8fafc;
-            border-radius: 40px;
-            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15);
-            padding: 30px;
-            min-height: 85vh;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            padding: 25px;
+            min-height: 90vh;
         }
 
-        /* --- HEADER & NAV --- */
+        /* --- HEADER --- */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
             background: white;
-            padding: 15px 30px;
-            border-radius: 20px;
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
         }
 
-        .logo { font-weight: 800; font-size: 1.4rem; color: var(--primary); }
+        .logo { font-weight: 800; font-size: 1.3rem; color: var(--primary); }
 
-        nav { display: flex; gap: 10px; }
         nav button {
-            background: none; border: none; padding: 10px 18px;
-            border-radius: 12px; font-weight: 600; cursor: pointer;
-            color: var(--text-light); transition: 0.3s;
+            background: none; border: none; padding: 10px 15px;
+            border-radius: 10px; font-weight: 600; cursor: pointer;
+            color: #64748b; transition: 0.3s;
         }
         nav button.active { background: var(--primary); color: white; }
 
-        .history-controls button {
-            background: #f1f5f9; border: none; padding: 10px 15px;
-            border-radius: 10px; cursor: pointer; font-size: 0.9rem;
-        }
-        .history-controls button:disabled { opacity: 0.3; }
-
-        /* --- MONTH SELECTOR --- */
-        .month-selector-wrapper {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        select#monthSelect {
-            padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;
-            font-weight: bold; color: var(--primary);
-        }
-
         /* --- VIEWS --- */
-        .view { display: none; animation: slideUp 0.4s ease-out; }
+        .view { display: none; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- GRID LAYOUTS --- */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 25px;
-        }
-
-        .card {
-            background: white; border-radius: var(--radius);
-            padding: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-
-        /* CALENDARIO CARDS */
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .memo-card {
-            padding: 20px; border-radius: 20px; color: #1e293b;
-            font-weight: 500; min-height: 150px;
-        }
-
-        /* --- UTILS --- */
-        .dark-card { background: var(--accent-dark); color: white; }
-        .donut {
-            width: 120px; height: 120px; border-radius: 50%;
-            border: 15px solid #e2e8f0; border-top-color: var(--primary);
-            margin: 20px auto; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 800;
-        }
-        .progress-bar {
-            height: 12px; background: #e2e8f0; border-radius: 10px; margin-top: 10px;
+        /* --- TABELLA GUADAGNI E SPESE (STILE FOTO) --- */
+        .table-container {
+            background: white;
+            border-radius: 10px;
             overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
-        .progress-fill { height: 100%; background: var(--primary); transition: 0.5s; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: white;
+            padding: 15px;
+            color: #64748b;
+            font-weight: 600;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .project-row {
+            background: var(--teal-header);
+            color: var(--teal-text);
+            font-weight: bold;
+        }
+
+        .project-row td { padding: 12px 15px; }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+
+        /* Celle Editabili */
+        td[contenteditable="true"] {
+            cursor: cell;
+            transition: background 0.2s;
+        }
+        td[contenteditable="true"]:hover { background: #f8fafc; }
+        td[contenteditable="true"]:focus { 
+            outline: 2px solid var(--primary); 
+            background: white; 
+        }
+
+        .val-positive { color: #10b981; font-weight: bold; }
+        .val-negative { color: #ef4444; font-weight: bold; }
+
+        /* --- ALTRE CARD --- */
+        .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: var(--radius); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .dark-card { background: #1e3a8a; color: white; }
+
     </style>
 </head>
 <body>
@@ -128,153 +124,134 @@
         <div class="logo">Bilancio-App</div>
         <nav id="mainNav">
             <button onclick="changePage('home')" id="nav-home" class="active">Home</button>
-            <button onclick="changePage('calendario')" id="nav-calendario">Calendario/Promemoria</button>
+            <button onclick="changePage('calendario')" id="nav-calendario">Calendario</button>
             <button onclick="changePage('resoconto')" id="nav-resoconto">Resoconto Annuale</button>
-            <button onclick="changePage('previsioni')" id="nav-previsioni">Previsioni</button>
+            <button onclick="changePage('guadagni')" id="nav-guadagni">Guadagni e Spese</button>
         </nav>
-        <div class="history-controls">
-            <button id="backBtn" onclick="goBack()">← Indietro</button>
-            <button id="forwardBtn" onclick="goForward()">Avanti →</button>
+        <div>
+            <button onclick="goBack()" style="border:none; cursor:pointer; background:#f1f5f9; padding:8px 12px; border-radius:8px;">Indietro</button>
         </div>
     </header>
 
-    <div class="month-selector-wrapper">
-        <label>Seleziona Mese:</label>
-        <select id="monthSelect" onchange="updateData()">
-            <option value="0">Gennaio</option>
-            <option value="1">Febbraio</option>
-            <option value="2">Marzo</option>
-            </select>
-    </div>
-
     <div id="home" class="view active">
-        <div class="dashboard-grid">
-            <div>
-                <h1 style="font-size: 2.5rem;">Analisi di Bilancio e<br>Flussi di Cassa</h1>
-                <div class="card" style="margin-top:20px">
-                    <h3>Andamento Mensile</h3>
-                    <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px;">
-                        <div style="flex:1; background: #3b82f633; height: 40%; border-radius: 5px;"></div>
-                        <div style="flex:1; background: #3b82f633; height: 70%; border-radius: 5px;"></div>
-                        <div style="flex:1; background: var(--primary); height: 90%; border-radius: 5px;"></div>
-                    </div>
-                </div>
+        <div class="grid-2">
+            <div class="card">
+                <h1>Analisi di Bilancio</h1>
+                <p>Benvenuto nel tuo cruscotto finanziario.</p>
             </div>
             <div class="card dark-card">
-                <h3>Saldo Totale</h3>
-                <h2 id="val-saldo" style="font-size: 3rem; margin: 10px 0;">€ 0,00</h2>
-                <p>Entrate: <span id="val-entrate">€ 0</span></p>
-                <p>Uscite: <span id="val-uscite">€ 0</span></p>
+                <h3>Saldo Mensile</h3>
+                <h2 style="font-size: 2.5rem;">€ 5.743,00</h2>
             </div>
         </div>
     </div>
 
     <div id="calendario" class="view">
-        <div class="calendar-grid">
-            <div class="memo-card" style="background: #fef3c7;"><h3>Settembre</h3><p>Affitto e utenze</p></div>
-            <div class="memo-card" style="background: #dcfce7;"><h3>Obiettivi</h3><p>Risparmio vacanze</p></div>
-            <div class="memo-card" style="background: #fee2e2;"><h3>Scadenza</h3><p>Assicurazione Auto</p></div>
-            <div class="memo-card" style="background: #e0e7ff;"><h3>Bache</h3><p>Revisione conti</p></div>
+        <div class="card">
+            <h2>Promemoria e Scadenze</h2>
+            <p>Sezione in fase di aggiornamento...</p>
         </div>
     </div>
 
     <div id="resoconto" class="view">
-        <div class="dashboard-grid">
-            <div class="card">
-                <h2 style="margin-top:0">Analisi Annuale</h2>
-                <div class="donut" id="val-donut">36%</div>
-                <p style="text-align:center; color: var(--text-light)">Percentuale Spese Fisse</p>
-                
-                <div style="margin-top: 40px;">
-                    <div style="display:flex; justify-content:space-between">
-                        <span>Target Risparmio Raggiunto</span>
-                        <b id="val-target-text">87%</b>
-                    </div>
-                    <div class="progress-bar"><div id="val-target-bar" class="progress-fill" style="width: 87%;"></div></div>
-                </div>
-            </div>
-            <div class="card dark-card">
-                <h3>Resoconto Totale Anno</h3>
-                <h2 id="val-anno-tot" style="font-size: 2.5rem;">€ 54.200</h2>
-                <hr style="opacity:0.2">
-                <p>Media Mensile: <b>€ 4.516</b></p>
-                <p>Mese migliore: <b>Marzo</b></p>
-            </div>
-        </div>
-    </div>
-
-    <div id="previsioni" class="view">
         <div class="card">
-            <h1>Previsioni Risparmio</h1>
-            <p>In base ai tuoi dati, potresti risparmiare altri €12.000 entro fine anno.</p>
+            <h2>Analisi Annuale</h2>
+            <p>Qui troverai il riepilogo di tutti i mesi dell'anno.</p>
         </div>
     </div>
 
+    <div id="guadagni" class="view">
+        <h2 style="margin-bottom: 20px;">Guadagni e Spese Mensili</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Progetto / Voce</th>
+                        <th>Attività</th>
+                        <th>Responsabile</th>
+                        <th>Importo / Scostamento</th>
+                    </tr>
+                </thead>
+                <tbody id="tabella-body">
+                    <tr class="project-row"><td colspan="4">Progetto A</td></tr>
+                    <tr>
+                        <td contenteditable="true">Fase 1</td>
+                        <td contenteditable="true">Attività 1</td>
+                        <td contenteditable="true">Mario</td>
+                        <td contenteditable="true" class="val-positive">30 €</td>
+                    </tr>
+                    <tr>
+                        <td contenteditable="true">Fase 2</td>
+                        <td contenteditable="true">Attività 2</td>
+                        <td contenteditable="true">Lucio</td>
+                        <td contenteditable="true" class="val-positive">130 €</td>
+                    </tr>
+
+                    <tr class="project-row"><td colspan="4">Progetto B</td></tr>
+                    <tr>
+                        <td contenteditable="true">Fase 1</td>
+                        <td contenteditable="true">Attività 1</td>
+                        <td contenteditable="true">Franco</td>
+                        <td contenteditable="true" class="val-positive">180 €</td>
+                    </tr>
+                    <tr>
+                        <td contenteditable="true">Fase 2</td>
+                        <td contenteditable="true">Attività 3</td>
+                        <td contenteditable="true">Sara</td>
+                        <td contenteditable="true" class="val-negative">-30 €</td>
+                    </tr>
+
+                    <tr class="project-row"><td colspan="4">Progetto C</td></tr>
+                    <tr>
+                        <td contenteditable="true">Fase 1</td>
+                        <td contenteditable="true">Attività 1</td>
+                        <td contenteditable="true">Azienda X</td>
+                        <td contenteditable="true" class="val-positive">480 €</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">* Clicca su qualsiasi cella per modificare il testo o l'importo.</p>
+    </div>
 </div>
 
 <script>
-    // DATI SIMULATI PER I MESI
-    const datiMensili = [
-        { saldo: "5.743", entrate: "7.000", uscite: "1.257", speseFisse: "36", target: "87" }, // Gennaio
-        { saldo: "4.200", entrate: "6.500", uscite: "2.300", speseFisse: "42", target: "65" }, // Febbraio
-        { saldo: "6.100", entrate: "8.000", uscite: "1.900", speseFisse: "28", target: "92" }  // Marzo
-    ];
-
-    let history = ['home'];
+    let historyStack = ['home'];
     let currentIndex = 0;
 
-    function updateData() {
-        const mese = document.getElementById('monthSelect').value;
-        const data = datiMensili[mese] || datiMensili[0];
-
-        // Aggiorna i testi nella UI
-        document.getElementById('val-saldo').innerText = "€ " + data.saldo;
-        document.getElementById('val-entrate').innerText = "€ " + data.entrate;
-        document.getElementById('val-uscite').innerText = "€ " + data.uscite;
-        document.getElementById('val-donut').innerText = data.speseFisse + "%";
-        document.getElementById('val-target-text').innerText = data.target + "%";
-        document.getElementById('val-target-bar').style.width = data.target + "%";
-    }
-
-    function changePage(pageId, isHistoryAction = false) {
-        // Gestione UI
+    function changePage(pageId, pushToHistory = true) {
+        // Nascondi tutte le viste
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('#mainNav button').forEach(b => b.classList.remove('active'));
-        
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+
+        // Mostra quella selezionata
         document.getElementById(pageId).classList.add('active');
         document.getElementById('nav-' + pageId).classList.add('active');
 
-        // Gestione Cronologia
-        if (!isHistoryAction) {
-            history = history.slice(0, currentIndex + 1);
-            history.push(pageId);
-            currentIndex++;
+        if (pushToHistory) {
+            historyStack.push(pageId);
+            currentIndex = historyStack.length - 1;
         }
-        updateButtons();
     }
 
     function goBack() {
         if (currentIndex > 0) {
             currentIndex--;
-            changePage(history[currentIndex], true);
+            changePage(historyStack[currentIndex], false);
         }
     }
 
-    function goForward() {
-        if (currentIndex < history.length - 1) {
-            currentIndex++;
-            changePage(history[currentIndex], true);
+    // Automazione colori importi: se scrivi un numero negativo diventa rosso
+    document.getElementById('tabella-body').addEventListener('input', function(e) {
+        if (e.target.cellIndex === 3) { // Se stiamo modificando la colonna importi
+            let val = e.target.innerText;
+            if (val.includes('-')) {
+                e.target.className = 'val-negative';
+            } else {
+                e.target.className = 'val-positive';
+            }
         }
-    }
-
-    function updateButtons() {
-        document.getElementById('backBtn').disabled = (currentIndex === 0);
-        document.getElementById('forwardBtn').disabled = (currentIndex === history.length - 1);
-    }
-
-    // Inizializzazione
-    updateData();
-    updateButtons();
+    });
 </script>
 
 </body>
