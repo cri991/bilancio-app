@@ -143,7 +143,12 @@ return btoa(str);
 }
 
 // PASSWORD
-let PASSWORD = localStorage.getItem("password") || hash("1234");
+let PASSWORD = localStorage.getItem("password");
+
+if(!PASSWORD){
+PASSWORD = hash("1234");
+localStorage.setItem("password", PASSWORD);
+}
 
 // LOGIN
 function login(){
@@ -172,23 +177,31 @@ startTimer();
 
 // CAMBIO PASSWORD
 function changePassword(){
-let old = hash(document.getElementById("oldPass").value);
-let nuovo = document.getElementById("newPass").value;
 
-if(old!==PASSWORD){
-alert("Password errata");
+let oldInput = document.getElementById("oldPass").value;
+let newInput = document.getElementById("newPass").value;
+
+if(hash(oldInput) !== PASSWORD){
+alert("Password attuale errata");
 return;
 }
 
-if(nuovo.length<4){
-alert("Troppo corta");
+if(newInput.length < 4){
+alert("Password troppo corta");
 return;
 }
 
-PASSWORD = hash(nuovo);
-localStorage.setItem("password", PASSWORD);
+let nuovaHash = hash(newInput);
+
+PASSWORD = nuovaHash;
+localStorage.setItem("password", nuovaHash);
 
 alert("Password aggiornata");
+
+// reset campi
+document.getElementById("oldPass").value="";
+document.getElementById("newPass").value="";
+}
 }
 
 // TIMER SICUREZZA
