@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MyFinance Pro - Full Offline</title>
+    <title>MyFinance Pro - GitHub Edition</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,13 +11,10 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
-        
         :root { --primary: #4f46e5; --dark: #0f172a; }
         body { font-family: 'Inter', sans-serif; -webkit-user-select: none; touch-action: manipulation; background-color: #f8fafc; }
-        
         #app-container { display: flex; height: 100vh; width: 100%; overflow: hidden; }
         
-        /* Sidebar Responsive */
         @media (max-width: 1024px) {
             aside { position: fixed; top: 0; left: -100%; width: 85% !important; height: 100vh; z-index: 999; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: white; }
             aside.mobile-open { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.2); }
@@ -27,18 +24,12 @@
         .sidebar-link.active { background: var(--primary) !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
         .content-section { display: none; }
         .content-section.active { display: block !important; animation: fadeIn 0.3s ease-out; }
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Calendario Styles */
-        .day-box { transition: all 0.2s; border: 1px solid #e2e8f0; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; }
-        .day-box:hover { background-color: #f1f5f9; }
+        .day-box { transition: all 0.2s; border: 1px solid #e2e8f0; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; background: white; }
         .day-box.selected { border: 2px solid var(--primary); background-color: #eff6ff; }
         .has-hours { border-bottom: 4px solid #10b981; }
         .has-note::after { content: ''; width: 6px; height: 6px; background: #f43f5e; border-radius: 50%; margin-top: 2px; }
-        
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -65,108 +56,51 @@
 
             <div class="pt-6 border-t border-slate-100 space-y-2">
                 <input type="file" id="fileInput" class="hidden" onchange="importJSON(event)" accept=".json">
-                <button onclick="document.getElementById('fileInput').click()" class="w-full text-left p-3 text-[10px] font-black uppercase text-emerald-600 hover:bg-emerald-50 rounded-xl">
-                    <i class="fas fa-folder-open mr-2"></i> 1. Apri File (.json)
-                </button>
-                <button onclick="exportJSON()" class="w-full text-left p-3 text-[10px] font-black uppercase text-indigo-600 hover:bg-indigo-50 rounded-xl">
-                    <i class="fas fa-save mr-2"></i> 2. Salva Modifiche
-                </button>
-                <button onclick="resetData()" class="w-full text-left p-3 text-[10px] font-black uppercase text-rose-500 hover:bg-rose-50 rounded-xl">
-                    <i class="fas fa-trash mr-2"></i> Reset Sessione
-                </button>
+                <button onclick="document.getElementById('fileInput').click()" class="w-full text-left p-3 text-[10px] font-black uppercase text-emerald-600 hover:bg-emerald-50 rounded-xl">📂 Apri Backup</button>
+                <button onclick="exportJSON()" class="w-full text-left p-3 text-[10px] font-black uppercase text-indigo-600 hover:bg-indigo-50 rounded-xl">💾 Salva Backup</button>
             </div>
         </aside>
 
         <main class="flex-1 overflow-y-auto p-6 md:p-12">
             
             <div id="home" class="content-section active space-y-8">
-                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Dashboard</h2>
+                <h2 class="text-4xl font-black tracking-tighter uppercase italic text-slate-800">Dashboard</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl">
                         <p class="text-[10px] font-black uppercase opacity-40 mb-2">Anno <span id="dash-year"></span></p>
-                        <h3 id="dash-tot-anno" class="text-5xl font-black italic">€ 0,00</h3>
+                        <h3 id="dash-tot-anno" class="text-5xl font-black italic text-indigo-400">€ 0,00</h3>
                     </div>
                     <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 border-l-8 border-l-indigo-600 shadow-sm">
                         <p class="text-[10px] font-black uppercase text-slate-400 mb-2">Entrate Mese</p>
                         <h3 id="dash-tot-mese" class="text-4xl font-black text-slate-800">€ 0,00</h3>
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-[2rem] border flex items-center space-x-4 border-l-8 border-l-rose-500">
-                        <div class="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 text-xl"><i class="fas fa-receipt"></i></div>
-                        <div><p class="text-[10px] font-black uppercase text-slate-400">Fisse</p><h4 id="dash-fisse" class="text-2xl font-black text-slate-800">€ 0,00</h4></div>
-                    </div>
-                    <div class="bg-white p-6 rounded-[2rem] border flex items-center space-x-4 border-l-8 border-l-amber-500">
-                        <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 text-xl"><i class="fas fa-shopping-bag"></i></div>
-                        <div><p class="text-[10px] font-black uppercase text-slate-400">Variabili</p><h4 id="dash-variabili" class="text-2xl font-black text-slate-800">€ 0,00</h4></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="bg-white p-8 rounded-[3rem] border border-slate-200 flex flex-col items-center justify-center shadow-sm">
-                        <h4 class="text-[10px] font-black uppercase text-slate-400 mb-6">Bilancio Mese</h4>
-                        <div class="w-48 h-48"><canvas id="mainChart"></canvas></div>
-                    </div>
-                    <div class="bg-slate-800 p-8 rounded-[3rem] text-white lg:col-span-2 shadow-xl">
-                        <h4 class="text-[10px] font-black uppercase text-indigo-400 mb-6 tracking-widest"><i class="fas fa-bell mr-2"></i>Prossime Note</h4>
-                        <div id="dash-notes" class="grid grid-cols-1 md:grid-cols-2 gap-3 custom-scroll overflow-y-auto max-h-[200px]"></div>
-                    </div>
+                <div class="flex justify-center bg-white p-8 rounded-[3rem] border shadow-sm max-w-sm mx-auto">
+                    <canvas id="mainChart"></canvas>
                 </div>
             </div>
 
             <div id="lavoro" class="content-section space-y-8">
-                <div class="flex justify-between items-end">
+                <div class="flex justify-between items-center">
                     <h2 class="text-4xl font-black tracking-tighter uppercase italic">Ore Lavoro</h2>
-                    <div class="bg-white p-3 rounded-xl border flex items-center space-x-2">
-                        <span class="text-[10px] font-black text-slate-400">PAGA €/H</span>
-                        <input type="number" id="pagaOraria" value="10" onchange="updatePaga()" class="w-12 font-black text-indigo-600 outline-none text-right">
-                    </div>
+                    <input type="number" id="pagaOraria" value="10" onchange="updatePaga()" class="w-16 bg-white p-2 border rounded-xl font-black text-indigo-600 text-center">
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border shadow-sm">
-                        <div class="flex justify-between items-center mb-8">
-                            <button onclick="changeMonth(-1, 'work')" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-left"></i></button>
-                            <span id="workMonthTitle" class="font-black uppercase tracking-widest text-sm text-slate-600"></span>
-                            <button onclick="changeMonth(1, 'work')" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-right"></i></button>
+                    <div class="lg:col-span-2 bg-white p-6 rounded-[3rem] border shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <button onclick="changeMonth(-1, 'work')" class="p-2">←</button>
+                            <span id="workMonthTitle" class="font-black uppercase text-sm"></span>
+                            <button onclick="changeMonth(1, 'work')" class="p-2">→</button>
                         </div>
                         <div id="work-grid" class="grid grid-cols-7 gap-2"></div>
                     </div>
-                    <div class="bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl h-fit">
-                        <h4 id="selectedWorkDate" class="text-lg font-black mb-6 text-indigo-400 text-center uppercase tracking-widest">Turni Lavoro</h4>
-                        
+                    <div class="bg-slate-900 p-8 rounded-[3rem] text-white h-fit shadow-xl">
+                        <h4 id="selectedWorkDate" class="text-center font-black mb-6 text-indigo-400">Seleziona Data</h4>
                         <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="text-[9px] font-black uppercase opacity-40 ml-2 block mb-1">Inizio</label>
-                                <input type="time" id="oraInizio" class="w-full bg-white/10 p-4 rounded-2xl font-black text-xl outline-none border border-white/5 text-center">
-                            </div>
-                            <div>
-                                <label class="text-[9px] font-black uppercase opacity-40 ml-2 block mb-1">Fine</label>
-                                <input type="time" id="oraFine" class="w-full bg-white/10 p-4 rounded-2xl font-black text-xl outline-none border border-white/5 text-center">
-                            </div>
+                            <input type="time" id="oraInizio" class="w-full bg-white/10 p-4 rounded-2xl font-black text-center text-white outline-none">
+                            <input type="time" id="oraFine" class="w-full bg-white/10 p-4 rounded-2xl font-black text-center text-white outline-none">
                         </div>
-                        
-                        <button onclick="saveHours()" class="w-full bg-indigo-600 p-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition-all">Salva Turno</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="note" class="content-section space-y-8">
-                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Note & Memo</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border shadow-sm">
-                        <div class="flex justify-between items-center mb-8">
-                            <button onclick="changeMonth(-1, 'note')" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-left"></i></button>
-                            <span id="noteMonthTitle" class="font-black uppercase tracking-widest text-sm text-slate-600"></span>
-                            <button onclick="changeMonth(1, 'note')" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-right"></i></button>
-                        </div>
-                        <div id="note-grid" class="grid grid-cols-7 gap-2"></div>
-                    </div>
-                    <div class="bg-white p-8 rounded-[3rem] border shadow-xl h-fit">
-                        <h4 id="selectedNoteDate" class="text-lg font-black mb-4 text-indigo-600 border-b pb-4 italic">Seleziona Giorno</h4>
-                        <textarea id="noteText" placeholder="Cosa devi ricordare?" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 font-bold outline-none h-32 focus:ring-2 ring-indigo-500"></textarea>
-                        <button onclick="saveNote()" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase text-xs">Aggiungi Memo</button>
-                        <div id="dayNotesList" class="mt-6 space-y-2"></div>
+                        <button onclick="saveHours()" class="w-full bg-indigo-600 p-5 rounded-2xl font-black uppercase text-xs hover:bg-indigo-500">Salva Turno</button>
                     </div>
                 </div>
             </div>
@@ -174,8 +108,8 @@
             <div id="spese" class="content-section space-y-6">
                 <h2 class="text-4xl font-black tracking-tighter uppercase italic">Spese Fisse</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 rounded-[2.5rem] border h-fit">
-                        <input type="text" id="fissa-nome" placeholder="Nome Spesa (es: Affitto)" class="w-full p-4 bg-slate-50 rounded-xl mb-3 font-bold outline-none">
+                    <div class="bg-white p-8 rounded-[2.5rem] border h-fit shadow-sm">
+                        <input type="text" id="fissa-nome" placeholder="Esempio: Affitto" class="w-full p-4 bg-slate-50 rounded-xl mb-3 font-bold outline-none">
                         <input type="number" id="fissa-prezzo" placeholder="Prezzo €" class="w-full p-4 bg-slate-50 rounded-xl mb-6 font-black outline-none">
                         <button onclick="addEntry('fissa')" class="w-full bg-slate-900 text-white p-4 rounded-xl font-black uppercase text-xs">Aggiungi</button>
                     </div>
@@ -184,14 +118,34 @@
             </div>
 
             <div id="variabili" class="content-section space-y-6">
-                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Spese Variabili</h2>
+                <h2 class="text-4xl font-black tracking-tighter uppercase italic text-amber-600">Spese Variabili</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-amber-100 h-fit">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-amber-100 h-fit shadow-sm">
                         <input type="text" id="var-nome" placeholder="Cosa hai comprato?" class="w-full p-4 bg-slate-50 rounded-xl mb-3 font-bold outline-none">
                         <input type="number" id="var-prezzo" placeholder="Prezzo €" class="w-full p-4 bg-slate-50 rounded-xl mb-6 font-black outline-none">
-                        <button onclick="addEntry('variabile')" class="w-full bg-amber-600 text-white p-4 rounded-xl font-black uppercase text-xs shadow-lg shadow-amber-200">Aggiungi</button>
+                        <button onclick="addEntry('variabile')" class="w-full bg-amber-600 text-white p-4 rounded-xl font-black uppercase text-xs shadow-lg">Aggiungi Spesa</button>
                     </div>
                     <div id="list-variabili" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <div id="note" class="content-section space-y-8">
+                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Note & Memo</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <button onclick="changeMonth(-1, 'note')" class="p-2">←</button>
+                            <span id="noteMonthTitle" class="font-black uppercase text-sm"></span>
+                            <button onclick="changeMonth(1, 'note')" class="p-2">→</button>
+                        </div>
+                        <div id="note-grid" class="grid grid-cols-7 gap-2"></div>
+                    </div>
+                    <div class="bg-white p-8 rounded-[3rem] border shadow-xl h-fit">
+                        <h4 id="selectedNoteDate" class="font-black mb-4 text-indigo-600 border-b pb-2">Seleziona Giorno</h4>
+                        <textarea id="noteText" placeholder="Scrivi qui..." class="w-full p-4 bg-slate-50 rounded-2xl mb-4 font-bold outline-none h-32"></textarea>
+                        <button onclick="saveNote()" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase text-xs">Salva Nota</button>
+                        <div id="dayNotesList" class="mt-6 space-y-2"></div>
+                    </div>
                 </div>
             </div>
 
@@ -227,59 +181,49 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
 
-        function renderDashboard() {
-            const now = new Date();
-            const m = now.getMonth();
-            const y = now.getFullYear();
-            document.getElementById('dash-year').innerText = y;
+        // CORRETTA FUNZIONE AGGIUNGI
+        function addEntry(type) {
+            const prefix = type === 'fissa' ? 'fissa' : 'var';
+            const nameField = document.getElementById(prefix + '-nome');
+            const priceField = document.getElementById(prefix + '-prezzo');
+            
+            const n = nameField.value;
+            const p = priceField.value;
 
-            let oreMese = 0; let totAnno = 0;
-            for(let k in db.work) {
-                const [day, mon, year] = k.split('-').map(Number);
-                const h = parseFloat(db.work[k]);
-                if(year === y) totAnno += h * db.paga;
-                if(year === y && mon === m) oreMese += h;
+            if (n && p) {
+                const target = type === 'fissa' ? 'fisse' : 'variabili';
+                db[target].push({ nome: n, prezzo: parseFloat(p) });
+                nameField.value = '';
+                priceField.value = '';
+                saveAll(); renderLists(); renderDashboard();
+            } else {
+                alert("Compila entrambi i campi!");
             }
-
-            let entrateMese = oreMese * db.paga;
-            let totFisse = db.fisse.reduce((a, b) => a + parseFloat(b.prezzo), 0);
-            let totVar = db.variabili.reduce((a, b) => a + parseFloat(b.prezzo), 0);
-
-            document.getElementById('dash-tot-mese').innerText = `€ ${entrateMese.toLocaleString('it-IT')}`;
-            document.getElementById('dash-tot-anno').innerText = `€ ${totAnno.toLocaleString('it-IT')}`;
-            document.getElementById('dash-fisse').innerText = `€ ${totFisse.toLocaleString()}`;
-            document.getElementById('dash-variabili').innerText = `€ ${totVar.toLocaleString()}`;
-
-            renderDashNotes();
-            updateChart(entrateMese, totFisse, totVar);
         }
 
-        function renderDashNotes() {
-            const container = document.getElementById('dash-notes');
-            container.innerHTML = '';
-            const keys = Object.keys(db.notes).sort();
-            keys.forEach(k => {
-                db.notes[k].forEach(n => {
-                    container.innerHTML += `<div class="bg-white/10 p-3 rounded-xl border border-white/5"><p class="text-[9px] font-black text-indigo-400 mb-1 uppercase">${k}</p><p class="text-xs font-medium">${n}</p></div>`;
+        function renderLists() {
+            // Fisse
+            const lf = document.getElementById('list-fisse'); 
+            if(lf) {
+                lf.innerHTML = '';
+                db.fisse.forEach((item, i) => {
+                    lf.innerHTML += `<div class="bg-white p-4 rounded-xl flex justify-between border shadow-sm"><b>${item.nome}</b> <span>€ ${item.prezzo.toFixed(2)} <button onclick="deleteEntry('fissa', ${i})" class="ml-2 text-rose-500">×</button></span></div>`;
                 });
-            });
-            if(keys.length === 0) container.innerHTML = '<p class="opacity-20 italic text-xs">Nessun impegno salvato...</p>';
+            }
+            // Variabili
+            const lv = document.getElementById('list-variabili'); 
+            if(lv) {
+                lv.innerHTML = '';
+                db.variabili.forEach((item, i) => {
+                    lv.innerHTML += `<div class="bg-white p-4 rounded-xl flex justify-between border border-amber-100 shadow-sm"><b>${item.nome}</b> <span>€ ${item.prezzo.toFixed(2)} <button onclick="deleteEntry('variabile', ${i})" class="ml-2 text-rose-500">×</button></span></div>`;
+                });
+            }
         }
 
-        function updateChart(e, f, v) {
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: [e, f, v],
-                        backgroundColor: ['#4f46e5', '#f43f5e', '#f59e0b'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { cutout: '80%', plugins: { legend: { display: false } } }
-            });
+        function deleteEntry(type, i) {
+            const target = type === 'fissa' ? 'fisse' : 'variabili';
+            db[target].splice(i, 1);
+            saveAll(); renderLists(); renderDashboard();
         }
 
         function renderCalendar(type) {
@@ -291,22 +235,15 @@
 
             title.innerText = new Intl.DateTimeFormat('it-IT', {month:'long', year:'numeric'}).format(date);
             grid.innerHTML = '';
-
             const firstDay = new Date(y, m, 1).getDay() || 7;
             const daysInMonth = new Date(y, m + 1, 0).getDate();
 
             for(let i = 1; i < firstDay; i++) grid.innerHTML += '<div></div>';
-
             for(let d = 1; d <= daysInMonth; d++) {
                 const key = `${d}-${m}-${y}`;
                 const isSelected = (type === 'work' ? selectedWorkKey : selectedNoteKey) === key;
                 const hasData = type === 'work' ? (db.work[key] ? 'has-hours' : '') : (db.notes[key] ? 'has-note' : '');
-                
-                grid.innerHTML += `
-                    <div onclick="selectDay(${d},${m},${y},'${type}')" class="day-box ${isSelected ? 'selected' : ''} ${hasData}">
-                        <span class="text-[10px] font-black text-slate-300 mb-1">${d}</span>
-                        ${type === 'work' && db.work[key] ? `<span class="text-[10px] font-black text-indigo-600">${db.work[key]}h</span>` : ''}
-                    </div>`;
+                grid.innerHTML += `<div onclick="selectDay(${d},${m},${y},'${type}')" class="day-box ${isSelected ? 'selected' : ''} ${hasData}"><span class="text-[10px] font-black text-slate-300">${d}</span>${type === 'work' && db.work[key] ? `<span class="text-[10px] font-black text-indigo-600">${db.work[key]}h</span>` : ''}</div>`;
             }
         }
 
@@ -315,9 +252,6 @@
             if(type === 'work') {
                 selectedWorkKey = key;
                 document.getElementById('selectedWorkDate').innerText = `${d}/${m+1}/${y}`;
-                // Resettiamo gli input quando si cambia giorno (opzionale)
-                document.getElementById('oraInizio').value = "";
-                document.getElementById('oraFine').value = "";
             } else {
                 selectedNoteKey = key;
                 document.getElementById('selectedNoteDate').innerText = `${d}/${m+1}/${y}`;
@@ -326,37 +260,24 @@
             renderCalendar(type);
         }
 
-        // LOGICA CALCOLO AUTOMATICO TURNI
         function saveHours() {
-            if(!selectedWorkKey) return alert("Seleziona un giorno!");
-            
-            const start = document.getElementById('oraInizio').value;
-            const end = document.getElementById('oraFine').value;
-
-            if(!start || !end) {
-                delete db.work[selectedWorkKey];
-            } else {
-                const [h1, m1] = start.split(':').map(Number);
-                const [h2, m2] = end.split(':').map(Number);
-                
-                let minInizio = h1 * 60 + m1;
-                let minFine = h2 * 60 + m2;
-
-                if(minFine < minInizio) minFine += 1440; // Gestione turno dopo mezzanotte
-
-                const totaleOre = ((minFine - minInizio) / 60).toFixed(2);
-                db.work[selectedWorkKey] = totaleOre;
+            if(!selectedWorkKey) return alert("Scegli un giorno!");
+            const s = document.getElementById('oraInizio').value;
+            const e = document.getElementById('oraFine').value;
+            if(!s || !e) delete db.work[selectedWorkKey];
+            else {
+                const [h1, m1] = s.split(':').map(Number);
+                const [h2, m2] = e.split(':').map(Number);
+                let diff = (h2 * 60 + m2) - (h1 * 60 + m1);
+                if(diff < 0) diff += 1440;
+                db.work[selectedWorkKey] = (diff/60).toFixed(2);
             }
-
-            saveAll(); 
-            renderCalendar('work');
-            renderDashboard();
+            saveAll(); renderCalendar('work'); renderDashboard();
         }
 
         function saveNote() {
-            if(!selectedNoteKey) return alert("Seleziona un giorno!");
             const txt = document.getElementById('noteText').value;
-            if(!txt) return;
+            if(!selectedNoteKey || !txt) return;
             if(!db.notes[selectedNoteKey]) db.notes[selectedNoteKey] = [];
             db.notes[selectedNoteKey].push(txt);
             document.getElementById('noteText').value = '';
@@ -368,7 +289,7 @@
             list.innerHTML = '';
             if(db.notes[selectedNoteKey]) {
                 db.notes[selectedNoteKey].forEach((n, i) => {
-                    list.innerHTML += `<div class="bg-slate-50 p-3 rounded-xl flex justify-between items-center text-sm font-medium"><span>${n}</span><button onclick="deleteNote(${i})" class="text-rose-400"><i class="fas fa-trash"></i></button></div>`;
+                    list.innerHTML += `<div class="bg-slate-50 p-3 rounded-xl flex justify-between text-sm"><span>${n}</span><button onclick="deleteNote(${i})" class="text-rose-400">×</button></div>`;
                 });
             }
         }
@@ -379,36 +300,28 @@
             saveAll(); renderDayNotes(); renderCalendar('note');
         }
 
-        function changeMonth(dir, type) {
-            if(type === 'work') currentWorkDate.setMonth(currentWorkDate.getMonth() + dir);
-            else currentNoteDate.setMonth(currentNoteDate.getMonth() + dir);
-            renderCalendar(type);
-        }
-
-        function addEntry(type) {
-            const n = document.getElementById(type + '-nome').value;
-            const p = document.getElementById(type + '-prezzo').value;
-            if(n && p) {
-                db[type === 'fissa' ? 'fisse' : 'variabili'].push({nome: n, prezzo: p});
-                document.getElementById(type + '-nome').value = '';
-                document.getElementById(type + '-prezzo').value = '';
-                saveAll(); renderLists();
+        function renderDashboard() {
+            const now = new Date();
+            const m = now.getMonth(); const y = now.getFullYear();
+            document.getElementById('dash-year').innerText = y;
+            let entrateMese = 0; let totAnno = 0;
+            for(let k in db.work) {
+                const [kd, km, ky] = k.split('-').map(Number);
+                const v = parseFloat(db.work[k]) * db.paga;
+                if(ky === y) totAnno += v;
+                if(ky === y && km === m) entrateMese += v;
             }
-        }
-
-        function deleteEntry(type, i) {
-            db[type === 'fissa' ? 'fisse' : 'variabili'].splice(i, 1);
-            saveAll(); renderLists();
-        }
-
-        function renderLists() {
-            const lf = document.getElementById('list-fisse'); lf.innerHTML = '';
-            db.fisse.forEach((item, i) => {
-                lf.innerHTML += `<div class="bg-white p-4 rounded-xl flex justify-between items-center border shadow-sm"><b>${item.nome}</b> <span>€ ${parseFloat(item.prezzo).toLocaleString()} <button onclick="deleteEntry('fissa', ${i})" class="ml-3 text-rose-400"><i class="fas fa-times"></i></button></span></div>`;
-            });
-            const lv = document.getElementById('list-variabili'); lv.innerHTML = '';
-            db.variabili.forEach((item, i) => {
-                lv.innerHTML += `<div class="bg-white p-4 rounded-xl flex justify-between items-center border border-amber-100 shadow-sm"><b>${item.nome}</b> <span>€ ${parseFloat(item.prezzo).toLocaleString()} <button onclick="deleteEntry('variabile', ${i})" class="ml-3 text-rose-400"><i class="fas fa-times"></i></button></span></div>`;
+            let totFisse = db.fisse.reduce((a, b) => a + parseFloat(b.prezzo), 0);
+            let totVar = db.variabili.reduce((a, b) => a + parseFloat(b.prezzo), 0);
+            document.getElementById('dash-tot-mese').innerText = `€ ${entrateMese.toFixed(2)}`;
+            document.getElementById('dash-tot-anno').innerText = `€ ${totAnno.toFixed(2)}`;
+            
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [entrateMese, totFisse + totVar], backgroundColor: ['#4f46e5', '#f1f5f9'] }] },
+                options: { cutout: '80%' }
             });
         }
 
@@ -421,30 +334,25 @@
         }
 
         function exportJSON() {
-            const data = JSON.stringify(db);
-            const blob = new Blob([data], {type: 'application/json'});
+            const blob = new Blob([JSON.stringify(db)], {type: 'application/json'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `MyFinance_Backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `MyFinance_Backup.json`;
             a.click();
         }
 
-        function importJSON(event) {
+        function importJSON(e) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if(confirm("Sovrascrivere i dati attuali con questo file?")) {
-                        db = imported;
-                        saveAll();
-                        location.reload();
-                    }
-                } catch(err) { alert("File non valido!"); }
-            };
-            reader.readAsText(event.target.files[0]);
+            reader.onload = (ev) => { db = JSON.parse(ev.target.result); saveAll(); location.reload(); };
+            reader.readAsText(e.target.files[0]);
         }
 
-        function resetData() { if(confirm("Sei sicuro?")) { localStorage.clear(); location.reload(); } }
+        function changeMonth(dir, type) {
+            const d = type === 'work' ? currentWorkDate : currentNoteDate;
+            d.setMonth(d.getMonth() + dir);
+            renderCalendar(type);
+        }
+
         function updatePaga() { db.paga = document.getElementById('pagaOraria').value; saveAll(); renderDashboard(); }
 
         document.getElementById('pagaOraria').value = db.paga;
