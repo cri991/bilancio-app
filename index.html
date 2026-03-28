@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MyFinance Pro - Shift Tracker</title>
+    <title>MyFinance Pro - Ultimate Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,140 +11,158 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; -webkit-user-select: none; touch-action: manipulation; }
+        body { font-family: 'Inter', sans-serif; -webkit-user-select: none; touch-action: manipulation; scroll-behavior: smooth; }
         #app-container { display: flex; height: 100vh; width: 100%; overflow: hidden; }
         
-        @media (max-width: 768px) {
-            aside { position: fixed; top: 0; left: -100%; width: 80% !important; height: 100vh; z-index: 999; transition: left 0.3s ease; }
-            aside.mobile-open { left: 0; }
+        @media (max-width: 1024px) {
+            aside { position: fixed; top: 0; left: -100%; width: 85% !important; height: 100vh; z-index: 999; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+            aside.mobile-open { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.2); }
             #mobile-menu-trigger { display: flex !important; }
         }
 
-        .sidebar-link.active { background: #4f46e5 !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
+        .sidebar-link.active { background: #4f46e5 !important; color: white !important; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
         .content-section { display: none; }
-        .content-section.active { display: block !important; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .content-section.active { display: block !important; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .work-day.has-hours { border-bottom: 4px solid #10b981; }
-        .work-day.selected { background: #eef2ff; border: 2px solid #4f46e5; }
+        .work-day.has-hours { border-bottom: 4px solid #10b981; background: #f0fdf4; }
+        .work-day.selected { border: 2px solid #4f46e5; background: #eef2ff; transform: scale(0.95); }
+        
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 flex items-center justify-center">
+<body class="bg-slate-100 flex items-center justify-center">
 
-    <button id="mobile-menu-trigger" onclick="toggleMobileSidebar()" class="fixed bottom-6 right-6 w-16 h-16 bg-indigo-600 text-white rounded-full hidden items-center justify-center z-[1000] shadow-2xl">
-        <i class="fas fa-bars"></i>
+    <button id="mobile-menu-trigger" onclick="toggleMobileSidebar()" class="fixed bottom-6 right-6 w-16 h-16 bg-indigo-600 text-white rounded-full hidden items-center justify-center z-[1000] shadow-2xl active:scale-90 transition-transform">
+        <i class="fas fa-bars text-xl"></i>
     </button>
 
     <div id="app-container">
-        <aside id="sidebar" class="w-72 bg-white border-r border-slate-200 flex flex-col p-8 justify-between shrink-0 bg-white">
+        <aside id="sidebar" class="w-72 bg-white border-r border-slate-200 flex flex-col p-8 justify-between shrink-0">
             <div class="space-y-10">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white"><i class="fas fa-gem"></i></div>
-                    <span class="font-black text-2xl tracking-tighter uppercase italic">MyFinance</span>
+                    <img src="icon.png" class="w-10 h-10 rounded-xl shadow-lg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2652/2652677.png'">
+                    <span class="font-black text-2xl tracking-tighter uppercase italic text-slate-800">MyFinance</span>
                 </div>
-                <nav class="space-y-2 text-slate-500 font-bold">
-                    <button onclick="showSection('home')" id="btn-home" class="sidebar-link active w-full flex items-center space-x-4 p-4 rounded-2xl"><i class="fas fa-home"></i> <span>Dashboard</span></button>
-                    <button onclick="showSection('lavoro')" id="btn-lavoro" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl"><i class="fas fa-clock"></i> <span>Ore Lavoro</span></button>
-                    <button onclick="showSection('spese')" id="btn-spese" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl"><i class="fas fa-receipt"></i> <span>Spese Fisse</span></button>
-                    <button onclick="showSection('variabili')" id="btn-variabili" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl"><i class="fas fa-shopping-cart"></i> <span>Variabili</span></button>
-                    <button onclick="showSection('calendario')" id="btn-calendario" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl"><i class="fas fa-calendar-alt"></i> <span>Note/Memo</span></button>
+                <nav class="space-y-1.5 text-slate-500 font-bold">
+                    <button onclick="showSection('home')" id="btn-home" class="sidebar-link active w-full flex items-center space-x-4 p-4 rounded-2xl transition-all"><i class="fas fa-chart-line w-5"></i> <span>Dashboard</span></button>
+                    <button onclick="showSection('lavoro')" id="btn-lavoro" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl transition-all"><i class="fas fa-business-time w-5"></i> <span>Turni Lavoro</span></button>
+                    <button onclick="showSection('spese')" id="btn-spese" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl transition-all"><i class="fas fa-wallet w-5"></i> <span>Spese Fisse</span></button>
+                    <button onclick="showSection('variabili')" id="btn-variabili" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl transition-all"><i class="fas fa-shopping-bag w-5"></i> <span>Variabili</span></button>
                 </nav>
             </div>
             <div class="pt-6 border-t border-slate-100 space-y-2">
-                <button onclick="exportData()" class="w-full text-left p-3 text-[10px] font-black uppercase text-indigo-400"><i class="fas fa-download mr-2"></i> Esporta</button>
-                <button onclick="resetApp()" class="w-full text-left p-3 text-[10px] font-black uppercase text-rose-400"><i class="fas fa-power-off mr-2"></i> Reset</button>
+                <button onclick="exportData()" class="w-full text-left p-3 text-[10px] font-black uppercase text-indigo-500 hover:bg-indigo-50 rounded-xl"><i class="fas fa-cloud-download-alt mr-2"></i> Esporta Backup</button>
+                <button onclick="resetApp()" class="w-full text-left p-3 text-[10px] font-black uppercase text-rose-400 hover:bg-rose-50 rounded-xl"><i class="fas fa-trash-alt mr-2"></i> Reset Totale</button>
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-8 md:p-12">
+        <main class="flex-1 overflow-y-auto p-6 md:p-12">
             
             <div id="home" class="content-section active space-y-8">
-                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Resoconto</h2>
+                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Resoconto Generale</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-2xl">
-                        <p class="text-[10px] font-black uppercase opacity-50 tracking-widest mb-2">Totale Annuale <span id="year-label"></span></p>
-                        <h3 id="h-guadagno-anno" class="text-5xl font-black">€ 0,00</h3>
-                        <p id="h-ore-anno" class="mt-2 text-indigo-400 font-bold">0 ore totali</p>
+                    <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
+                        <div class="relative z-10">
+                            <p class="text-[10px] font-black uppercase opacity-40 tracking-widest mb-2">Anno Corrente <span id="year-label"></span></p>
+                            <h3 id="h-guadagno-anno" class="text-5xl font-black italic">€ 0,00</h3>
+                            <p id="h-ore-anno" class="mt-2 text-indigo-400 font-bold text-sm">0 ore totali</p>
+                        </div>
+                        <i class="fas fa-coins absolute -right-4 -bottom-4 text-white/5 text-9xl"></i>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
-                        <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Mese Corrente</p>
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm flex flex-col justify-center">
+                        <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Mese in corso</p>
                         <h3 id="h-guadagno-mese" class="text-4xl font-black text-slate-800">€ 0,00</h3>
-                        <p id="h-ore-mese" class="mt-1 text-emerald-500 font-bold">0 ore lavorate</p>
-                    </div>
-                </div>
-
-                <div class="bg-white p-8 rounded-[3rem] border flex flex-col items-center">
-                    <h4 class="text-[10px] font-black uppercase text-slate-400 mb-6">Proporzione Budget Mensile</h4>
-                    <div class="w-64 h-64"><canvas id="chartBilancio"></canvas></div>
-                </div>
-            </div>
-
-            <div id="lavoro" class="content-section space-y-8">
-                <div class="flex justify-between items-end">
-                    <h2 class="text-4xl font-black tracking-tighter uppercase italic">Ore Lavoro</h2>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border flex items-center space-x-4">
-                        <span class="text-[10px] font-black text-slate-400 uppercase">Paga Oraria €</span>
-                        <input type="number" id="paga-oraria" onchange="updatePaga()" value="10" class="w-16 font-black text-indigo-600 outline-none text-right">
+                        <p id="h-ore-mese" class="mt-1 text-emerald-500 font-bold text-sm">0 ore lavorate</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border border-slate-200">
-                        <div class="flex justify-between items-center mb-8">
-                            <button onclick="changeWorkMonth(-1)" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-left"></i></button>
-                            <span id="workMonthTitle" class="font-black uppercase tracking-widest"></span>
-                            <button onclick="changeWorkMonth(1)" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-right"></i></button>
+                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border border-slate-200 flex flex-col items-center">
+                        <h4 class="text-[10px] font-black uppercase text-slate-400 mb-8">Rapporto Entrate/Uscite Mese</h4>
+                        <div class="w-full max-w-[300px] h-[300px]"><canvas id="chartBilancio"></canvas></div>
+                    </div>
+                    <div class="bg-white p-8 rounded-[3rem] border border-slate-200">
+                        <h4 class="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest"><i class="fas fa-history mr-2"></i>Storico Anni</h4>
+                        <div id="storico-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="lavoro" class="content-section space-y-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                    <h2 class="text-4xl font-black tracking-tighter uppercase italic">Registro Turni</h2>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-indigo-100 flex items-center space-x-4">
+                        <span class="text-[10px] font-black text-slate-400 uppercase">Paga Oraria</span>
+                        <div class="flex items-center text-indigo-600 font-black text-xl">
+                            <span>€</span>
+                            <input type="number" id="paga-oraria" onchange="updatePaga()" value="10" class="w-16 outline-none text-right ml-1">
                         </div>
-                        <div id="work-grid" class="grid grid-cols-7 gap-3 text-center"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-8">
+                            <button onclick="changeWorkMonth(-1)" class="w-12 h-12 hover:bg-slate-100 rounded-full transition-colors"><i class="fas fa-chevron-left"></i></button>
+                            <span id="workMonthTitle" class="font-black uppercase tracking-[0.2em] text-sm text-slate-800"></span>
+                            <button onclick="changeWorkMonth(1)" class="w-12 h-12 hover:bg-slate-100 rounded-full transition-colors"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div id="work-grid" class="grid grid-cols-7 gap-3"></div>
                     </div>
 
-                    <div id="shift-panel" class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl h-fit">
-                        <h4 id="selectedWorkDay" class="text-xl font-black mb-6 italic text-indigo-400">Seleziona data</h4>
+                    <div id="shift-panel" class="bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl h-fit sticky top-8">
+                        <h4 id="selectedWorkDay" class="text-xl font-black mb-8 italic text-indigo-400 border-b border-white/10 pb-4 text-center">Seleziona Giorno</h4>
                         <div class="space-y-6">
-                            <div>
-                                <label class="text-[9px] font-black uppercase opacity-40 block mb-2">Inizio Turno</label>
-                                <input type="time" id="time-start" class="w-full bg-white/10 p-4 rounded-xl font-black text-2xl outline-none border border-white/5">
+                            <div class="group">
+                                <label class="text-[9px] font-black uppercase opacity-40 block mb-2 tracking-widest">Inizio Turno</label>
+                                <input type="time" id="time-start" class="w-full bg-white/5 hover:bg-white/10 focus:bg-indigo-600/20 p-4 rounded-2xl font-black text-2xl outline-none border border-white/5 transition-all">
                             </div>
-                            <div>
-                                <label class="text-[9px] font-black uppercase opacity-40 block mb-2">Fine Turno</label>
-                                <input type="time" id="time-end" class="w-full bg-white/10 p-4 rounded-xl font-black text-2xl outline-none border border-white/5">
+                            <div class="group">
+                                <label class="text-[9px] font-black uppercase opacity-40 block mb-2 tracking-widest">Fine Turno</label>
+                                <input type="time" id="time-end" class="w-full bg-white/5 hover:bg-white/10 focus:bg-indigo-600/20 p-4 rounded-2xl font-black text-2xl outline-none border border-white/5 transition-all">
                             </div>
-                            <button onclick="saveShift()" class="w-full bg-indigo-600 p-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition-all shadow-lg">Salva Turno</button>
-                            <p id="shift-calc-preview" class="text-center text-[10px] font-bold text-emerald-400 uppercase"></p>
+                            <button onclick="saveShift()" class="w-full bg-indigo-600 p-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-indigo-500 active:scale-95 transition-all shadow-lg">Salva e Calcola</button>
+                            <div id="preview-box" class="hidden text-center p-3 bg-emerald-500/10 rounded-xl">
+                                <p id="shift-calc-preview" class="text-[10px] font-black text-emerald-400 uppercase"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="spese" class="content-section space-y-6">
-                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Spese Fisse</h2>
+                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Spese Mensili</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 rounded-[2.5rem] border">
-                        <input type="text" id="fissa-nome" placeholder="Nome Spesa" class="w-full p-4 bg-slate-50 rounded-xl mb-4 font-bold outline-none">
-                        <input type="number" id="fissa-prezzo" placeholder="Prezzo €" class="w-full p-4 bg-slate-50 rounded-xl mb-4 font-black outline-none">
-                        <button onclick="addItem('fissa')" class="w-full bg-slate-900 text-white p-4 rounded-xl font-black uppercase text-xs">Aggiungi</button>
+                    <div class="bg-white p-8 rounded-[3rem] border border-slate-200 h-fit">
+                        <p class="text-[10px] font-black uppercase text-slate-300 mb-6">Aggiungi Uscita Fissa</p>
+                        <input type="text" id="fissa-nome" placeholder="Affitto, Netflix, ecc..." class="w-full p-4 bg-slate-50 rounded-2xl mb-4 font-bold outline-none focus:ring-2 ring-indigo-500">
+                        <input type="number" id="fissa-prezzo" placeholder="Importo €" class="w-full p-4 bg-slate-50 rounded-2xl mb-6 font-black outline-none focus:ring-2 ring-indigo-500">
+                        <button onclick="addItem('fissa')" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase text-[10px] tracking-widest">Aggiungi alla lista</button>
                     </div>
-                    <div id="lista-fisse" class="space-y-2"></div>
+                    <div class="space-y-3">
+                        <div id="lista-fisse" class="space-y-3"></div>
+                        <div class="p-6 bg-indigo-50 rounded-[2rem] text-right"><span class="text-[10px] font-black uppercase text-indigo-400 mr-4">Totale Fisse:</span><span id="tot-fisse" class="text-2xl font-black text-indigo-600 italic">€ 0,00</span></div>
+                    </div>
                 </div>
             </div>
 
             <div id="variabili" class="content-section space-y-6">
                 <h2 class="text-4xl font-black tracking-tighter uppercase italic">Spese Variabili</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 rounded-[2.5rem] border">
-                        <input type="text" id="var-nome" placeholder="Nome Spesa" class="w-full p-4 bg-slate-50 rounded-xl mb-4 font-bold outline-none">
-                        <input type="number" id="var-prezzo" placeholder="Prezzo €" class="w-full p-4 bg-slate-50 rounded-xl mb-4 font-black outline-none">
-                        <button onclick="addItem('variabile')" class="w-full bg-indigo-600 text-white p-4 rounded-xl font-black uppercase text-xs">Aggiungi</button>
+                    <div class="bg-white p-8 rounded-[3rem] border border-slate-200 h-fit">
+                        <p class="text-[10px] font-black uppercase text-slate-300 mb-6">Aggiungi Uscita Variabile</p>
+                        <input type="text" id="var-nome" placeholder="Cena, Spesa, Regalo..." class="w-full p-4 bg-slate-50 rounded-2xl mb-4 font-bold outline-none focus:ring-2 ring-emerald-500">
+                        <input type="number" id="var-prezzo" placeholder="Importo €" class="w-full p-4 bg-slate-50 rounded-2xl mb-6 font-black outline-none focus:ring-2 ring-emerald-500">
+                        <button onclick="addItem('variabile')" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-black uppercase text-[10px] tracking-widest">Aggiungi alla lista</button>
                     </div>
-                    <div id="lista-variabili" class="space-y-2"></div>
-                </div>
-            </div>
-
-            <div id="calendario" class="content-section space-y-6">
-                <h2 class="text-4xl font-black tracking-tighter uppercase italic">Note</h2>
-                <div class="bg-white p-8 rounded-[2.5rem] border">
-                    <div id="note-grid" class="grid grid-cols-7 gap-2"></div>
+                    <div class="space-y-3">
+                        <div id="lista-variabili" class="space-y-3"></div>
+                        <div class="p-6 bg-emerald-50 rounded-[2rem] text-right"><span class="text-[10px] font-black uppercase text-emerald-400 mr-4">Totale Variabili:</span><span id="tot-variabili" class="text-2xl font-black text-emerald-600 italic">€ 0,00</span></div>
+                    </div>
                 </div>
             </div>
 
@@ -152,8 +170,8 @@
     </div>
 
     <script>
-        // DATI
-        let workData = JSON.parse(localStorage.getItem('myFinWork')) || {}; // Salva: { "d-m-y": { start: "06:00", end: "14:00", hours: 8 } }
+        // CORE DATA
+        let workData = JSON.parse(localStorage.getItem('myFinWork')) || {}; 
         let fisse = JSON.parse(localStorage.getItem('myFinFisse')) || [];
         let variabili = JSON.parse(localStorage.getItem('myFinVariabili')) || [];
         let pagaOraria = localStorage.getItem('myFinPaga') || 10;
@@ -171,23 +189,29 @@
             document.getElementById('btn-' + id).classList.add('active');
             if(id === 'home') renderResoconto();
             if(id === 'lavoro') renderWork();
-            if(window.innerWidth < 768) toggleMobileSidebar();
+            if(id === 'spese' || id === 'variabili') renderItems();
+            if(window.innerWidth < 1024) document.getElementById('sidebar').classList.remove('mobile-open');
         }
 
-        // --- LOGICA LAVORO (TURNI) ---
+        // --- LOGICA TURNI ---
         function renderWork() {
-            const grid = document.getElementById('work-grid'); const y = workViewDate.getFullYear(); const m = workViewDate.getMonth();
+            const grid = document.getElementById('work-grid'); 
+            const y = workViewDate.getFullYear(); 
+            const m = workViewDate.getMonth();
             document.getElementById('workMonthTitle').innerText = new Intl.DateTimeFormat('it-IT', {month:'long', year:'numeric'}).format(workViewDate);
-            grid.innerHTML = ''; const first = new Date(y, m, 1).getDay() || 7; const last = new Date(y, m+1, 0).getDate();
+            grid.innerHTML = ''; 
+            const first = new Date(y, m, 1).getDay() || 7; 
+            const last = new Date(y, m+1, 0).getDate();
             
             for(let i=1; i<first; i++) grid.innerHTML += '<div></div>';
             for(let d=1; d<=last; d++) {
-                const k = `${d}-${m}-${y}`; const data = workData[k];
+                const k = `${d}-${m}-${y}`; 
+                const data = workData[k];
                 const hasHours = data ? 'has-hours' : '';
                 const isSel = selectedWorkKey === k ? 'selected' : '';
-                grid.innerHTML += `<div onclick="selectWorkDay(${d},${m},${y})" class="work-day ${hasHours} ${isSel} p-4 rounded-xl border text-center cursor-pointer hover:bg-indigo-50 transition-all">
-                    <span class="text-[10px] block font-black text-slate-300">${d}</span>
-                    <span class="text-xs font-bold ${data?'text-indigo-600':'text-transparent'}">${data ? data.hours+'h' : '0h'}</span>
+                grid.innerHTML += `<div onclick="selectWorkDay(${d},${m},${y})" class="work-day ${hasHours} ${isSel} p-3 rounded-2xl border flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-all h-20">
+                    <span class="text-[10px] font-black text-slate-300 uppercase">${d}</span>
+                    <span class="text-xs font-black ${data?'text-indigo-600':'text-transparent'}">${data ? data.hours+'h' : '0h'}</span>
                 </div>`;
             }
         }
@@ -195,22 +219,21 @@
         function selectWorkDay(d, m, y) {
             selectedWorkKey = `${d}-${m}-${y}`;
             const data = workData[selectedWorkKey];
-            document.getElementById('selectedWorkDay').innerText = `${d}/${m+1}/${y}`;
+            document.getElementById('selectedWorkDay').innerText = `${d} / ${m+1} / ${y}`;
             document.getElementById('time-start').value = data ? data.start : "";
             document.getElementById('time-end').value = data ? data.end : "";
             renderWork();
         }
 
         function saveShift() {
-            if(!selectedWorkKey) return alert("Seleziona un giorno!");
+            if(!selectedWorkKey) return alert("Clicca su un giorno nel calendario!");
             const start = document.getElementById('time-start').value;
             const end = document.getElementById('time-end').value;
             
             if(start && end) {
                 const s = start.split(':'); const e = end.split(':');
                 let diff = (new Date(0,0,0,e[0],e[1]) - new Date(0,0,0,s[0],s[1])) / 1000 / 60 / 60;
-                if (diff < 0) diff += 24; // Gestione turno notte
-                
+                if (diff < 0) diff += 24; // Notturno
                 workData[selectedWorkKey] = { start, end, hours: diff.toFixed(2) };
             } else {
                 delete workData[selectedWorkKey];
@@ -221,32 +244,108 @@
             renderResoconto();
         }
 
-        // --- RESOCONTI ---
+        // --- RESOCONTI & STORICO ---
         function renderResoconto() {
             const now = new Date();
             const curM = now.getMonth();
             const curY = now.getFullYear();
             document.getElementById('year-label').innerText = curY;
 
-            let oreMese = 0, oreAnno = 0;
+            let oreMese = 0;
+            let annualTotals = {}; // Per lo storico
+
             for(let k in workData) {
                 const [d, m, y] = k.split('-').map(Number);
                 const h = parseFloat(workData[k].hours);
-                if(y === curY) {
-                    oreAnno += h;
-                    if(m === curM) oreMese += h;
-                }
+                
+                // Accumula per anno
+                if(!annualTotals[y]) annualTotals[y] = 0;
+                annualTotals[y] += h;
+
+                // Accumula per mese corrente
+                if(y === curY && m === curM) oreMese += h;
             }
 
             const guadagnoMese = oreMese * pagaOraria;
-            const guadagnoAnno = oreAnno * pagaOraria;
+            const guadagnoAnnoCorrente = (annualTotals[curY] || 0) * pagaOraria;
 
             document.getElementById('h-guadagno-mese').innerText = `€ ${guadagnoMese.toLocaleString('it-IT', {minimumFractionDigits:2})}`;
-            document.getElementById('h-ore-mese').innerText = `${oreMese.toFixed(1)} ore lavorate`;
-            document.getElementById('h-guadagno-anno').innerText = `€ ${guadagnoAnno.toLocaleString('it-IT', {minimumFractionDigits:2})}`;
-            document.getElementById('h-ore-anno').innerText = `${oreAnno.toFixed(1)} ore totali nell'anno`;
+            document.getElementById('h-ore-mese').innerText = `${oreMese.toFixed(1)} ore questo mese`;
+            document.getElementById('h-guadagno-anno').innerText = `€ ${guadagnoAnnoCorrente.toLocaleString('it-IT', {minimumFractionDigits:2})}`;
+            document.getElementById('h-ore-anno').innerText = `${(annualTotals[curY] || 0).toFixed(1)} ore nel ${curY}`;
 
+            renderStorico(annualTotals);
             updateChart(guadagnoMese);
+        }
+
+        function renderStorico(totals) {
+            const container = document.getElementById('storico-list');
+            container.innerHTML = '';
+            const years = Object.keys(totals).sort((a,b) => b-a); // Anni più recenti sopra
+
+            if(years.length === 0) {
+                container.innerHTML = '<p class="text-xs italic text-slate-300">Nessun dato negli anni passati.</p>';
+                return;
+            }
+
+            years.forEach(y => {
+                const g = totals[y] * pagaOraria;
+                container.innerHTML += `
+                    <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase">${y}</p>
+                            <p class="text-xs font-bold text-slate-600">${totals[y].toFixed(1)} ore</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-black text-indigo-600 italic">€ ${g.toLocaleString('it-IT', {minimumFractionDigits:2})}</p>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // --- SPESE ---
+        function addItem(type) {
+            const n = document.getElementById(type==='fissa'?'fissa-nome':'var-nome').value;
+            const p = document.getElementById(type==='fissa'?'fissa-prezzo':'var-prezzo').value;
+            if(n && p) {
+                if(type==='fissa') fisse.push({nome:n, prezzo:p});
+                else variabili.push({nome:n, prezzo:p});
+                document.getElementById(type==='fissa'?'fissa-nome':'var-nome').value = '';
+                document.getElementById(type==='fissa'?'fissa-prezzo':'var-prezzo').value = '';
+                renderItems();
+                renderResoconto();
+            }
+        }
+
+        function delItem(type, index) {
+            if(type==='fissa') fisse.splice(index, 1);
+            else variabili.splice(index, 1);
+            renderItems();
+            renderResoconto();
+        }
+
+        function renderItems() {
+            let tF = 0, tV = 0;
+            const lf = document.getElementById('lista-fisse'); lf.innerHTML = '';
+            fisse.forEach((s, i) => {
+                tF += parseFloat(s.prezzo);
+                lf.innerHTML += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100">
+                    <span class="font-bold text-slate-700">${s.nome}</span>
+                    <button onclick="delItem('fissa', ${i})" class="font-black text-indigo-600">€ ${parseFloat(s.prezzo).toLocaleString()} <i class="fas fa-times-circle ml-2 text-rose-400"></i></button>
+                </div>`;
+            });
+            const lv = document.getElementById('lista-variabili'); lv.innerHTML = '';
+            variabili.forEach((s, i) => {
+                tV += parseFloat(s.prezzo);
+                lv.innerHTML += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100">
+                    <span class="font-bold text-slate-700">${s.nome}</span>
+                    <button onclick="delItem('variabile', ${i})" class="font-black text-emerald-600">€ ${parseFloat(s.prezzo).toLocaleString()} <i class="fas fa-times-circle ml-2 text-rose-400"></i></button>
+                </div>`;
+            });
+            document.getElementById('tot-fisse').innerText = `€ ${tF.toLocaleString()}`;
+            document.getElementById('tot-variabili').innerText = `€ ${tV.toLocaleString()}`;
+            localStorage.setItem('myFinFisse', JSON.stringify(fisse));
+            localStorage.setItem('myFinVariabili', JSON.stringify(variabili));
         }
 
         function updateChart(guadagnoMese) {
@@ -262,22 +361,31 @@
                     datasets: [{
                         data: [guadagnoMese, tF + tV],
                         backgroundColor: ['#4f46e5', '#f43f5e'],
-                        borderWidth: 0
+                        borderWidth: 0,
+                        hoverOffset: 20
                     }]
                 },
-                options: { cutout: '80%', plugins: { legend: { display: false } } }
+                options: { 
+                    cutout: '85%', 
+                    plugins: { legend: { display: false } },
+                    animation: { animateScale: true }
+                }
             });
         }
 
-        // UTILITY
+        // UTILS
         function updatePaga() { pagaOraria = document.getElementById('paga-oraria').value; localStorage.setItem('myFinPaga', pagaOraria); renderResoconto(); }
         function changeWorkMonth(s) { workViewDate.setMonth(workViewDate.getMonth()+s); renderWork(); }
-        function addItem(t) { /* Logica spese simile a prima */ }
-        function resetApp() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
+        function exportData() {
+            const blob = new Blob([JSON.stringify({workData, fisse, variabili, pagaOraria})], {type: 'application/json'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'MyFinance_Backup.json'; a.click();
+        }
+        function resetApp() { if(confirm("Attenzione: cancellerai tutti i dati salvati. Procedere?")) { localStorage.clear(); location.reload(); } }
 
-        // Avvio
+        // START
         document.getElementById('paga-oraria').value = pagaOraria;
         renderResoconto();
+        renderItems();
     </script>
 </body>
 </html>
