@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MyFinance Pro - GitHub</title>
+    <title>MyFinance Pro - Full System</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,6 +27,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
         .day-box { transition: all 0.2s; border: 1px solid #e2e8f0; aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; background: white; }
+        .day-box:hover { background-color: #f1f5f9; }
         .day-box.selected { border: 2px solid var(--primary); background-color: #eff6ff; }
         .has-hours { border-bottom: 4px solid #10b981; }
         .has-note::after { content: ''; width: 6px; height: 6px; background: #f43f5e; border-radius: 50%; margin-top: 2px; }
@@ -99,12 +100,28 @@
             </div>
 
             <div id="lavoro" class="content-section space-y-8">
-                <div class="flex justify-between items-end"><h2 class="text-4xl font-black tracking-tighter uppercase italic">Ore Lavoro</h2><input type="number" id="pagaOraria" onchange="updatePaga()" class="w-16 p-2 border rounded-xl font-black text-center text-indigo-600"></div>
+                <div class="flex justify-between items-end">
+                    <h2 class="text-4xl font-black tracking-tighter uppercase italic">Ore Lavoro</h2>
+                    <div class="bg-white p-3 rounded-xl border flex items-center space-x-2">
+                        <span class="text-[10px] font-black text-slate-400 uppercase">Paga €/h</span>
+                        <input type="number" id="pagaOraria" onchange="updatePaga()" class="w-12 font-black text-indigo-600 outline-none text-right">
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border shadow-sm"><div id="work-grid" class="grid grid-cols-7 gap-2 mt-8"></div></div>
+                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border shadow-sm">
+                        <div class="flex justify-between items-center mb-8">
+                            <button onclick="changeMonth(-1, 'work')" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-left"></i></button>
+                            <span id="workMonthTitle" class="font-black uppercase tracking-widest text-sm text-slate-600"></span>
+                            <button onclick="changeMonth(1, 'work')" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div id="work-grid" class="grid grid-cols-7 gap-2"></div>
+                    </div>
                     <div class="bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl h-fit">
-                        <h4 id="selectedWorkDate" class="text-center font-black mb-6 text-indigo-400">Seleziona Data</h4>
-                        <div class="grid grid-cols-2 gap-4 mb-4"><input type="time" id="oraInizio" class="bg-white/10 p-4 rounded-2xl text-center"><input type="time" id="oraFine" class="bg-white/10 p-4 rounded-2xl text-center"></div>
+                        <h4 id="selectedWorkDate" class="text-lg font-black mb-6 text-indigo-400 text-center uppercase tracking-widest">Seleziona Data</h4>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <input type="time" id="oraInizio" class="w-full bg-white/10 p-4 rounded-2xl text-white text-center outline-none">
+                            <input type="time" id="oraFine" class="w-full bg-white/10 p-4 rounded-2xl text-white text-center outline-none">
+                        </div>
                         <button onclick="saveHours()" class="w-full bg-indigo-600 p-5 rounded-2xl font-black uppercase text-xs">Salva Turno</button>
                     </div>
                 </div>
@@ -137,9 +154,16 @@
             <div id="note" class="content-section space-y-8">
                 <h2 class="text-4xl font-black tracking-tighter uppercase italic">Note & Memo</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border shadow-sm"><div id="note-grid" class="grid grid-cols-7 gap-2 mt-8"></div></div>
+                    <div class="lg:col-span-2 bg-white p-8 rounded-[3rem] border shadow-sm">
+                        <div class="flex justify-between items-center mb-8">
+                            <button onclick="changeMonth(-1, 'note')" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-left"></i></button>
+                            <span id="noteMonthTitle" class="font-black uppercase tracking-widest text-sm text-slate-600"></span>
+                            <button onclick="changeMonth(1, 'note')" class="w-10 h-10 hover:bg-slate-100 rounded-full"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div id="note-grid" class="grid grid-cols-7 gap-2"></div>
+                    </div>
                     <div class="bg-white p-8 rounded-[3rem] border shadow-xl h-fit">
-                        <h4 id="selectedNoteDate" class="font-black mb-4 text-indigo-600 border-b pb-4">Seleziona Giorno</h4>
+                        <h4 id="selectedNoteDate" class="text-lg font-black mb-4 text-indigo-600 border-b pb-4 italic">Seleziona Giorno</h4>
                         <textarea id="noteText" placeholder="Cosa devi ricordare?" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 font-bold outline-none h-32"></textarea>
                         <button onclick="saveNote()" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase text-xs">Aggiungi Memo</button>
                         <div id="dayNotesList" class="mt-6 space-y-2"></div>
@@ -188,12 +212,10 @@
             let entrateMese = oreMese * db.paga;
             let totFisse = db.fisse.reduce((a, b) => a + parseFloat(b.prezzo), 0);
             let totVar = db.variabili.reduce((a, b) => a + parseFloat(b.prezzo), 0);
-
             document.getElementById('dash-tot-mese').innerText = `€ ${entrateMese.toFixed(2)}`;
             document.getElementById('dash-tot-anno').innerText = `€ ${totAnno.toFixed(2)}`;
             document.getElementById('dash-fisse').innerText = `€ ${totFisse.toFixed(2)}`;
             document.getElementById('dash-variabili').innerText = `€ ${totVar.toFixed(2)}`;
-
             renderDashNotes();
             const ctx = document.getElementById('mainChart').getContext('2d');
             if(myChart) myChart.destroy();
@@ -206,34 +228,69 @@
             keys.forEach(k => db.notes[k].forEach(n => { container.innerHTML += `<div class="bg-white/10 p-3 rounded-xl border border-white/5"><p class="text-[9px] font-black text-indigo-400 uppercase">${k}</p><p class="text-xs">${n}</p></div>`; }));
         }
 
-        function addEntry(type) {
-            const prefix = type === 'fissa' ? 'fissa' : 'var';
-            const name = document.getElementById(prefix + '-nome');
-            const price = document.getElementById(prefix + '-prezzo');
-            if(name.value && price.value) {
-                db[type === 'fissa' ? 'fisse' : 'variabili'].push({nome: name.value, prezzo: parseFloat(price.value)});
-                name.value = ''; price.value = '';
-                saveAll(); renderLists(); renderDashboard();
+        function renderCalendar(type) {
+            const date = type === 'work' ? currentWorkDate : currentNoteDate;
+            const grid = document.getElementById(type + '-grid');
+            const title = document.getElementById(type + 'MonthTitle');
+            const y = date.getFullYear(); const m = date.getMonth();
+            title.innerText = new Intl.DateTimeFormat('it-IT', {month:'long', year:'numeric'}).format(date);
+            grid.innerHTML = '';
+            const firstDay = new Date(y, m, 1).getDay() || 7;
+            const daysInMonth = new Date(y, m + 1, 0).getDate();
+            for(let i = 1; i < firstDay; i++) grid.innerHTML += '<div></div>';
+            for(let d = 1; d <= daysInMonth; d++) {
+                const key = `${d}-${m}-${y}`;
+                const isSelected = (type === 'work' ? selectedWorkKey : selectedNoteKey) === key;
+                const hasData = type === 'work' ? (db.work[key] ? 'has-hours' : '') : (db.notes[key] ? 'has-note' : '');
+                grid.innerHTML += `<div onclick="selectDay(${d},${m},${y},'${type}')" class="day-box ${isSelected ? 'selected' : ''} ${hasData}"><span class="text-[10px] font-black text-slate-300">${d}</span>${type === 'work' && db.work[key] ? `<span class="text-[10px] font-black text-indigo-600">${db.work[key]}h</span>` : ''}</div>`;
             }
         }
 
+        function selectDay(d, m, y, type) {
+            const key = `${d}-${m}-${y}`;
+            if(type === 'work') { selectedWorkKey = key; document.getElementById('selectedWorkDate').innerText = `${d}/${m+1}/${y}`; }
+            else { selectedNoteKey = key; document.getElementById('selectedNoteDate').innerText = `${d}/${m+1}/${y}`; renderDayNotes(); }
+            renderCalendar(type);
+        }
+
+        function saveHours() {
+            if(!selectedWorkKey) return alert("Scegli un giorno!");
+            const s = document.getElementById('oraInizio').value; const e = document.getElementById('oraFine').value;
+            if(!s || !e) delete db.work[selectedWorkKey];
+            else { const [h1, m1] = s.split(':').map(Number); const [h2, m2] = e.split(':').map(Number); let diff = (h2 * 60 + m2) - (h1 * 60 + m1); if(diff < 0) diff += 1440; db.work[selectedWorkKey] = (diff/60).toFixed(2); }
+            saveAll(); renderCalendar('work'); renderDashboard();
+        }
+
+        function saveNote() {
+            const txt = document.getElementById('noteText').value;
+            if(!selectedNoteKey || !txt) return;
+            if(!db.notes[selectedNoteKey]) db.notes[selectedNoteKey] = [];
+            db.notes[selectedNoteKey].push(txt); document.getElementById('noteText').value = '';
+            saveAll(); renderDayNotes(); renderCalendar('note');
+        }
+
+        function renderDayNotes() {
+            const list = document.getElementById('dayNotesList'); list.innerHTML = '';
+            if(db.notes[selectedNoteKey]) db.notes[selectedNoteKey].forEach((n, i) => { list.innerHTML += `<div class="bg-slate-50 p-3 rounded-xl flex justify-between text-sm"><span>${n}</span><button onclick="deleteNote(${i})" class="text-rose-400">×</button></div>`; });
+        }
+
+        function deleteNote(i) { db.notes[selectedNoteKey].splice(i, 1); if(db.notes[selectedNoteKey].length === 0) delete db.notes[selectedNoteKey]; saveAll(); renderDayNotes(); renderCalendar('note'); }
+
+        function addEntry(type) {
+            const prefix = type === 'fissa' ? 'fissa' : 'var';
+            const n = document.getElementById(prefix + '-nome'); const p = document.getElementById(prefix + '-prezzo');
+            if(n.value && p.value) { db[type === 'fissa' ? 'fisse' : 'variabili'].push({nome: n.value, prezzo: parseFloat(p.value)}); n.value = ''; p.value = ''; saveAll(); renderLists(); renderDashboard(); }
+        }
+
         function renderLists() {
-            ['fisse', 'variabili'].forEach(type => {
-                const list = document.getElementById('list-' + type); list.innerHTML = '';
-                db[type].forEach((item, i) => { list.innerHTML += `<div class="bg-white p-4 rounded-xl flex justify-between border shadow-sm"><b>${item.nome}</b> <span>€ ${item.prezzo.toFixed(2)} <button onclick="deleteEntry('${type}', ${i})" class="ml-2 text-rose-400">×</button></span></div>`; });
-            });
+            ['fisse', 'variabili'].forEach(type => { const list = document.getElementById('list-' + (type === 'fisse' ? 'fisse' : 'variabili')); list.innerHTML = ''; db[type].forEach((item, i) => { list.innerHTML += `<div class="bg-white p-4 rounded-xl flex justify-between border shadow-sm"><b>${item.nome}</b> <span>€ ${item.prezzo.toFixed(2)} <button onclick="deleteEntry('${type}', ${i})" class="ml-2 text-rose-400">×</button></span></div>`; }); });
         }
 
         function deleteEntry(type, i) { db[type].splice(i, 1); saveAll(); renderLists(); renderDashboard(); }
         function saveAll() { localStorage.setItem('myFinWork', JSON.stringify(db.work)); localStorage.setItem('myFinNotes', JSON.stringify(db.notes)); localStorage.setItem('myFinFisse', JSON.stringify(db.fisse)); localStorage.setItem('myFinVariabili', JSON.stringify(db.variabili)); localStorage.setItem('myFinPaga', db.paga); }
-        function exportJSON() { const blob = new Blob([JSON.stringify(db)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Backup.json"; a.click(); }
+        function changeMonth(dir, type) { if(type === 'work') currentWorkDate.setMonth(currentWorkDate.getMonth() + dir); else currentNoteDate.setMonth(currentNoteDate.getMonth() + dir); renderCalendar(type); }
         function updatePaga() { db.paga = document.getElementById('pagaOraria').value; saveAll(); renderDashboard(); }
-
-        // Funzioni calendario base rimaste per brevità... 
-        function renderCalendar(type) { /* Logica calendario */ }
-        function selectDay(d, m, y, type) { /* Logica selezione */ }
-        function saveHours() { /* Logica ore */ }
-        function saveNote() { /* Logica note */ }
+        function exportJSON() { const blob = new Blob([JSON.stringify(db)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Backup.json"; a.click(); }
 
         document.getElementById('pagaOraria').value = db.paga;
         renderDashboard();
