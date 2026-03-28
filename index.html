@@ -3,203 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio-App | Home Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Bilancio App - Analisi Strategica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #f0f2f5;
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --primary: #3b82f6;
-            --green: #10b981;
-            --red: #ef4444;
-            --blue-light: #e0f2fe;
-            --border: #e2e8f0;
-        }
-
-        body {
-            margin: 0; font-family: 'Inter', system-ui, sans-serif;
-            background: var(--bg); color: var(--text-main);
-            display: flex; height: 100vh; overflow: hidden;
-        }
-
-        /* SIDEBAR UNIFICATA */
-        .sidebar {
-            width: 90px; background: var(--white); border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; align-items: center; padding: 25px 0; flex-shrink: 0;
-        }
-        .sidebar-logo { color: var(--primary); font-size: 28px; margin-bottom: 40px; }
-        .nav-link { color: #cbd5e1; font-size: 24px; margin: 18px 0; text-decoration: none; transition: 0.3s; }
-        .nav-link.active { color: var(--primary); }
-        .nav-link:hover { color: var(--primary); }
-        .logout { margin-top: auto; color: #cbd5e1; cursor: pointer; }
-
-        /* LAYOUT PRINCIPALE */
-        .main-content {
-            flex-grow: 1; padding: 25px; display: grid;
-            grid-template-columns: 360px 1fr;
-            grid-template-rows: 400px 1fr;
-            gap: 20px; overflow-y: auto;
-        }
-
-        .card { 
-            background: var(--white); border-radius: 20px; padding: 22px; 
-            border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-            display: flex; flex-direction: column;
-        }
-
-        /* 1. BILANCIO (TOP LEFT) */
-        .balance-card h2 { font-size: 18px; margin: 0 0 20px 0; color: var(--text-sub); }
-        .stat-group { margin-bottom: 20px; }
-        .stat-group .label { font-size: 13px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
-        .stat-group .val { font-size: 36px; font-weight: 800; display: block; margin-top: 5px; }
-        .netto-box { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; }
-
-        /* 2. CALENDARIO (TOP RIGHT) */
-        .calendar-card { grid-column: 2; }
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .calendar-table { width: 100%; border-collapse: collapse; flex-grow: 1; }
-        .calendar-table th { font-size: 12px; color: var(--text-sub); padding: 8px; }
-        .calendar-table td { border: 1px solid #f1f5f9; text-align: center; padding: 10px; height: 40px; font-size: 13px; position: relative; }
-        .event-dot { width: 6px; height: 6px; border-radius: 50%; display: block; margin: 3px auto; }
-
-        /* 3. DETTAGLIO MOVIMENTI (BOTTOM - FULL WIDTH) */
-        .data-card { grid-column: 1 / 3; }
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .data-table th { text-align: left; padding: 12px; font-size: 13px; color: var(--text-sub); border-bottom: 2px solid var(--border); }
-        .data-table td { padding: 12px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
-        
-        /* Titoli Sezioni (Entrate/Uscite) */
-        .row-cat { background: var(--blue-light); font-weight: bold; color: #0369a1; }
-        .pos { color: var(--green); font-weight: 700; }
-        .neg { color: var(--red); font-weight: 700; }
-
+        body { font-family: 'Inter', sans-serif; }
+        .card-gradient-attivo { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); }
+        .card-gradient-passivo { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-900 pb-20">
 
-    <nav class="sidebar">
-        <div class="sidebar-logo"><i class="fas fa-th-large"></i></div>
-        <a href="index.html" class="nav-link active"><i class="fas fa-home"></i></a>
-        <a href="calendario.html" class="nav-link"><i class="fas fa-calendar-alt"></i></a>
-        <a href="resoconto.html" class="nav-link"><i class="fas fa-chart-line"></i></a>
-        <a href="guadagni.html" class="nav-link"><i class="fas fa-wallet"></i></a>
-        <div class="logout"><i class="fas fa-power-off" onclick="localStorage.clear(); location.reload();"></i></div>
-    </nav>
-
-    <div class="main-content">
+    <div id="app" class="max-w-6xl mx-auto p-4 md:p-8 space-y-10">
         
-        <div class="card">
-            <h2>Riepilogo Mensile</h2>
-            <div class="stat-group">
-                <span class="label">Guadagni Totali:</span>
-                <span class="val" id="h-entrate" style="color: var(--text-main);">€ 0,00</span>
+        <header class="flex flex-col md:flex-row justify-between items-center border-b border-gray-200 pb-8">
+            <div>
+                <h1 class="text-4xl font-black tracking-tighter uppercase">Analisi Strategica</h1>
+                <p class="text-gray-500 font-medium">Gestione flussi di cassa e previsioni</p>
             </div>
-            <div class="stat-group">
-                <span class="label">Spese Totali:</span>
-                <span class="val" id="h-uscite" style="color: var(--text-main);">€ 0,00</span>
+            <div class="mt-4 md:mt-0 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 flex items-center">
+                <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-2"></span>
+                <span class="text-xs font-bold uppercase text-gray-600">Sistema Attivo</span>
             </div>
-            <div class="stat-group netto-box">
-                <span class="label">Totale Netto:</span>
-                <span class="val" id="h-netto" style="color: var(--primary);">€ 0,00</span>
-            </div>
-        </div>
+        </header>
 
-        <div class="card calendar-card">
-            <div class="cal-header">
-                <strong style="font-size: 18px;">Promemoria Spese e Utenze</strong>
-                <span style="color:var(--primary); font-size: 13px; font-weight: 700; cursor:pointer;">Marzo 2026 <i class="fas fa-chevron-right"></i></span>
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-50">
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Entrate Previste</p>
+                <h2 id="entrate-previste" class="text-3xl font-black text-emerald-600 mt-2">€ 0,00</h2>
+                <div class="mt-4 text-[10px] font-bold text-emerald-500 bg-emerald-50 inline-block px-2 py-1 rounded">CREDITI ATTIVI</div>
             </div>
-            <table class="calendar-table">
-                <thead>
-                    <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
-                </thead>
-                <tbody id="cal-grid">
-                    </tbody>
-            </table>
-        </div>
 
-        <div class="card data-card">
-            <h3 style="margin-top:0">Dettaglio Movimenti Automatici</h3>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Categoria</th>
-                        <th>Descrizione</th>
-                        <th>Responsabile</th>
-                        <th>Importo</th>
-                    </tr>
-                </thead>
-                <tbody id="tabella-body">
-                    </tbody>
-            </table>
-        </div>
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-50">
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Uscite Pendenti</p>
+                <h2 id="uscite-pendenti" class="text-3xl font-black text-rose-600 mt-2">€ 0,00</h2>
+                <div class="mt-4 text-[10px] font-bold text-rose-500 bg-rose-50 inline-block px-2 py-1 rounded">DEBITI DA SALDARE</div>
+            </div>
+
+            <div id="card-saldo" class="p-6 rounded-[2rem] shadow-xl text-white transition-colors duration-500">
+                <p id="label-saldo" class="text-xs font-black opacity-80 uppercase tracking-widest italic">Saldo Futuro</p>
+                <h2 id="saldo-netto" class="text-3xl font-black mt-2">€ 0,00</h2>
+                <div class="mt-4 text-[10px] font-black bg-white/20 inline-block px-2 py-1 rounded uppercase">Risultato Strategico</div>
+            </div>
+        </section>
+
+        <section class="bg-gray-900 p-8 rounded-[2.5rem] shadow-2xl">
+            <h3 class="text-white font-black mb-6 uppercase text-sm tracking-widest">Nuova Registrazione</h3>
+            <form id="form-movimento" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input type="text" id="desc" placeholder="Descrizione" class="p-4 rounded-2xl bg-gray-800 text-white border-none focus:ring-2 focus:ring-indigo-500 outline-none font-medium" required>
+                <input type="number" id="valore" placeholder="Importo €" class="p-4 rounded-2xl bg-gray-800 text-white border-none focus:ring-2 focus:ring-indigo-500 outline-none font-bold" required>
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="tipo" class="p-4 rounded-2xl bg-gray-800 text-white font-bold text-xs uppercase cursor-pointer">
+                        <option value="entrata">Entrata</option>
+                        <option value="uscita">Uscita</option>
+                    </select>
+                    <select id="stato" class="p-4 rounded-2xl bg-gray-800 text-white font-bold text-xs uppercase cursor-pointer">
+                        <option value="saldato">Saldato</option>
+                        <option value="pendente">Pendente</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-indigo-500 hover:bg-indigo-400 text-white font-black rounded-2xl p-4 transition-all uppercase text-sm shadow-lg shadow-indigo-500/20">Aggiungi</button>
+            </form>
+        </section>
+
+        <section class="space-y-4">
+            <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.4em] ml-4">Cronologia Recente</h3>
+            <div id="lista-container" class="space-y-3">
+                </div>
+        </section>
 
     </div>
 
     <script>
-        // Funzione per caricare i dati e popolare la dashboard
-        function inizializzaDashboard() {
-            // Recupero dati dal database condiviso (localStorage)
-            const db = JSON.parse(localStorage.getItem('database_bilancio')) || { entrate: [], uscite: [] };
+        // DATI APP
+        let movimenti = JSON.parse(localStorage.getItem('movimenti')) || [];
+
+        const form = document.getElementById('form-movimento');
+        const listaContainer = document.getElementById('lista-container');
+
+        // FUNZIONE PER AGGIORNARE I CALCOLI
+        function aggiornaAnalisi() {
+            const entrateP = movimenti.filter(m => m.tipo === 'entrata' && m.stato === 'pendente').reduce((s, m) => s + Number(m.valore), 0);
+            const usciteP = movimenti.filter(m => m.tipo === 'uscita' && m.stato === 'pendente').reduce((s, m) => s + Number(m.valore), 0);
+            const netto = entrateP - usciteP;
+
+            document.getElementById('entrate-previste').innerText = `€ ${entrateP.toLocaleString('it-IT')}`;
+            document.getElementById('uscite-pendenti').innerText = `€ ${usciteP.toLocaleString('it-IT')}`;
+            document.getElementById('saldo-netto').innerText = `€ ${Math.abs(netto).toLocaleString('it-IT')}`;
+
+            const cardSaldo = document.getElementById('card-saldo');
+            const labelSaldo = document.getElementById('label-saldo');
             
-            const tbody = document.getElementById('tabella-body');
-            let entrateTot = 0;
-            let usciteTot = 0;
-            let rowsHtml = '';
-
-            // --- SEZIONE ENTRATE ---
-            rowsHtml += `<tr class="row-cat"><td colspan="4">Resoconto Entrate</td></tr>`;
-            if(db.entrate.length === 0) {
-                rowsHtml += `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">Nessun dato inserito</td></tr>`;
+            if (netto >= 0) {
+                cardSaldo.className = 'p-6 rounded-[2rem] shadow-xl text-white transition-all duration-500 card-gradient-attivo';
+                labelSaldo.innerText = 'Saldo Attivo Previsto';
             } else {
-                db.entrate.forEach(e => {
-                    entrateTot += parseFloat(e.importo);
-                    rowsHtml += `<tr><td>${e.cat}</td><td>${e.desc}</td><td>${e.resp}</td><td class="pos">+ € ${e.importo}</td></tr>`;
-                });
-            }
-
-            // --- SEZIONE USCITE ---
-            rowsHtml += `<tr class="row-cat"><td colspan="4">Resoconto Uscite</td></tr>`;
-            if(db.uscite.length === 0) {
-                rowsHtml += `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">Nessun dato inserito</td></tr>`;
-            } else {
-                db.uscite.forEach(u => {
-                    usciteTot += parseFloat(u.importo);
-                    rowsHtml += `<tr><td>${u.cat}</td><td>${u.desc}</td><td>${u.resp}</td><td class="neg">- € ${u.importo}</td></tr>`;
-                });
-            }
-
-            // Aggiornamento Tabella e Numeri
-            tbody.innerHTML = rowsHtml;
-            document.getElementById('h-entrate').innerText = `€ ${entrateTot.toLocaleString('it-IT', {minimumFractionDigits: 2})}`;
-            document.getElementById('h-uscite').innerText = `€ ${usciteTot.toLocaleString('it-IT', {minimumFractionDigits: 2})}`;
-            
-            const netto = entrateTot - usciteTot;
-            const nettoEl = document.getElementById('h-netto');
-            nettoEl.innerText = `€ ${netto.toLocaleString('it-IT', {minimumFractionDigits: 2})}`;
-            nettoEl.style.color = netto >= 0 ? '#10b981' : '#ef4444';
-
-            // Generazione Calendario Semplice
-            const calGrid = document.getElementById('cal-grid');
-            let day = 1;
-            for(let i=0; i<5; i++) {
-                let row = calGrid.insertRow();
-                for(let j=0; j<7; j++) {
-                    let cell = row.insertCell();
-                    if(day <= 31) {
-                        cell.innerHTML = `<div>${day}</div>`;
-                        if([5, 12, 20].includes(day)) cell.innerHTML += '<span class="event-dot" style="background:var(--red)"></span>';
-                        if([15, 25].includes(day)) cell.innerHTML += '<span class="event-dot" style="background:var(--green)"></span>';
-                        day++;
-                    }
-                }
+                cardSaldo.className = 'p-6 rounded-[2rem] shadow-xl text-white transition-all duration-500 card-gradient-passivo';
+                labelSaldo.innerText = 'Saldo Passivo Previsto';
             }
         }
 
-        // Avvio al caricamento
-        window.onload = inizializzaDashboard;
+        // FUNZIONE PER DISEGNARE LA LISTA
+        function renderLista() {
+            listaContainer.innerHTML = '';
+            movimenti.forEach((m, index) => {
+                const div = document.createElement('div');
+                div.className = 'bg-white p-5 rounded-3xl border border-gray-100 flex items-center justify-between hover:shadow-md transition-all group';
+                
+                div.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleStato(${index})" class="p-3 rounded-xl ${m.stato === 'saldato' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600 animate-pulse'}">
+                            ${m.stato === 'saldato' ? '✓' : '⌛'}
+                        </button>
+                        <div>
+                            <p class="font-black text-gray-800 uppercase text-xs tracking-tight">${m.desc}</p>
+                            <p class="text-[9px] font-bold text-gray-300 uppercase">${m.stato}</p>
+                        </div>
+                    </div>
+                    <div class="text-lg font-black ${m.tipo === 'entrata' ? 'text-emerald-500' : 'text-rose-500'}">
+                        ${m.tipo === 'entrata' ? '+' : '-'} €${Number(m.valore).toFixed(2)}
+                    </div>
+                `;
+                listaContainer.appendChild(div);
+            });
+            localStorage.setItem('movimenti', JSON.stringify(movimenti));
+            aggiornaAnalisi();
+        }
+
+        // AZIONE: AGGIUNGI MOVIMENTO
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const nuovo = {
+                desc: document.getElementById('desc').value,
+                valore: document.getElementById('valore').value,
+                tipo: document.getElementById('tipo').value,
+                stato: document.getElementById('stato').value
+            };
+            movimenti.unshift(nuovo);
+            form.reset();
+            renderLista();
+        };
+
+        // AZIONE: CAMBIA STATO
+        window.toggleStato = (index) => {
+            movimenti[index].stato = movimenti[index].stato === 'saldato' ? 'pendente' : 'saldato';
+            renderLista();
+        };
+
+        // AVVIO INIZIALE
+        renderLista();
     </script>
 </body>
 </html>
