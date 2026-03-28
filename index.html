@@ -133,9 +133,20 @@
                         <div id="work-grid" class="grid grid-cols-7 gap-2"></div>
                     </div>
                     <div class="bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl h-fit">
-                        <h4 id="selectedWorkDate" class="text-lg font-black mb-6 text-indigo-400 text-center uppercase">Seleziona Data</h4>
-                        <input type="number" id="inputOre" placeholder="Inserisci Ore (es: 8)" class="w-full bg-white/10 p-4 rounded-2xl font-black text-2xl outline-none mb-4 border border-white/5">
-                        <button onclick="saveHours()" class="w-full bg-indigo-600 p-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition-all">Salva Ore</button>
+                        <h4 id="selectedWorkDate" class="text-lg font-black mb-6 text-indigo-400 text-center uppercase tracking-widest">Turni Lavoro</h4>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="text-[9px] font-black uppercase opacity-40 ml-2 block mb-1">Inizio</label>
+                                <input type="time" id="oraInizio" class="w-full bg-white/10 p-4 rounded-2xl font-black text-xl outline-none border border-white/5 text-center">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-black uppercase opacity-40 ml-2 block mb-1">Fine</label>
+                                <input type="time" id="oraFine" class="w-full bg-white/10 p-4 rounded-2xl font-black text-xl outline-none border border-white/5 text-center">
+                            </div>
+                        </div>
+                        
+                        <button onclick="saveHours()" class="w-full bg-indigo-600 p-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition-all">Salva Turno</button>
                     </div>
                 </div>
             </div>
@@ -188,7 +199,6 @@
     </div>
 
     <script>
-        // Stato Iniziale
         let db = {
             work: JSON.parse(localStorage.getItem('myFinWork')) || {},
             notes: JSON.parse(localStorage.getItem('myFinNotes')) || {},
@@ -203,7 +213,6 @@
         let selectedNoteKey = null;
         let myChart = null;
 
-        // Navigazione
         function showSection(id) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
@@ -218,7 +227,6 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('mobile-open'); }
 
-        // Dashboard
         function renderDashboard() {
             const now = new Date();
             const m = now.getMonth();
@@ -274,7 +282,6 @@
             });
         }
 
-        // Calendari (Lavoro e Note)
         function renderCalendar(type) {
             const date = type === 'work' ? currentWorkDate : currentNoteDate;
             const grid = document.getElementById(type + '-grid');
@@ -308,7 +315,9 @@
             if(type === 'work') {
                 selectedWorkKey = key;
                 document.getElementById('selectedWorkDate').innerText = `${d}/${m+1}/${y}`;
-                document.getElementById('inputOre').value = db.work[key] || "";
+                // Resettiamo gli input quando si cambia giorno (opzionale)
+                document.getElementById('oraInizio').value = "";
+                document.getElementById('oraFine').value = "";
             } else {
                 selectedNoteKey = key;
                 document.getElementById('selectedNoteDate').innerText = `${d}/${m+1}/${y}`;
@@ -317,12 +326,31 @@
             renderCalendar(type);
         }
 
+        // LOGICA CALCOLO AUTOMATICO TURNI
         function saveHours() {
             if(!selectedWorkKey) return alert("Seleziona un giorno!");
-            const h = document.getElementById('inputOre').value;
-            if(h && h > 0) db.work[selectedWorkKey] = h;
-            else delete db.work[selectedWorkKey];
-            saveAll(); renderCalendar('work');
+            
+            const start = document.getElementById('oraInizio').value;
+            const end = document.getElementById('oraFine').value;
+
+            if(!start || !end) {
+                delete db.work[selectedWorkKey];
+            } else {
+                const [h1, m1] = start.split(':').map(Number);
+                const [h2, m2] = end.split(':').map(Number);
+                
+                let minInizio = h1 * 60 + m1;
+                let minFine = h2 * 60 + m2;
+
+                if(minFine < minInizio) minFine += 1440; // Gestione turno dopo mezzanotte
+
+                const totaleOre = ((minFine - minInizio) / 60).toFixed(2);
+                db.work[selectedWorkKey] = totaleOre;
+            }
+
+            saveAll(); 
+            renderCalendar('work');
+            renderDashboard();
         }
 
         function saveNote() {
@@ -357,7 +385,6 @@
             renderCalendar(type);
         }
 
-        // Spese
         function addEntry(type) {
             const n = document.getElementById(type + '-nome').value;
             const p = document.getElementById(type + '-prezzo').value;
@@ -385,7 +412,6 @@
             });
         }
 
-        // Backup & Save (JSON)
         function saveAll() {
             localStorage.setItem('myFinWork', JSON.stringify(db.work));
             localStorage.setItem('myFinNotes', JSON.stringify(db.notes));
@@ -418,10 +444,9 @@
             reader.readAsText(event.target.files[0]);
         }
 
-        function resetData() { if(confirm("Sei sicuro? Perderai tutto ciò che non hai salvato su file.")) { localStorage.clear(); location.reload(); } }
+        function resetData() { if(confirm("Sei sicuro?")) { localStorage.clear(); location.reload(); } }
         function updatePaga() { db.paga = document.getElementById('pagaOraria').value; saveAll(); renderDashboard(); }
 
-        // Avvio
         document.getElementById('pagaOraria').value = db.paga;
         renderDashboard();
     </script>
