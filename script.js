@@ -1,48 +1,41 @@
-let monthKey = new Date().toISOString().slice(0,7);
-
-// -------- PROGETTI --------
-function loadProjects() {
-    let data = JSON.parse(localStorage.getItem("projects_"+monthKey) || "[]");
-    let tbody = document.querySelector("#projectTable tbody");
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-
-    data.forEach((r,i)=>{
-        let tr = document.createElement("tr");
-
-        tr.innerHTML = `
-        <td><input value="${r.progetto}" onchange="updateP(${i},'progetto',this.value)"></td>
-        <td><input value="${r.attivita}" onchange="updateP(${i},'attivita',this.value)"></td>
-        <td><input value="${r.responsabile}" onchange="updateP(${i},'responsabile',this.value)"></td>
-        <td><input value="${r.scostamento}" onchange="updateP(${i},'scostamento',this.value)"></td>
-        `;
-
-        tbody.appendChild(tr);
+// Funzione per mostrare le sezioni (adattala se la tua ha un nome diverso)
+function showSection(sectionId) {
+    // Nascondi tutte le sezioni
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.style.display = 'none';
     });
+    // Mostra quella selezionata
+    document.getElementById(sectionId).style.display = 'block';
+    
+    if(sectionId === 'analisi-strategica') {
+        renderAnalisiStrategica();
+    }
 }
 
-function addProject() {
-    let data = JSON.parse(localStorage.getItem("projects_"+monthKey) || "[]");
-    data.push({progetto:"",attivita:"",responsabile:"",scostamento:""});
-    localStorage.setItem("projects_"+monthKey, JSON.stringify(data));
-    loadProjects();
-}
+// Logica di calcolo specifica
+function renderAnalisiStrategica() {
+    const pendenti = movimenti.filter(m => m.stato === 'pendente');
+    const container = document.getElementById('lista-pendenti');
+    container.innerHTML = '';
 
-function updateP(i,f,v){
-    let data = JSON.parse(localStorage.getItem("projects_"+monthKey) || "[]");
-    data[i][f]=v;
-    localStorage.setItem("projects_"+monthKey, JSON.stringify(data));
-}
+    let ePrev = 0, uPend = 0;
 
-// -------- CALENDARIO --------
-function saveEvent(){
-    let date = document.getElementById("date").value;
-    let title = document.getElementById("title").value;
+    pendenti.forEach(m => {
+        const val = Number(m.valore);
+        if (m.tipo === 'entrata') ePrev += val; else uPend += val;
 
-    let events = JSON.parse(localStorage.getItem("events")||"[]");
-    events.push({date,title});
-    localStorage.setItem("events",JSON.stringify(events));
+        container.innerHTML += `
+            <div class="flex justify-between p-3 border-b items-center">
+                <span>${m.desc}</span>
+                <span class="font-bold ${m.tipo === 'entrata' ? 'text-green-600' : 'text-red-600'}">
+                    € ${val.toFixed(2)}
+                </span>
+            </div>
+        `;
+    });
 
-    alert("Salvato");
+    document.getElementById('strat-entrate').innerText = `€ ${ePrev.toFixed(2)}`;
+    document.getElementById('strat-uscite').innerText = `€ ${uPend.toFixed(2)}`;
+    const netto = ePrev - uPend;
+    document.getElementById('strat-netto').innerText = `€ ${Math.abs(netto).toFixed(2)}`;
 }
