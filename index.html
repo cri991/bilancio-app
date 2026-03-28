@@ -2,12 +2,14 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MyFinance Pro</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,48 +17,90 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; -webkit-user-select: none; transition: all 0.3s ease; }
+        body { font-family: 'Inter', sans-serif; -webkit-user-select: none; touch-action: manipulation; }
         
-        /* Container per il Toggle Vista */
+        /* --- GESTIONE VISTE (PC/EXE) --- */
         #app-container { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); margin: 0 auto; display: flex; height: 100vh; width: 100%; overflow: hidden; }
         
-        /* Classe per Vista Mobile forzata */
-        .view-mobile #app-container { width: 420px; border-left: 8px solid #1e293b; border-right: 8px solid #1e293b; border-radius: 40px; margin: 20px auto; height: calc(100vh - 40px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-        .view-mobile aside { w-64 !important; p-4 !important; }
-        .view-mobile main { p-6 !important; }
-        .view-mobile h2 { text-size: 1.5rem !important; }
+        /* Modalità Mobile FORZATA (solo su PC quando attivi il toggle) */
+        .view-mobile-forced #app-container { width: 400px; border-left: 10px solid #1e293b; border-right: 10px solid #1e293b; border-radius: 40px; margin: 20px auto; height: calc(100vh - 40px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .view-mobile-forced aside { width: 220px !important; padding: 1rem !important; }
+        .view-mobile-forced aside .sidebar-text { display: none; } /* Nasconde testi lunghi */
+        .view-mobile-forced main { padding: 1.5rem !important; }
 
+        /* --- RESPONSIVE REALE (SMARTPHONE VERI) --- */
+        @media (max-width: 768px) {
+            #app-container { flex-direction: column; }
+            
+            /* Sidebar diventa un pannello sovrapposto */
+            aside {
+                position: fixed; top: 0; left: -100%; /* Nascosta a sinistra */
+                width: 80% !important; height: 100vh;
+                z-index: 999; box-shadow: 20px 0 50px rgba(0,0,0,0.3);
+                transition: left 0.3s ease;
+                padding: 1.5rem !important;
+                border-right: none !important;
+            }
+            aside.mobile-open { left: 0; } /* Mostra sidebar */
+            aside .sidebar-text { display: inline !important; } /* Forza testo visibile su telefono */
+
+            main { padding: 1rem !important; padding-top: 1rem !important; padding-bottom: 80px !important; } /* Spazio per tasto menu */
+            
+            /* Nasconde tasto "Vista" su telefono vero */
+            #toggle-view-btn { display: none !important; }
+            
+            /* Mostra pulsante Menu Mobile */
+            #mobile-menu-trigger { display: flex !important; }
+        }
+
+        /* Stili UI generici */
         .sidebar-link.active { background: #4f46e5 !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
         .content-section { display: none; }
         .content-section.active { display: block !important; animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .work-day.has-hours { border-bottom: 4px solid #10b981; }
-        .note-day.has-note::after { content: ''; display: block; width: 4px; height: 4px; background: #f43f5e; border-radius: 50%; margin: 2px auto 0; }
-        ::-webkit-scrollbar { width: 4px; }
+        
+        .work-day.has-hours { border-bottom: 3px solid #10b981; }
+        .note-day.has-note::after { content: ''; display: block; width: 4px; height: 4px; background: #f43f5e; border-radius: 50%; margin: 1px auto 0; }
+        
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-800 flex items-center justify-center">
 
+    <button id="mobile-menu-trigger" onclick="toggleMobileSidebar()" class="fixed bottom-6 right-6 w-16 h-16 bg-indigo-600 text-white rounded-full hidden items-center justify-center z-[1000] shadow-2xl border-4 border-white">
+        <i class="fas fa-bars fa-lg"></i>
+    </button>
+
     <div id="app-container" class="bg-slate-50">
-        <aside class="w-72 bg-white border-r border-slate-200 flex flex-col p-8 justify-between shrink-0 transition-all">
+        <aside id="sidebar" class="w-72 bg-white border-r border-slate-200 flex flex-col p-8 justify-between shrink-0 transition-all">
             <div class="space-y-10">
                 <div class="flex items-center space-x-3">
                     <img src="icon.png" alt="Logo" class="w-10 h-10 rounded-xl shadow-md">
-                    <span class="font-black text-2xl tracking-tighter uppercase italic lg:inline hidden sidebar-text">MyFinance</span>
+                    <span class="font-black text-2xl tracking-tighter uppercase italic sidebar-text">MyFinance</span>
                 </div>
                 <nav class="space-y-2">
-                    <button onclick="showSection('home')" id="btn-home" class="sidebar-link active w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50"><i class="fas fa-home w-5"></i> <span class="sidebar-text">Dashboard</span></button>
-                    <button onclick="showSection('lavoro')" id="btn-lavoro" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50"><i class="fas fa-clock w-5"></i> <span class="sidebar-text">Ore</span></button>
-                    <button onclick="showSection('spese')" id="btn-spese" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50"><i class="fas fa-receipt w-5"></i> <span class="sidebar-text">Fisse</span></button>
-                    <button onclick="showSection('variabili')" id="btn-variabili" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50"><i class="fas fa-shopping-cart w-5"></i> <span class="sidebar-text">Variabili</span></button>
-                    <button onclick="showSection('calendario')" id="btn-calendario" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50"><i class="fas fa-calendar-alt w-5"></i> <span class="sidebar-text">Note</span></button>
+                    <button onclick="showSection('home')" id="btn-home" class="sidebar-link active w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50 transition-colors">
+                        <i class="fas fa-home w-5 text-center"></i> <span class="sidebar-text">Dashboard</span>
+                    </button>
+                    <button onclick="showSection('lavoro')" id="btn-lavoro" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50 transition-colors">
+                        <i class="fas fa-clock w-5 text-center"></i> <span class="sidebar-text">Ore Lavoro</span>
+                    </button>
+                    <button onclick="showSection('spese')" id="btn-spese" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50 transition-colors">
+                        <i class="fas fa-receipt w-5 text-center"></i> <span class="sidebar-text">Spese Fisse</span>
+                    </button>
+                    <button onclick="showSection('variabili')" id="btn-variabili" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50 transition-colors">
+                        <i class="fas fa-shopping-cart w-5 text-center"></i> <span class="sidebar-text">Variabili</span>
+                    </button>
+                    <button onclick="showSection('calendario')" id="btn-calendario" class="sidebar-link w-full flex items-center space-x-4 p-4 rounded-2xl font-bold text-sm text-slate-500 hover:bg-slate-50 transition-colors">
+                        <i class="fas fa-calendar-alt w-5 text-center"></i> <span class="sidebar-text">Note/Memo</span>
+                    </button>
                 </nav>
             </div>
 
             <div class="space-y-2 pt-6 border-t border-slate-100">
-                <button onclick="toggleView()" class="w-full text-left p-3 text-[10px] font-black uppercase text-amber-500 hover:bg-amber-50 rounded-xl transition-all">
-                    <i id="view-icon" class="fas fa-mobile-alt mr-2"></i> <span id="view-text">Vista Mobile</span>
+                <button id="toggle-view-btn" onclick="toggleForcedView()" class="w-full text-left p-3 text-[10px] font-black uppercase text-amber-600 hover:bg-amber-50 rounded-xl transition-all">
+                    <i id="view-icon" class="fas fa-mobile-alt mr-2"></i> <span id="view-text">Vista Stretta</span>
                 </button>
                 <button onclick="exportData()" class="w-full text-left p-3 text-[10px] font-black uppercase text-indigo-400 hover:bg-indigo-50 rounded-xl">
                     <i class="fas fa-download mr-2"></i> <span class="sidebar-text">Esporta</span>
@@ -67,89 +111,87 @@
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-12 transition-all">
+        <main class="flex-1 overflow-y-auto p-12 bg-slate-50 transition-all">
+            
             <div id="home" class="content-section active space-y-8">
-                <h2 class="text-3xl font-black uppercase tracking-tighter">Dashboard</h2>
+                <h2 class="text-3xl font-black tracking-tighter uppercase">Dashboard</h2>
                 <div class="grid grid-cols-1 gap-6">
-                    <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100"><span class="text-[9px] font-black text-slate-300 uppercase">Anno</span><h3 id="h-guadagno-anno" class="text-3xl font-black text-indigo-600">€ 0,00</h3></div>
+                    <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100"><span class="text-[9px] font-black text-slate-300 uppercase">Guadagno Anno</span><h3 id="h-guadagno-anno" class="text-3xl font-black text-indigo-600">€ 0,00</h3></div>
                     <div class="flex gap-4">
-                        <div class="flex-1 bg-white p-4 rounded-[2rem] border-l-4 border-rose-500 shadow-sm"><p class="text-[9px] font-bold uppercase text-rose-500">Fisse</p><h4 id="h-fisse-home" class="text-xl font-black">€ 0,00</h4></div>
-                        <div class="flex-1 bg-white p-4 rounded-[2rem] border-l-4 border-orange-500 shadow-sm"><p class="text-[9px] font-bold uppercase text-orange-500">Variabili</p><h4 id="h-var-home" class="text-xl font-black">€ 0,00</h4></div>
+                        <div class="flex-1 bg-white p-4 rounded-[1.5rem] border-l-4 border-rose-500 shadow-sm"><p class="text-[9px] font-bold uppercase text-rose-500">Fisse</p><h4 id="h-fisse-home" class="text-xl font-black">€ 0,00</h4></div>
+                        <div class="flex-1 bg-white p-4 rounded-[1.5rem] border-l-4 border-orange-500 shadow-sm"><p class="text-[9px] font-bold uppercase text-orange-500">Variabili</p><h4 id="h-var-home" class="text-xl font-black">€ 0,00</h4></div>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-[2.5rem] border flex flex-col items-center">
+                <div class="bg-white p-6 rounded-[2rem] border flex flex-col items-center">
                     <div class="w-48 h-48"><canvas id="chartBilancio"></canvas></div>
                 </div>
-                <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white">
-                    <h4 class="text-[9px] font-black uppercase opacity-40 mb-4">Prossime Note</h4>
-                    <div id="home-notes-list" class="space-y-3 max-h-[150px] overflow-y-auto"></div>
+                <div class="bg-slate-900 p-8 rounded-[2rem] text-white">
+                    <h4 class="text-[9px] font-black uppercase opacity-40 mb-4 tracking-widest">Note Future</h4>
+                    <div id="home-notes-list" class="space-y-3 max-h-[150px] overflow-y-auto pr-2"></div>
                 </div>
             </div>
 
             <div id="lavoro" class="content-section space-y-6">
-                <h2 class="text-3xl font-black uppercase">Ore Lavorative</h2>
-                <div class="bg-white p-4 rounded-2xl border flex items-center justify-between mb-4">
+                <div class="flex justify-between items-center bg-white p-4 rounded-xl border mb-4">
                     <span class="text-[9px] font-black text-slate-400 uppercase">Paga €</span>
                     <input type="number" id="paga-oraria" onchange="renderWork()" value="10" class="w-16 font-black text-indigo-600 outline-none text-right">
                 </div>
-                <div class="bg-white p-6 rounded-[2.5rem] border">
+                <div class="bg-white p-6 rounded-[2rem] border">
                     <div class="flex justify-between items-center mb-6">
                         <button onclick="changeWorkMonth(-1)"><i class="fas fa-chevron-left"></i></button>
-                        <span id="workMonthTitle" class="font-black text-xs uppercase"></span>
+                        <span id="workMonthTitle" class="font-black text-xs uppercase tracking-wider"></span>
                         <button onclick="changeWorkMonth(1)"><i class="fas fa-chevron-right"></i></button>
                     </div>
-                    <div id="work-grid" class="grid grid-cols-7 gap-2"></div>
+                    <div id="work-grid" class="grid grid-cols-7 gap-1.5 text-center"></div>
                 </div>
-                <div class="bg-slate-900 p-6 rounded-[2rem] text-white">
-                    <h4 id="selectedWorkDay" class="text-sm font-black mb-4 opacity-50 italic">Giorno</h4>
-                    <input type="number" step="0.5" id="work-hours-input" placeholder="Ore" class="w-full bg-white/10 p-3 rounded-xl mb-3 font-black text-xl outline-none">
-                    <button onclick="saveHours()" class="w-full bg-indigo-500 p-3 rounded-xl font-black text-[10px] uppercase">Salva</button>
+                <div class="bg-slate-900 p-6 rounded-[1.5rem] text-white">
+                    <h4 id="selectedWorkDay" class="text-xs font-black mb-3 opacity-50">Giorno</h4>
+                    <input type="number" step="0.5" id="work-hours-input" placeholder="Ore" class="w-full bg-white/10 p-3 rounded-lg mb-3 font-black outline-none text-xl">
+                    <button onclick="saveHours()" class="w-full bg-indigo-500 p-3 rounded-lg font-black text-[10px] uppercase">Salva</button>
                 </div>
             </div>
 
             <div id="spese" class="content-section space-y-6">
-                <h2 class="text-3xl font-black uppercase">Fisse</h2>
-                <div class="bg-white p-6 rounded-[2rem] border">
+                <div class="bg-white p-6 rounded-[1.5rem] border">
                     <input type="text" id="fissa-nome" placeholder="Cosa?" class="w-full p-3 bg-slate-50 rounded-xl mb-3 font-bold outline-none text-sm">
-                    <input type="number" id="fissa-prezzo" placeholder="Quanto? €" class="w-full p-3 bg-slate-50 rounded-xl mb-3 font-black outline-none text-sm">
+                    <input type="number" id="fissa-prezzo" placeholder="Quanto €" class="w-full p-3 bg-slate-50 rounded-xl mb-3 font-black outline-none text-sm">
                     <button onclick="addItem('fissa')" class="w-full bg-slate-900 text-white p-3 rounded-xl font-black uppercase text-[10px]">Aggiungi</button>
                 </div>
-                <div id="lista-fisse" class="bg-white p-6 rounded-[2rem] border divide-y text-sm font-medium"></div>
-                <div class="text-right font-black text-2xl text-indigo-600 italic" id="tot-fisse">€ 0,00</div>
+                <div id="lista-fisse" class="bg-white p-5 rounded-[1.5rem] border divide-y text-sm"></div>
+                <div class="text-right font-black text-2xl text-indigo-600" id="tot-fisse">€ 0,00</div>
             </div>
 
             <div id="variabili" class="content-section space-y-6">
-                <h2 class="text-3xl font-black uppercase">Variabili</h2>
-                <div class="bg-white p-6 rounded-[2rem] border">
+                <div class="bg-white p-6 rounded-[1.5rem] border">
                     <input type="text" id="var-nome" placeholder="Cosa?" class="w-full p-3 bg-slate-50 rounded-xl mb-3 font-bold outline-none text-sm">
-                    <input type="number" id="var-prezzo" placeholder="Quanto? €" class="w-full p-3 bg-slate-50 rounded-xl mb-3 font-black outline-none text-sm">
+                    <input type="number" id="var-prezzo" placeholder="Quanto €" class="w-full p-3 bg-slate-50 rounded-xl mb-3 font-black outline-none text-sm">
                     <button onclick="addItem('variabile')" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-black uppercase text-[10px]">Aggiungi</button>
                 </div>
-                <div id="lista-variabili" class="bg-white p-6 rounded-[2rem] border divide-y text-sm font-medium"></div>
-                <div class="text-right font-black text-2xl text-emerald-500 italic" id="tot-variabili">€ 0,00</div>
+                <div id="lista-variabili" class="bg-white p-5 rounded-[1.5rem] border divide-y text-sm"></div>
+                <div class="text-right font-black text-2xl text-emerald-500" id="tot-variabili">€ 0,00</div>
             </div>
 
             <div id="calendario" class="content-section space-y-6">
-                <h2 class="text-3xl font-black uppercase">Note</h2>
-                <div class="flex justify-between items-center bg-white p-3 rounded-xl border mb-4">
+                <div class="flex justify-between items-center bg-white p-3 rounded-xl border mb-3">
                     <button onclick="changeNoteMonth(-1)"><i class="fas fa-chevron-left text-xs"></i></button>
                     <span id="noteMonthTitle" class="font-black text-[10px] uppercase"></span>
                     <button onclick="changeNoteMonth(1)"><i class="fas fa-chevron-right text-xs"></i></button>
                 </div>
-                <div class="bg-white p-4 rounded-[2rem] border shadow-sm mb-6">
-                    <div id="note-grid" class="grid grid-cols-7 gap-2 text-center"></div>
+                <div class="bg-white p-4 rounded-[1.5rem] border shadow-sm mb-4">
+                    <div id="note-grid" class="grid grid-cols-7 gap-1 text-center font-bold text-[9px]"></div>
                 </div>
-                <div class="bg-white p-6 rounded-[2rem] border shadow-xl">
+                <div class="bg-white p-6 rounded-[1.5rem] border shadow-xl">
                     <h4 id="selectedNoteLabel" class="text-[9px] font-black text-indigo-500 uppercase mb-3">Data</h4>
-                    <input type="text" id="memoText" placeholder="Nota..." class="w-full p-3 bg-slate-50 rounded-xl mb-3 outline-none font-bold text-sm">
-                    <button onclick="addMemo()" class="w-full bg-slate-900 text-white p-3 rounded-xl font-black uppercase text-[10px]">Salva</button>
-                    <div id="memoList" class="mt-4 space-y-2"></div>
+                    <input type="text" id="memoText" placeholder="Nota..." class="w-full p-3 bg-slate-50 rounded-lg mb-3 outline-none font-bold text-sm">
+                    <button onclick="addMemo()" class="w-full bg-slate-900 text-white p-3 rounded-lg font-black uppercase text-[10px]">Salva Nota</button>
+                    <div id="memoList" class="mt-4 space-y-1.5 text-[9px] font-medium"></div>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
+        // DATI & STATO
         let fisse = JSON.parse(localStorage.getItem('myFinFisse')) || [];
         let variabili = JSON.parse(localStorage.getItem('myFinVariabili')) || [];
         let workData = JSON.parse(localStorage.getItem('myFinWork')) || {};
@@ -161,37 +203,62 @@
         let selectedWorkKey = null;
         let selectedNoteKey = null;
         let chartBilancio = null;
-        let isMobileView = false;
+        let isForcedMobileView = false; // Stato per la vista PC simulata
 
-        function toggleView() {
-            isMobileView = !isMobileView;
-            document.body.classList.toggle('view-mobile', isMobileView);
+        // --- GESTIONE VISTE E MENU ---
+
+        // 1. Toggle per PC/EXE (Vista stretta simulata)
+        function toggleForcedView() {
+            isForcedMobileView = !isForcedMobileView;
+            document.body.classList.toggle('view-mobile-forced', isForcedMobileView);
             const btnText = document.getElementById('view-text');
             const btnIcon = document.getElementById('view-icon');
             
-            if(isMobileView) {
-                btnText.innerText = "Vista Desktop";
+            if(isForcedMobileView) {
+                btnText.innerText = "Vista Larga";
                 btnIcon.className = "fas fa-desktop mr-2";
             } else {
-                btnText.innerText = "Vista Mobile";
+                btnText.innerText = "Vista Stretta";
                 btnIcon.className = "fas fa-mobile-alt mr-2";
             }
-            // Forza ridisegno grafici per adattarsi alle nuove dimensioni
+            // Aggiorna grafici dopo l'animazione
             setTimeout(updateCharts, 600);
         }
 
+        // 2. Apri/Chiudi Sidebar su TELEFONO VERO
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const triggerIcon = document.querySelector('#mobile-menu-trigger i');
+            sidebar.classList.toggle('mobile-open');
+            
+            if(sidebar.classList.contains('mobile-open')) {
+                triggerIcon.className = "fas fa-times fa-lg"; // Icona X
+            } else {
+                triggerIcon.className = "fas fa-bars fa-lg"; // Icona Menu
+            }
+        }
+
+        // Modifica showSection per chiudere il menu su mobile dopo il clic
         function showSection(id) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-' + id).classList.add('active');
+            
             if(id === 'home') { renderHomeNotes(); updateCharts(); }
             if(id === 'lavoro') renderWork();
             if(id === 'calendario') renderNotesCalendar();
+            
             render();
+
+            // Chiudi sidebar se siamo su mobile vero
+            const sidebar = document.getElementById('sidebar');
+            if(sidebar.classList.contains('mobile-open')) {
+                toggleMobileSidebar();
+            }
         }
 
-        // --- LOGICA GRAFICI ---
+        // --- LOGICA CORE (GRAFICI, ORE, NOTE, SPESE) - Invariata ma ottimizzata per spazi stretti ---
         function updateCharts() {
             const canvas = document.getElementById('chartBilancio');
             if(!canvas) return;
@@ -207,16 +274,15 @@
             chartBilancio = new Chart(ctx, {
                 type: 'doughnut',
                 data: { labels: ['Entrate', 'Uscite'], datasets: [{ data: [gM, tU], backgroundColor: ['#4f46e5', '#f43f5e'], borderWidth: 0 }] },
-                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '80%' }
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '85%' }
             });
         }
 
-        // --- NOTE ---
         function renderHomeNotes() {
             const container = document.getElementById('home-notes-list'); container.innerHTML = '';
-            const allKeys = Object.keys(notes).sort();
+            const allKeys = Object.keys(notes).sort().reverse(); // Ordina per data decrescente
             if(allKeys.length === 0) container.innerHTML = '<p class="opacity-30 italic text-[10px]">Vuoto...</p>';
-            allKeys.slice(-3).forEach(key => {
+            allKeys.slice(0, 3).forEach(key => {
                 notes[key].forEach(n => {
                     const [d,m,y] = key.split('-');
                     container.innerHTML += `<div class="bg-white/5 border border-white/10 p-3 rounded-xl"><span class="text-[8px] font-black text-indigo-400 uppercase">${d}/${parseInt(m)+1}</span><p class="text-xs font-bold text-slate-200">${n}</p></div>`;
@@ -224,24 +290,6 @@
             });
         }
 
-        function renderNotesCalendar() {
-            const grid = document.getElementById('note-grid'); const y = noteViewDate.getFullYear(); const m = noteViewDate.getMonth();
-            document.getElementById('noteMonthTitle').innerText = new Intl.DateTimeFormat('it-IT', {month:'short', year:'numeric'}).format(noteViewDate);
-            grid.innerHTML = ''; const first = new Date(y, m, 1).getDay() || 7; const last = new Date(y, m+1, 0).getDate();
-            for(let i=1; i<first; i++) grid.innerHTML += '<div></div>';
-            for(let d=1; d<=last; d++) {
-                const k = `${d}-${m}-${y}`; const hasN = notes[k] ? 'has-note' : '';
-                grid.innerHTML += `<div onclick="selectNoteDay(${d},${m},${y})" class="note-day ${hasN} ${selectedNoteKey===k?'selected':''} p-2 rounded-xl bg-slate-50 text-slate-400 font-black text-[9px] cursor-pointer hover:bg-indigo-50">${d}</div>`;
-            }
-            renderNotesList();
-        }
-        function changeNoteMonth(s) { noteViewDate.setMonth(noteViewDate.getMonth()+s); renderNotesCalendar(); }
-        function selectNoteDay(d,m,y) { selectedNoteKey = `${d}-${m}-${y}`; document.getElementById('selectedNoteLabel').innerText = `${d}/${m+1}/${y}`; renderNotesCalendar(); }
-        function addMemo() { const t = document.getElementById('memoText').value; if(t && selectedNoteKey) { if(!notes[selectedNoteKey]) notes[selectedNoteKey]=[]; notes[selectedNoteKey].push(t); document.getElementById('memoText').value=''; localStorage.setItem('myFinNotes', JSON.stringify(notes)); renderNotesCalendar(); } }
-        function renderNotesList() { const l = document.getElementById('memoList'); l.innerHTML=''; if(selectedNoteKey && notes[selectedNoteKey]) { notes[selectedNoteKey].forEach((n,i) => { l.innerHTML += `<div class="bg-slate-50 p-2 rounded-lg text-[9px] font-bold flex justify-between"><span>${n}</span><button onclick="delNote(${i})"><i class="fas fa-trash text-rose-400"></i></button></div>`; }); } }
-        function delNote(i) { notes[selectedNoteKey].splice(i,1); if(notes[selectedNoteKey].length===0) delete notes[selectedNoteKey]; localStorage.setItem('myFinNotes', JSON.stringify(notes)); renderNotesCalendar(); }
-
-        // --- ORE ---
         function renderWork() {
             const grid = document.getElementById('work-grid'); const y = workViewDate.getFullYear(); const m = workViewDate.getMonth();
             pagaOraria = document.getElementById('paga-oraria').value; localStorage.setItem('myFinPaga', pagaOraria);
@@ -250,7 +298,7 @@
             for(let i=1; i<first; i++) grid.innerHTML += '<div></div>';
             for(let d=1; d<=last; d++) {
                 const k = `${d}-${m}-${y}`; const h = workData[k] || 0;
-                grid.innerHTML += `<div onclick="selectWorkDay(${d},${m},${y})" class="work-day ${h>0?'has-hours':''} ${selectedWorkKey===k?'selected':''} p-2 bg-white border rounded-xl text-center cursor-pointer text-[9px] font-black"><span class="block text-slate-300">${d}</span><span class="${h>0?'text-indigo-600':'text-transparent'}">${h>0?h+'h':'0h'}</span></div>`;
+                grid.innerHTML += `<div onclick="selectWorkDay(${d},${m},${y})" class="work-day ${h>0?'has-hours':''} ${selectedWorkKey===k?'selected':''} p-1.5 rounded-lg bg-white border text-center cursor-pointer text-[9px] font-bold transition-all"><span class="block text-slate-300">${d}</span><span class="${h>0?'text-indigo-600':'text-transparent'}">${h>0?h+'h':'0h'}</span></div>`;
             }
             calculateYearly();
         }
@@ -258,15 +306,14 @@
         function selectWorkDay(d,m,y) { selectedWorkKey = `${d}-${m}-${y}`; document.getElementById('selectedWorkDay').innerText = `${d}/${m+1}/${y}`; document.getElementById('work-hours-input').value = workData[selectedWorkKey]||''; renderWork(); }
         function saveHours() { if(!selectedWorkKey) return; const h = document.getElementById('work-hours-input').value; if(h>0) workData[selectedWorkKey]=h; else delete workData[selectedWorkKey]; localStorage.setItem('myFinWork', JSON.stringify(workData)); renderWork(); }
 
-        // --- SPESE ---
         function addItem(t) { const n = document.getElementById(t==='fissa'?'fissa-nome':'var-nome').value; const p = document.getElementById(t==='fissa'?'fissa-prezzo':'var-prezzo').value; if(n && p) { if(t==='fissa') fisse.push({nome:n, prezzo:p}); else variabili.push({nome:n, prezzo:p}); render(); } }
         function delItem(t, i) { if(t==='fissa') fisse.splice(i,1); else variabili.splice(i,1); render(); }
         function render() {
             let tF=0, tV=0; fisse.forEach(s=>tF+=parseFloat(s.prezzo)); variabili.forEach(s=>tV+=parseFloat(s.prezzo));
             document.getElementById('h-fisse-home').innerText = `€ ${tF.toLocaleString()}`; document.getElementById('h-var-home').innerText = `€ ${tV.toLocaleString()}`;
             document.getElementById('tot-fisse').innerText = `€ ${tF.toLocaleString()}`; document.getElementById('tot-variabili').innerText = `€ ${tV.toLocaleString()}`;
-            const fl = document.getElementById('lista-fisse'); fl.innerHTML=''; fisse.forEach((s,i)=>fl.innerHTML += `<div class="flex justify-between py-3"><span>${s.nome}</span><button onclick="delItem('fissa',${i})">€ ${s.prezzo} <i class="fas fa-times ml-1"></i></button></div>`);
-            const vl = document.getElementById('lista-variabili'); vl.innerHTML=''; variabili.forEach((s,i)=>vl.innerHTML += `<div class="flex justify-between py-3"><span>${s.nome}</span><button onclick="delItem('variabile',${i})">€ ${s.prezzo} <i class="fas fa-times ml-1"></i></button></div>`);
+            const fl = document.getElementById('lista-fisse'); fl.innerHTML=''; fisse.forEach((s,i)=>fl.innerHTML += `<div class="flex justify-between py-3"><span>${s.nome}</span><button onclick="delItem('fissa',${i})">€ ${s.prezzo} <i class="fas fa-times ml-1 text-rose-300"></i></button></div>`);
+            const vl = document.getElementById('lista-variabili'); vl.innerHTML=''; variabili.forEach((s,i)=>vl.innerHTML += `<div class="flex justify-between py-3"><span>${s.nome}</span><button onclick="delItem('variabile',${i})">€ ${s.prezzo} <i class="fas fa-times ml-1 text-rose-300"></i></button></div>`);
             localStorage.setItem('myFinFisse', JSON.stringify(fisse)); localStorage.setItem('myFinVariabili', JSON.stringify(variabili));
             calculateYearly();
         }
@@ -276,14 +323,32 @@
             document.getElementById('h-guadagno-anno').innerText = `€ ${(totO*pagaOraria).toLocaleString()}`;
         }
 
+        function renderNotesCalendar() {
+            const grid = document.getElementById('note-grid'); const y = noteViewDate.getFullYear(); const m = noteViewDate.getMonth();
+            document.getElementById('noteMonthTitle').innerText = new Intl.DateTimeFormat('it-IT', {month:'short', year:'numeric'}).format(noteViewDate);
+            grid.innerHTML = ''; const first = new Date(y, m, 1).getDay() || 7; const last = new Date(y, m+1, 0).getDate();
+            for(let i=1; i<first; i++) grid.innerHTML += '<div></div>';
+            for(let d=1; d<=last; d++) {
+                const k = `${d}-${m}-${y}`; const hasN = notes[k] ? 'has-note' : '';
+                grid.innerHTML += `<div onclick="selectNoteDay(${d},${m},${y})" class="note-day ${hasN} ${selectedNoteKey===k?'selected':''} p-1 rounded bg-slate-50 text-slate-400 font-bold text-[8px] cursor-pointer hover:bg-indigo-50">${d}</div>`;
+            }
+            renderNotesList();
+        }
+        function changeNoteMonth(s) { noteViewDate.setMonth(noteViewDate.getMonth()+s); renderNotesCalendar(); }
+        function selectNoteDay(d,m,y) { selectedNoteKey = `${d}-${m}-${y}`; document.getElementById('selectedNoteLabel').innerText = `${d}/${m+1}/${y}`; renderNotesCalendar(); }
+        function addMemo() { const t = document.getElementById('memoText').value; if(t && selectedNoteKey) { if(!notes[selectedNoteKey]) notes[selectedNoteKey]=[]; notes[selectedNoteKey].push(t); document.getElementById('memoText').value=''; localStorage.setItem('myFinNotes', JSON.stringify(notes)); renderNotesCalendar(); } }
+        function renderNotesList() { const l = document.getElementById('memoList'); l.innerHTML=''; if(selectedNoteKey && notes[selectedNoteKey]) { notes[selectedNoteKey].forEach((n,i) => { l.innerHTML += `<div class="bg-slate-50 p-2 rounded-lg flex justify-between"><span>${n}</span><button onclick="delNote(${i})"><i class="fas fa-trash text-rose-400"></i></button></div>`; }); } }
+        function delNote(i) { notes[selectedNoteKey].splice(i,1); if(notes[selectedNoteKey].length===0) delete notes[selectedNoteKey]; localStorage.setItem('myFinNotes', JSON.stringify(notes)); renderNotesCalendar(); }
+
         function exportData() {
             const data = { fisse, variabili, workData, notes, pagaOraria };
             const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'myfinance_backup.json'; a.click();
+            const a = document.createElement('a'); a.href = url; a.download = 'backup_myfinance.json'; a.click();
         }
         function resetApp() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
 
+        // AVVIO
         document.getElementById('paga-oraria').value = pagaOraria;
         render(); renderHomeNotes(); updateCharts();
     </script>
