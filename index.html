@@ -3,80 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilancio Personale - Pro</title>
+    <title>Bilancio App - Analisi Strategica</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .bg-attivo { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); }
+        .bg-attivo { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); }
         .bg-passivo { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
     </style>
 </head>
-<body class="bg-slate-50 pb-10">
+<body class="bg-slate-50 min-h-screen pb-10">
 
-    <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-10">
+    <div class="max-w-6xl mx-auto p-4 md:p-8 space-y-12">
         
+        <header class="flex flex-col md:flex-row justify-between items-center border-b border-slate-200 pb-8">
+            <div>
+                <h1 class="text-4xl font-black tracking-tighter uppercase text-slate-900">Bilancio Personale</h1>
+                <p class="text-slate-500 font-medium">Gestione Reale & Analisi Strategica</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex space-x-2">
+                <button onclick="resetDati()" class="text-[10px] font-bold uppercase text-rose-500 border border-rose-200 px-3 py-1 rounded-full hover:bg-rose-50 transition-all">Reset Dati</button>
+            </div>
+        </header>
+
         <section>
-            <h2 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-4 ml-2">Bilancio Reale (Saldato)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Totale In Cassa</p>
-                    <h3 id="reale-totale" class="text-3xl font-black text-slate-800 mt-1">€ 0,00</h3>
+            <div class="flex items-center space-x-2 mb-4 ml-2">
+                <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
+                <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest font-mono text-xl">Dashboard Reale</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-l-8 border-l-slate-800">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo Attuale</p>
+                    <h3 id="reale-totale" class="text-3xl font-black text-slate-900 mt-1">€ 0,00</h3>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 border-l-4 border-l-emerald-500">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Entrate Effettive</p>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-l-8 border-l-emerald-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-emerald-500">Entrate Totali</p>
                     <h3 id="reale-entrate" class="text-2xl font-black text-emerald-600 mt-1">€ 0,00</h3>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 border-l-4 border-l-rose-500">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Uscite Effettive</p>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 border-l-8 border-l-rose-500">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-rose-500">Uscite Totali</p>
                     <h3 id="reale-uscite" class="text-2xl font-black text-rose-600 mt-1">€ 0,00</h3>
                 </div>
             </div>
         </section>
 
-        <hr class="border-slate-200">
-
         <section>
-            <h2 class="text-xs font-black text-indigo-500 uppercase tracking-[0.3em] mb-4 ml-2">Analisi Strategica (Previsioni)</h2>
+            <div class="flex items-center space-x-2 mb-4 ml-2">
+                <div class="w-2 h-2 bg-indigo-500 rounded-full animate-ping"></div>
+                <h2 class="text-xs font-black text-indigo-500 uppercase tracking-widest font-mono text-xl">Analisi Strategica</h2>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-3xl shadow-md border border-indigo-50 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-2 opacity-10 font-black text-4xl">IN</div>
-                    <p class="text-xs font-bold text-slate-400 uppercase">Entrate Previste</p>
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-indigo-100/50 border border-indigo-50">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Entrate Previste</p>
                     <h3 id="strat-entrate" class="text-3xl font-black text-indigo-600 mt-1">€ 0,00</h3>
+                    <span class="text-[9px] font-black bg-indigo-50 text-indigo-500 px-2 py-0.5 rounded mt-2 inline-block uppercase">Crediti</span>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-md border border-rose-50 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-2 opacity-10 font-black text-4xl">OUT</div>
-                    <p class="text-xs font-bold text-slate-400 uppercase">Uscite Pendenti</p>
+                <div class="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-rose-100/50 border border-rose-50">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Uscite Pendenti</p>
                     <h3 id="strat-uscite" class="text-3xl font-black text-rose-500 mt-1">€ 0,00</h3>
+                    <span class="text-[9px] font-black bg-rose-50 text-rose-500 px-2 py-0.5 rounded mt-2 inline-block uppercase">Debiti</span>
                 </div>
-                <div id="strat-card-netto" class="p-6 rounded-3xl shadow-lg text-white transition-all duration-500">
-                    <p id="strat-label-netto" class="text-xs font-bold opacity-80 uppercase tracking-widest">Saldo Futuro</p>
+                <div id="strat-card-netto" class="p-6 rounded-[2.5rem] shadow-xl text-white transition-all duration-700">
+                    <p id="strat-label-netto" class="text-[10px] font-black opacity-80 uppercase tracking-widest">Saldo Futuro</p>
                     <h3 id="strat-netto" class="text-3xl font-black mt-1">€ 0,00</h3>
+                    <span class="text-[9px] font-black bg-white/20 px-2 py-0.5 rounded mt-2 inline-block uppercase tracking-tighter">Previsione Netta</span>
                 </div>
             </div>
         </section>
 
-        <section class="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl">
+        <section class="bg-slate-900 p-8 rounded-[3rem] shadow-2xl">
+            <h4 class="text-white font-black text-xs uppercase tracking-[0.4em] mb-6 text-center opacity-50">Nuova Operazione</h4>
             <form id="form-movimento" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <input type="text" id="desc" placeholder="Descrizione" class="p-4 rounded-2xl bg-slate-800 text-white border-none focus:ring-2 focus:ring-indigo-500 outline-none" required>
-                <input type="number" id="valore" placeholder="Importo €" class="p-4 rounded-2xl bg-slate-800 text-white border-none focus:ring-2 focus:ring-indigo-500 outline-none font-bold" required>
+                <input type="text" id="desc" placeholder="Descrizione (es. Stipendio)" class="p-4 rounded-2xl bg-slate-800 text-white border-none focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium" required>
+                <input type="number" id="valore" placeholder="Importo €" class="p-4 rounded-2xl bg-slate-800 text-white border-none focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-black" required>
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="tipo" class="p-4 rounded-2xl bg-slate-800 text-white font-bold text-xs uppercase cursor-pointer">
-                        <option value="entrata text-emerald-400">Entrata</option>
-                        <option value="uscita text-rose-400">Uscita</option>
+                    <select id="tipo" class="p-4 rounded-2xl bg-slate-800 text-white font-bold text-[10px] uppercase cursor-pointer outline-none">
+                        <option value="entrata">Entrata</option>
+                        <option value="uscita">Uscita</option>
                     </select>
-                    <select id="stato" class="p-4 rounded-2xl bg-slate-800 text-white font-bold text-xs uppercase cursor-pointer">
-                        <option value="saldato">Già Saldato</option>
+                    <select id="stato" class="p-4 rounded-2xl bg-slate-800 text-white font-bold text-[10px] uppercase cursor-pointer outline-none">
+                        <option value="saldato">Saldato</option>
                         <option value="pendente">Pendente</option>
                     </select>
                 </div>
-                <button type="submit" class="bg-indigo-500 hover:bg-indigo-400 text-white font-black rounded-2xl p-4 transition-all uppercase text-sm">Registra</button>
+                <button type="submit" class="bg-indigo-500 hover:bg-indigo-400 text-white font-black rounded-2xl p-4 transition-all uppercase text-xs tracking-widest shadow-lg shadow-indigo-500/20">Aggiungi Ora</button>
             </form>
         </section>
 
         <section class="space-y-4">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest ml-4">Cronologia Movimenti</h3>
-            <div id="lista-container" class="space-y-3"></div>
+            <div id="lista-container" class="space-y-3">
+                </div>
         </section>
 
     </div>
@@ -88,57 +105,54 @@
             const container = document.getElementById('lista-container');
             container.innerHTML = '';
 
-            // Calcoli Dashboard REALE
-            let rEntrate = 0, rUscite = 0;
-            // Calcoli Dashboard STRATEGICA
-            let sEntrate = 0, sUscite = 0;
+            let rEntrate = 0, rUscite = 0; // Reale
+            let sEntrate = 0, sUscite = 0; // Strategico
 
             movimenti.forEach((m, i) => {
-                const val = Number(m.valore);
-                
+                const v = Number(m.valore);
                 if (m.stato === 'saldato') {
-                    if (m.tipo === 'entrata') rEntrate += val; else rUscite += val;
+                    if (m.tipo === 'entrata') rEntrate += v; else rUscite += v;
                 } else {
-                    if (m.tipo === 'entrata') sEntrate += val; else sUscite += val;
+                    if (m.tipo === 'entrata') sEntrate += v; else sUscite += v;
                 }
 
                 const div = document.createElement('div');
-                div.className = 'bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm';
+                div.className = 'bg-white p-5 rounded-3xl border border-slate-100 flex justify-between items-center shadow-sm hover:shadow-md transition-all group';
                 div.innerHTML = `
-                    <div class="flex items-center space-x-4">
-                        <button onclick="toggle(${i})" class="w-10 h-10 rounded-full flex items-center justify-center ${m.stato === 'saldato' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600 animate-pulse'}">
-                            ${m.stato === 'saldato' ? '✓' : '⌛'}
+                    <div class="flex items-center space-x-5">
+                        <button onclick="toggle(${i})" class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${m.stato === 'saldato' ? 'bg-emerald-50 text-emerald-500 shadow-inner' : 'bg-amber-50 text-amber-500 animate-pulse'}">
+                            ${m.stato === 'saldato' ? '<b class="text-xl">✓</b>' : '<b class="text-xl">⌛</b>'}
                         </button>
                         <div>
-                            <p class="font-bold text-slate-700 uppercase text-xs">${m.desc}</p>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">${m.tipo} - ${m.stato}</p>
+                            <p class="font-black text-slate-800 uppercase text-xs tracking-tight group-hover:text-indigo-600 transition-colors">${m.desc}</p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mt-0.5">${m.tipo} • ${m.stato}</p>
                         </div>
                     </div>
-                    <div class="font-black ${m.tipo === 'entrata' ? 'text-emerald-500' : 'text-rose-500'}">
-                        ${m.tipo === 'entrata' ? '+' : '-'} €${val.toLocaleString()}
+                    <div class="text-xl font-black ${m.tipo === 'entrata' ? 'text-emerald-500' : 'text-rose-500'}">
+                        ${m.tipo === 'entrata' ? '+' : '-'} €${v.toLocaleString('it-IT', {minimumFractionDigits: 2})}
                     </div>
                 `;
                 container.appendChild(div);
             });
 
             // Update UI Reale
-            document.getElementById('reale-entrate').innerText = `€ ${rEntrate.toLocaleString()}`;
-            document.getElementById('reale-uscite').innerText = `€ ${rUscite.toLocaleString()}`;
-            document.getElementById('reale-totale').innerText = `€ ${(rEntrate - rUscite).toLocaleString()}`;
+            document.getElementById('reale-entrate').innerText = `€ ${rEntrate.toLocaleString('it-IT')}`;
+            document.getElementById('reale-uscite').innerText = `€ ${rUscite.toLocaleString('it-IT')}`;
+            document.getElementById('reale-totale').innerText = `€ ${(rEntrate - rUscite).toLocaleString('it-IT')}`;
 
             // Update UI Strategica
-            document.getElementById('strat-entrate').innerText = `€ ${sEntrate.toLocaleString()}`;
-            document.getElementById('strat-uscite').innerText = `€ ${sUscite.toLocaleString()}`;
+            document.getElementById('strat-entrate').innerText = `€ ${sEntrate.toLocaleString('it-IT')}`;
+            document.getElementById('strat-uscite').innerText = `€ ${sUscite.toLocaleString('it-IT')}`;
             const sNetto = sEntrate - sUscite;
-            document.getElementById('strat-netto').innerText = `€ ${Math.abs(sNetto).toLocaleString()}`;
+            document.getElementById('strat-netto').innerText = `€ ${Math.abs(sNetto).toLocaleString('it-IT')}`;
             
             const cardNetto = document.getElementById('strat-card-netto');
             const labelNetto = document.getElementById('strat-label-netto');
             if(sNetto >= 0) {
-                cardNetto.className = "p-6 rounded-3xl shadow-lg text-white bg-attivo transition-all";
+                cardNetto.className = "p-6 rounded-[2.5rem] shadow-xl text-white bg-attivo transition-all";
                 labelNetto.innerText = "Saldo Futuro Attivo";
             } else {
-                cardNetto.className = "p-6 rounded-3xl shadow-lg text-white bg-passivo transition-all";
+                cardNetto.className = "p-6 rounded-[2.5rem] shadow-xl text-white bg-passivo transition-all";
                 labelNetto.innerText = "Saldo Futuro Passivo";
             }
 
@@ -160,6 +174,13 @@
         window.toggle = (i) => {
             movimenti[i].stato = movimenti[i].stato === 'saldato' ? 'pendente' : 'saldato';
             render();
+        };
+
+        window.resetDati = () => {
+            if(confirm("Vuoi davvero cancellare tutti i movimenti?")) {
+                movimenti = [];
+                render();
+            }
         };
 
         render();
